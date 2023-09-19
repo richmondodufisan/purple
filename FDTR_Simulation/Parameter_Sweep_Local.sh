@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #Original file name
-og_filename="fdtr_connected"
+og_filename="FDTR_input"
 extension=".i"
 
-og_mesh_script="sample_connected_gb"
+og_mesh_script="FDTR_mesh"
 og_mesh_ext=".geo"
 
 
@@ -18,7 +18,7 @@ theta_vals_num=("75" "0")
 
 #x0_vals_num=("-15" "-10" "-5" "-4" "-3" "-2" "-1" "0" "1" "2" "3" "4" "5" "10" "15")
 
-freq_vals_num=("1e6" "2e6" "4e6" "6e6" "10e6")
+freq_vals_num=("1e6")
 
 #theta_vals_num=("0" "15" "30" "45" "60" "75")
 
@@ -126,12 +126,14 @@ for theta_val_num in "${theta_vals_num[@]}"; do
 			sed -i "0,/file = [^ ]*/s/file = [^ ]*/file = \"$new_mesh_name\"/" "$new_filename"
 
 			# Start simulation and wait for it to finish
-			../purple-opt -i ${new_filename} &
+			#../purple-opt -i ${new_filename} --mesh-only &
+
+			# ../purple-opt -i ${new_filename} &
 			wait
 		done
 	done
 done
 
 # Delete input files and mesh files
-rm ${og_filename}_*.i
-rm ${og_mesh_script}_*.msh
+# rm ${og_filename}_*.i
+# rm ${og_mesh_script}_*.msh
