@@ -97,9 +97,15 @@
 [BCs]
   [left_val]
     type = DirichletBC
-    variable = q_x
+    variable = temperature
+    boundary = 'left'
+    value = 0
+  []
+  [right_val]
+    type = NeumannBC
+    variable = temperature
     boundary = 'right'
-    value = 100
+    value = 1000
   []
 []
 

@@ -6,18 +6,6 @@
 []
 
 [Variables]
-  [q_x]
-    order = SECOND
-    family = LAGRANGE
-  []
-  [q_y]
-    order = SECOND
-    family = LAGRANGE
-  []
-  [q_z]
-    order = SECOND
-    family = LAGRANGE
-  []
   [temperature]
     order = FIRST
     family = LAGRANGE
@@ -26,34 +14,10 @@
 
 
 [Kernels]
-  [heat_x]
-    type = FourierHeatEquation
-    variable = q_x
-	temperature = temperature
-	component_flux = 0
-	thermal_conductivity = k_val
-  []
-  [heat_y]
-    type = FourierHeatEquation
-    variable = q_y
-	temperature = temperature
-	component_flux = 1
-	thermal_conductivity = k_val
-  []
-  [heat_z]
-    type = FourierHeatEquation
-    variable = q_z
-	temperature = temperature
-	component_flux = 2
-	thermal_conductivity = k_val
-  []
   [diffuse]
-    type = DiffusionTemperature
+    type = ADHeatConduction
     variable = temperature
-	
-	q_x = q_x
-	q_y = q_y
-	q_z = q_z
+	thermal_conductivity = k_val
   []
 []
 

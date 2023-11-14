@@ -58,7 +58,7 @@ FourierHeatEquation::computeQpResidual()
   auto grad_NA = _grad_test[_i][_qp];
   auto NA = _test[_i][_qp];
 
-  auto residual = (_u[_qp] * NA) - (_kappa[_qp] * _grad_temp[_qp](i) * NA);
+  auto residual = (_u[_qp] * NA) + (_kappa[_qp] * _grad_temp[_qp](i) * NA);
   
   return residual;
 }
