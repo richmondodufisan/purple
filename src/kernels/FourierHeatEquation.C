@@ -44,7 +44,7 @@ FourierHeatEquation::FourierHeatEquation(const InputParameters & parameters)
     // Get Parameter from user, name in input file is in quotes
     _component_flux(getParam<unsigned int>("component_flux")),
 	
-	_temp(adCoupledValue("temperature")),
+	_grad_temp(adCoupledGradient("temperature")),
 	_kappa(getADMaterialProperty<Real>("thermal_conductivity"))
 	
 {
@@ -58,7 +58,7 @@ FourierHeatEquation::computeQpResidual()
   auto grad_NA = _grad_test[_i][_qp];
   auto NA = _test[_i][_qp];
 
-  auto residual = (_u[_qp] * NA) - (_kappa[_qp] * _temp[_qp] * grad_NA(i));
+  auto residual = (_u[_qp] * NA) - (_kappa[_qp] * _grad_temp[_qp](i) * NA);
   
   return residual;
 }

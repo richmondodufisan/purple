@@ -24,7 +24,7 @@ class FourierHeatEquation : public DerivativeMaterialInterface<ADKernel>
     // Parameters
     const unsigned int _component_flux;
 	
-	const ADVariableValue & _temp;
+	const ADVariableGradient & _grad_temp;
 	
 	const ADMaterialProperty<Real> & _kappa;
 };
