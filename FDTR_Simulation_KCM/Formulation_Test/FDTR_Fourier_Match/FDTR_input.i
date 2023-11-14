@@ -39,6 +39,8 @@ end_period = 10.0
 t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 
 [Mesh]
+  second_order = true
+
   [sample_mesh]
     type = FileMeshGenerator
     file = FDTR_mesh.msh
@@ -117,37 +119,37 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 
 [Variables]
   [q_samp_x]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
 	block = sample_material
   []
   
   [q_samp_y]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
 	block = sample_material
   []
   
   [q_samp_z]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
 	block = sample_material
   []
   
   [q_trans_x]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
 	block = transducer_material
   []
   
   [q_trans_y]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
 	block = transducer_material
   []
   
   [q_trans_z]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
 	block = transducer_material
   []
@@ -405,14 +407,14 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 
 [Preconditioning]
   [preconditioner]
-    type = FDP
+    type = SMP
     full = true
   []
 []
 
 [Executioner]
   type = Transient
-  solve_type = 'NEWTON'
+  solve_type = 'PJFNK'
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8
