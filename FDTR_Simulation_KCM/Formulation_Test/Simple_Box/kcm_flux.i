@@ -27,25 +27,46 @@
 
 [Kernels]
   [heat_x]
-    type = FourierHeatEquation
+    type = KCMHeatEquation
     variable = q_x
 	temperature = temperature
 	component_flux = 0
+	
 	thermal_conductivity = k_val
+	length_scale = length_scale_val
+	alpha = alpha_val
+		
+	q_x = q_x
+	q_y = q_y
+	q_z = q_z
   []
   [heat_y]
-    type = FourierHeatEquation
+    type = KCMHeatEquation
     variable = q_y
 	temperature = temperature
 	component_flux = 1
+	
 	thermal_conductivity = k_val
+	length_scale = length_scale_val
+	alpha = alpha_val
+		
+	q_x = q_x
+	q_y = q_y
+	q_z = q_z
   []
   [heat_z]
-    type = FourierHeatEquation
+    type = KCMHeatEquation
     variable = q_z
 	temperature = temperature
 	component_flux = 2
+	
 	thermal_conductivity = k_val
+	length_scale = length_scale_val
+	alpha = alpha_val
+		
+	q_x = q_x
+	q_y = q_y
+	q_z = q_z
   []
   [diffuse]
     type = DiffusionTemperature
@@ -57,26 +78,28 @@
   []
 []
 
+[Postprocessors]
+  [central_temp]
+    type = PointValue
+    variable = temperature
+    point = '5 5 2.5'
+  []
+[]
+
 [Materials]
   [simulation_constants]
     type = ADGenericConstantMaterial
-    prop_names = 'k_val'
-    prop_values = '1.0'
+    prop_names = 'k_val length_scale_val alpha_val'
+    prop_values = '1.0 0.1 2.0'
   []
 []
 
 [BCs]
   [left_val]
     type = DirichletBC
-    variable = temperature
+    variable = q_x
     boundary = 'right'
-    value = 1
-  []
-  [right_val]
-    type = DirichletBC
-	variable = temperature
-	boundary = 'left'
-	value = 0
+    value = 100
   []
 []
 
@@ -96,7 +119,6 @@
   l_tol = 1e-5
   l_max_its = 300
   nl_max_its = 20
-
 [] 
 
 [Outputs]
