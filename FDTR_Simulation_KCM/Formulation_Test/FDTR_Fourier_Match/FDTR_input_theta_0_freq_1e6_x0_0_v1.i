@@ -30,6 +30,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 
 period = ${fparse 1/freq_val}
 dt_val = ${fparse 5.0*(dphase/360.0)*period*tp}
+dt_val_min = ${fparse 0.5*(dphase/360.0)*period*tp}
 
 start_period = 0.0
 start_val = ${fparse 2.2*period*tp*(start_period/2.0)}
@@ -404,17 +405,14 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 
 [Preconditioning]
   [smp]
-    type = SMP
+    type = FDP
     full = true
   []
 []
 
 [Executioner]
   type = Transient
-  solve_type = 'PJFNK'
-
-  petsc_options_iname = '-pc_type   -pc_hypre_type    -ksp_type     -ksp_gmres_restart  -pc_hypre_boomeramg_strong_threshold -pc_hypre_boomeramg_agg_nl -pc_hypre_boomeramg_agg_num_paths -pc_hypre_boomeramg_max_levels -pc_hypre_boomeramg_coarsen_type -pc_hypre_boomeramg_interp_type -pc_hypre_boomeramg_P_max -pc_hypre_boomeramg_truncfactor'
-  petsc_options_value = 'hypre      boomeramg         gmres         301                  0.6                                  4                          5                                 25                             Falgout                          ext+i                           1                         0.3'
+  solve_type = 'NEWTON'
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8
@@ -422,13 +420,7 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
   l_max_its = 300
   nl_max_its = 20
 
-  line_search = 'none'
-
-  automatic_scaling=true
-  compute_scaling_once =true
-  verbose=false
-
-  dtmin = ${dt_val}
+  dtmin = ${dt_val_min}
   dtmax= ${dt_val}
   
   start_time = ${start_val}

@@ -81,8 +81,8 @@
     value = 0
   []
   [right_val]
-    type = NeumannBC
-    variable = temperature
+    type = DirichletBC
+    variable = q_x
     boundary = 'right'
     value = 1000
   []
