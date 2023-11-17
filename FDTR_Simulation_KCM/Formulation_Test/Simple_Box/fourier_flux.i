@@ -81,8 +81,8 @@
     value = 0
   []
   [right_val]
-    type = DirichletBC
-    variable = q_x
+    type = NeumannBC
+    variable = temperature
     boundary = 'right'
     value = 1000
   []
@@ -104,7 +104,6 @@
   l_tol = 1e-5
   l_max_its = 300
   nl_max_its = 20
-
 [] 
 
 [Outputs]
