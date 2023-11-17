@@ -116,12 +116,12 @@ done
 #submission_count=1
 
 # Change this value to continue from nth simulation
-submission_count=14
+submission_count=16
 
 #o_start=$start_val
 
 # Change this value to the START period of the nth simulation (nth_simulation * period_per_sim) - period_per_sim
-o_start=6.5
+o_start=7.5
 
 #Initial input file name
 init_filename="FDTR_input"

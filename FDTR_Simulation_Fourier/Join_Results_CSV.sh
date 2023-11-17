@@ -2,7 +2,7 @@
 
 n_iterations=16
 
-theta_angle=75
+theta_angle=0
 n_periods_per_iteration=0.5
 
 dphase=0.2
