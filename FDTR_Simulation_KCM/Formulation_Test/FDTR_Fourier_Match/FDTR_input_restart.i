@@ -32,10 +32,17 @@ period = ${fparse 1/freq_val}
 dt_val = ${fparse 5.0*(dphase/360.0)*period*tp}
 dt_val_min = ${fparse 0.5*(dphase/360.0)*period*tp}
 
+prev_start = 0.0
+prev_start_val = ${fparse 2.2*period*tp*(prev_start/2.0)}
+prev_end = 0.0
+prev_end_val = ${fparse 2.2*period*tp*(prev_end/2.0)}
+
+last_timestep = ${fparse int(((prev_end_val - prev_start_val)/dt_val))}
+
 start_period = 0.0
 start_val = ${fparse 2.2*period*tp*(start_period/2.0)}
 
-end_period = 2.0
+end_period = 10.0
 t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 
 [Mesh]
@@ -43,7 +50,8 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 
   [sample_mesh]
     type = FileMeshGenerator
-    file = "FDTR_mesh_x0_0_theta_0.msh"
+    file = FDTR_mesh.msh
+	use_for_exodus_restart = true
   []
   [sample_block]
     type = SubdomainBoundingBoxGenerator
@@ -122,48 +130,64 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
     order = SECOND
     family = LAGRANGE
 	block = sample_material
+	initial_from_file_var = temp_trans
+    initial_from_file_timestep = ${last_timestep}
   []
   
   [q_samp_y]
     order = SECOND
     family = LAGRANGE
 	block = sample_material
+	initial_from_file_var = temp_trans
+    initial_from_file_timestep = ${last_timestep}
   []
   
   [q_samp_z]
     order = SECOND
     family = LAGRANGE
 	block = sample_material
+	initial_from_file_var = temp_trans
+    initial_from_file_timestep = ${last_timestep}
   []
   
   [q_trans_x]
     order = SECOND
     family = LAGRANGE
 	block = transducer_material
+	initial_from_file_var = temp_trans
+    initial_from_file_timestep = ${last_timestep}
   []
   
   [q_trans_y]
     order = SECOND
     family = LAGRANGE
 	block = transducer_material
+	initial_from_file_var = temp_trans
+    initial_from_file_timestep = ${last_timestep}
   []
   
   [q_trans_z]
     order = SECOND
     family = LAGRANGE
 	block = transducer_material
+	initial_from_file_var = temp_trans
+    initial_from_file_timestep = ${last_timestep}
   []
   
   [temp_samp]
     order = FIRST
     family = LAGRANGE
 	block = sample_material
+	initial_from_file_var = temp_trans
+    initial_from_file_timestep = ${last_timestep}
   []
   
   [temp_trans]
     order = FIRST
     family = LAGRANGE
 	block = transducer_material
+	initial_from_file_var = temp_trans
+    initial_from_file_timestep = ${last_timestep}
   []
 []
 
@@ -387,21 +411,6 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 	variable = temp_trans
 	boundary = 'top_pump_area'
 	function = heat_source_function
-  []
-[]
-
-[ICs]
-  [initial_temperature_sample]
-    type = ConstantIC
-	variable = temp_samp
-	value = ${room_temperature}
-	block = sample_material
-  []
-  [initial_temperature_doping]
-    type = ConstantIC
-	variable = temp_trans
-	value = ${room_temperature}
-	block = transducer_material
   []
 []
 

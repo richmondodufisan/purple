@@ -17,11 +17,10 @@ function check_squeue() {
 
 
 # Set the maximum number of times to submit the batch job
-#n_iterations=60
-n_iterations=60
+n_iterations=8
 
 # Set the number of periods each job/sweep should solve for
-n_periods_per_job=0.5
+n_periods_per_job=0.25
 
 # Initial timestep
 start_val=0.0
@@ -39,17 +38,17 @@ first_period=$n_periods_per_job
 
 # Define the range of values you want to loop over
 
-#x0_vals_num=("0")
+x0_vals_num=("0")
 
-#freq_vals_num=("1e6" "2e6")
+freq_vals_num=("1e6" "2e6")
 
-#theta_vals_num=("0")
+theta_vals_num=("0")
 
-x0_vals_num=("-15" "-10" "-9" "-8" "-7" "-6" "-5" "-4" "-3" "-2" "-1" "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "15")
+# x0_vals_num=("-15" "-10" "-9" "-8" "-7" "-6" "-5" "-4" "-3" "-2" "-1" "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "15")
 
-freq_vals_num=("1e6" "2e6" "4e6" "6e6" "10e6")
+# freq_vals_num=("1e6" "2e6" "4e6" "6e6" "10e6")
 
-theta_vals_num=("0" "75")
+# theta_vals_num=("0" "75")
 
 
 # Loop over values
@@ -68,9 +67,9 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		
 		#echo "$new_mesh_name"
 		
-		# Make new 3D mesh
-		#python3 FDTR_mesh.py >> gmsh_output.txt &
-		#wait
+		Make new 3D mesh
+		python3 FDTR_mesh.py >> gmsh_output.txt &
+		wait
 		
 		# Submit Job
 		#sbatch --wait FDTR_Batch_gmsh.sh
@@ -79,7 +78,7 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		
 		for freq_val_num in "${freq_vals_num[@]}"; do
 			# Create a new filename by appending x0_val to the original filename
-			new_filename="${og_filename}_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_v1.i"
+			new_filename="${og_filename}_KCM_Mixed_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_v1.i"
 
 			# Copy the original input file to the new filename
 			cp "$og_filename$extension" "$new_filename"
@@ -107,21 +106,21 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 			# Replace the job name
 			sed -E -i "s/(#SBATCH --job-name=)[^[:space:]]+/\1${x0_val_num}${freq_noexp}${theta_val_num}/" "FDTR_Batch_MOOSE.sh"
 
-			# Submit job
-			#sbatch FDTR_Batch_MOOSE.sh
+			Submit job
+			sbatch FDTR_Batch_MOOSE.sh
 		done
 	done
 done
 
-#submission_count=1
+submission_count=1
 
 # Change this value to continue from nth simulation
-submission_count=16
+# submission_count=16
 
-#o_start=$start_val
+o_start=$start_val
 
 # Change this value to the START period of the nth simulation (nth_simulation * period_per_sim) - period_per_sim
-o_start=7.5
+# o_start=7.5
 
 #Initial input file name
 init_filename="FDTR_input"
@@ -144,12 +143,12 @@ while [ $submission_count -lt $n_iterations ]; do
 		fi
 
 
-		mv *.e /scratch/vtw1026/		
+		mv *_KCM_Mixed*.e /scratch/vtw1026/		
 
 		# Delete mesh files from older submission
 		if [ $submission_count -gt 1 ]; then
 				older_submission=$((submission_count - 1))
-			rm /scratch/vtw1026/*v${older_submission}*e
+			rm /scratch/vtw1026/*_KCM_Mixed*v${older_submission}*e
 		fi
 
 
@@ -158,7 +157,7 @@ while [ $submission_count -lt $n_iterations ]; do
 		former_sim_ver="v${o_ver}"
 		new_sim_ver="v${n_ver}"
 		
-		rm *${former_sim_ver}*i
+		rm *_KCM_Mixed*${former_sim_ver}*i
 
 		o_stop=$(echo "$o_start + $n_periods_per_job" | bc -l)
 		n_stop=$(echo "$o_stop + $n_periods_per_job" | bc -l)
@@ -176,7 +175,7 @@ while [ $submission_count -lt $n_iterations ]; do
 				for freq_val_num in "${freq_vals_num[@]}"; do
 
 					# Create a new filename by appending x0_val to the original filename
-					new_filename="${init_filename}_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_${new_sim_ver}.i"
+					new_filename="${init_filename}_KCM_Mixed_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_${new_sim_ver}.i"
 
 					# Copy the original input file to the new filename
 					cp "$og_filename$extension" "$new_filename"
@@ -192,7 +191,7 @@ while [ $submission_count -lt $n_iterations ]; do
 					
 					# Replace the mesh in the MOOSE script
 					scratch_path="\/scratch\/vtw1026\/"
-					former_sim_output="${init_filename}_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_${former_sim_ver}_out.e"
+					former_sim_output="${init_filename}_KCM_Mixed_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_${former_sim_ver}_out.e"
 					sed -i "0,/file = [^ ]*/s/file = [^ ]*/file = \"$scratch_path$former_sim_output\"/" "$new_filename"
 					
 					

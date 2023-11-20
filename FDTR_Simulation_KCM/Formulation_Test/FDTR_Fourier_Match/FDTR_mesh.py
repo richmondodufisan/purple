@@ -5,25 +5,25 @@ import sys
 gmsh.initialize()
 gmsh.model.add("FDTR_mesh")
 
-newMeshName = "FDTR_mesh_x0_0_theta_0.msh"
+newMeshName = "FDTR_mesh_x0_15_theta_75.msh"
 
-theta = 0
-xcen = 0
+theta = 75
+xcen = 15
 ycen = 0
 radius = 8
 trans_thick = 0.09
 
 dummy_factor = 3
-trans_thick_ref = 0.2
+trans_thick_ref = 0.09
 
 x_dir = 40
 y_dir = 20
 z_dir = 40
 gb_width = 0.1
 
-pump_refine = 0.8
-reg_element_refine = 12
-gb_refine = 2
+pump_refine = 0.3
+reg_element_refine = 4
+gb_refine = 0.7
 
 # Initialize gb refinement values
 x_left_up = 0
@@ -376,9 +376,6 @@ gmsh.model.removeEntities([lastVolume], recursive=True)
 
 # More efficient meshing algorithm used when there are multiple subvolumes
 gmsh.option.setNumber("Mesh.Algorithm",5)
-
-# Make second order elements
-# gmsh.option.setNumber("Mesh.ElementOrder", 2)
 
 # Create 3D mesh
 gmsh.model.mesh.generate(3)

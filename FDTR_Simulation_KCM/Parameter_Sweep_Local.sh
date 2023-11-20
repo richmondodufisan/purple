@@ -4,7 +4,7 @@
 n_iterations=1
 
 # Set the number of periods each job/sweep should solve for
-n_periods_per_job=1.0
+n_periods_per_job=2.0
 
 # Initial timestep
 start_val=0.0
@@ -80,6 +80,7 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 			sed -i "s/\(end_period\s*=\s*\)[0-9.eE+-]\+/\1$first_period/g" "$new_filename"
 			
 			mpiexec -n 4 ../purple-opt -i ${new_filename} &
+			# ../../../purple-opt -i ${new_filename} &
 			wait
 		done
 	done
@@ -146,7 +147,7 @@ while [ $submission_count -lt $n_iterations ]; do
 				
 				############# END Replacing end and start periods #############
 				
-				mpiexec -n 4 ../purple-opt -i ${new_filename} &
+				mpiexec -n 4 ../../../purple-opt -i ${new_filename} &
 				wait		
 			done
 		done
