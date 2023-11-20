@@ -3,7 +3,8 @@
 *.txt
 slurm*
 FDTR_input_theta_*
-
+FDTR_input_KCM_*
+FDTR_input_Fourier_*
 .libs
 *.la
 *.lo
