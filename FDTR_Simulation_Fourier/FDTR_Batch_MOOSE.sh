@@ -9,7 +9,7 @@
 #SBATCH --exclude=qnode0565,qnode0626,qnode0637
 
 
-script_name="FDTR_input_theta_75_freq_10e6_x0_15_v16.i"
+script_name="FDTR_input_theta_75_freq_10e6_x0_15_v26.i"
 
 #moose_exec.sh ../purple-opt -i ${script_name} --mesh-only
 #moose_exec.sh ../purple-opt -i ${script_name}
