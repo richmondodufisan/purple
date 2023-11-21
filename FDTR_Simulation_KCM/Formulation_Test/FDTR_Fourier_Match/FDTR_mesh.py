@@ -14,16 +14,17 @@ radius = 8
 trans_thick = 0.09
 
 dummy_factor = 3
-trans_thick_ref = 0.09
+trans_thick_ref = 0.3
+sub_center_ref=0.3
 
 x_dir = 40
 y_dir = 20
 z_dir = 40
 gb_width = 0.1
 
-pump_refine = 0.3
-reg_element_refine = 4
-gb_refine = 0.7
+pump_refine = 1.2
+reg_element_refine = 12
+gb_refine = 1.5
 
 # Initialize gb refinement values
 x_left_up = 0
@@ -160,7 +161,7 @@ sloop2 = gmsh.model.occ.addSurfaceLoop([s6, s11, s8, s7, s10, s9])
 v2 = gmsh.model.occ.addVolume([sloop2])
 
 # Points for radial refinement dummy volume
-p13 = gmsh.model.occ.addPoint(xcen, ycen, 0, trans_thick_ref)
+p13 = gmsh.model.occ.addPoint(xcen, ycen, 0, sub_center_ref)
 p14 = gmsh.model.occ.addPoint(xcen, ycen+radius, 0, pump_refine)
 p15 = gmsh.model.occ.addPoint(xcen, ycen-radius, 0, pump_refine)
 p16 = gmsh.model.occ.addPoint(xcen+radius, ycen, 0, pump_refine)
@@ -194,11 +195,11 @@ sloop3 = gmsh.model.occ.addSurfaceLoop([s12, s13, s14, s15, s16])
 v3 = gmsh.model.occ.addVolume([sloop3])
 
 ##### ADDITIONAL SUB-SPHERE REFINEMENT DUMMY POINTS #####
-p36 = gmsh.model.occ.addPoint(xcen, ycen+(radius/dummy_factor), 0, trans_thick_ref)
-p37 = gmsh.model.occ.addPoint(xcen, ycen-(radius/dummy_factor), 0, trans_thick_ref)
-p38 = gmsh.model.occ.addPoint(xcen+(radius/dummy_factor), ycen, 0, trans_thick_ref)
-p39 = gmsh.model.occ.addPoint(xcen-(radius/dummy_factor), ycen, 0, trans_thick_ref)
-p40 = gmsh.model.occ.addPoint(xcen, ycen, 0-(radius/dummy_factor), trans_thick_ref)
+p36 = gmsh.model.occ.addPoint(xcen, ycen+(radius/dummy_factor), 0, sub_center_ref)
+p37 = gmsh.model.occ.addPoint(xcen, ycen-(radius/dummy_factor), 0, sub_center_ref)
+p38 = gmsh.model.occ.addPoint(xcen+(radius/dummy_factor), ycen, 0, sub_center_ref)
+p39 = gmsh.model.occ.addPoint(xcen-(radius/dummy_factor), ycen, 0, sub_center_ref)
+p40 = gmsh.model.occ.addPoint(xcen, ycen, 0-(radius/dummy_factor), sub_center_ref)
 
 c49 = gmsh.model.occ.addCircleArc(p39, p13, p37)
 c50 = gmsh.model.occ.addCircleArc(p37, p13, p38)
@@ -364,8 +365,8 @@ for ps in zip(p, s):
         # print(checkSphere)
         
         # assign small sphere refinement if yes, large sphere refinement otherwise
-        if ( checkSphere <= ((radius/dummy_factor)**2 + 1e-2)):
-            gmsh.model.mesh.setSize([ps[0]], trans_thick_ref)
+        if (( checkSphere <= ((radius/dummy_factor)**2 + 1e-2)) and ((val[0]) < 0)):
+            gmsh.model.mesh.setSize([ps[0]], sub_center_ref)
         else:
             gmsh.model.mesh.setSize([ps[0]], pump_refine)
    
