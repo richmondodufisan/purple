@@ -17,10 +17,10 @@ function check_squeue() {
 
 
 # Set the maximum number of times to submit the batch job
-n_iterations=8
+n_iterations=4
 
 # Set the number of periods each job/sweep should solve for
-n_periods_per_job=0.25
+n_periods_per_job=0.5
 
 # Initial timestep
 start_val=0.0
@@ -137,7 +137,7 @@ while [ $submission_count -lt $n_iterations ]; do
 		# Check for failed jobs. edit date/time/number of failed jobs as needed
 		failed_jobs=$(sacct -S 11/20/23 -X -u vtw1026 --format=nodelist,state,jobid | grep FAIL | wc -l)
 		
-		if [ $failed_jobs -gt 0 ]; then
+		if [ $failed_jobs -gt 2 ]; then
 			echo "SOME JOBS FAILED. EXITING SCRIPT."
 			exit 1
 		fi
