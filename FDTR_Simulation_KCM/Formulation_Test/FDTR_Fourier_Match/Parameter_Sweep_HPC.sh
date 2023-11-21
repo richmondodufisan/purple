@@ -71,8 +71,8 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		#echo "$new_mesh_name"
 		
 		#Make new 3D mesh
-		python3 FDTR_mesh.py >> gmsh_output.txt &
-		wait
+		# python3 FDTR_mesh.py >> gmsh_output.txt &
+		# wait
 		
 		# Submit Job
 		#sbatch --wait FDTR_Batch_gmsh.sh
@@ -110,7 +110,7 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 			sed -E -i "s/(#SBATCH --job-name=)[^[:space:]]+/\1${x0_val_num}${freq_noexp}${theta_val_num}_Fourier_Mixed_Formulation/" "FDTR_Batch_MOOSE.sh"
 
 			#Submit job
-			sbatch FDTR_Batch_MOOSE.sh
+			# sbatch FDTR_Batch_MOOSE.sh
 		done
 	done
 done
@@ -138,9 +138,9 @@ while [ $submission_count -lt $n_iterations ]; do
 		echo "No jobs in the queue. Submitting batch job script..."
 		
 		# Check for failed jobs. edit date/time/number of failed jobs as needed
-		failed_jobs=$(sacct -S 11/20/23 -X -u vtw1026 --format=nodelist,state,jobid | grep FAIL | wc -l)
+		failed_jobs=$(sacct -S 11/21/23 -X -u vtw1026 --format=nodelist,state,jobid | grep FAIL | wc -l)
 		
-		if [ $failed_jobs -gt 2 ]; then
+		if [ $failed_jobs -gt 4 ]; then
 			echo "SOME JOBS FAILED. EXITING SCRIPT."
 			exit 1
 		fi
