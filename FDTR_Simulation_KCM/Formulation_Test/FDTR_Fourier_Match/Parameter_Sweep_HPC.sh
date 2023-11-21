@@ -140,7 +140,7 @@ while [ $submission_count -lt $n_iterations ]; do
 		# Check for failed jobs. edit date/time/number of failed jobs as needed
 		failed_jobs=$(sacct -S 11/21/23 -X -u vtw1026 --format=nodelist,state,jobid | grep FAIL | wc -l)
 		
-		if [ $failed_jobs -gt 4 ]; then
+		if [ $failed_jobs -gt 5 ]; then
 			echo "SOME JOBS FAILED. EXITING SCRIPT."
 			exit 1
 		fi

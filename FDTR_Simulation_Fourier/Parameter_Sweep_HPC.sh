@@ -9,7 +9,7 @@ module load mpi/mpich-4.0.2-gcc-10.4.0
 function check_squeue() {
     #squeue_output=$(squeue -t PD,R -u vtw1026 -h)  # Replace with your actual username
 	
-	squeue_output=$(squeue -t PD,R -u vtw1026 -h -o "%.18i %.9P %.80j %.8T %.10M %.6D %R" | grep Fourier_Standard_Formulation)
+	squeue_output=$(squeue -t PD,R -u vtw1026 -h -o "%.18i %.9P %.80j %.8T %.10M %.6D %R" | grep Standard_Formulation)
 	
     if [ -z "$squeue_output" ]; then
         return 0  # No jobs in the queue
@@ -141,7 +141,7 @@ while [ $submission_count -lt $n_iterations ]; do
 		# Check for failed jobs. edit date/time/number of failed jobs as needed
 		failed_jobs=$(sacct -S 11/21/23 -X -u vtw1026 --format=nodelist,state,jobid | grep FAIL | wc -l)
 		
-		if [ $failed_jobs -gt 4 ]; then
+		if [ $failed_jobs -gt 5 ]; then
 			echo "SOME JOBS FAILED. EXITING SCRIPT."
 			exit 1
 		fi
