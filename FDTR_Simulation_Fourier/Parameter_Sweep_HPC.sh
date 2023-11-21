@@ -18,7 +18,7 @@ function check_squeue() {
 
 # Set the maximum number of times to submit the batch job
 #n_iterations=60
-n_iterations=60
+n_iterations=4
 
 # Set the number of periods each job/sweep should solve for
 n_periods_per_job=0.5
@@ -39,17 +39,17 @@ first_period=$n_periods_per_job
 
 # Define the range of values you want to loop over
 
-#x0_vals_num=("0")
+x0_vals_num=("0")
 
-#freq_vals_num=("1e6" "2e6")
+freq_vals_num=("1e6")
 
-#theta_vals_num=("0")
+theta_vals_num=("0")
 
-x0_vals_num=("-15" "-10" "-9" "-8" "-7" "-6" "-5" "-4" "-3" "-2" "-1" "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "15")
+#x0_vals_num=("-15" "-10" "-9" "-8" "-7" "-6" "-5" "-4" "-3" "-2" "-1" "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "15")
 
-freq_vals_num=("1e6" "2e6" "4e6" "6e6" "10e6")
+#freq_vals_num=("1e6" "2e6" "4e6" "6e6" "10e6")
 
-theta_vals_num=("0" "75")
+#theta_vals_num=("0" "75")
 
 
 # Loop over values
@@ -69,8 +69,8 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		#echo "$new_mesh_name"
 		
 		# Make new 3D mesh
-		#python3 FDTR_mesh.py >> gmsh_output.txt &
-		#wait
+		python3 FDTR_mesh.py >> gmsh_output.txt &
+		wait
 		
 		# Submit Job
 		#sbatch --wait FDTR_Batch_gmsh.sh
@@ -113,15 +113,15 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 	done
 done
 
-#submission_count=1
+submission_count=1
 
 # Change this value to continue from nth simulation
-submission_count=16
+#submission_count=16
 
-#o_start=$start_val
+o_start=$start_val
 
 # Change this value to the START period of the nth simulation (nth_simulation * period_per_sim) - period_per_sim
-o_start=7.5
+#o_start=7.5
 
 #Initial input file name
 init_filename="FDTR_input"
@@ -138,7 +138,7 @@ while [ $submission_count -lt $n_iterations ]; do
 		# Check for failed jobs. edit date/time/number of failed jobs as needed
 		failed_jobs=$(sacct -S 11/20/23 -X -u vtw1026 --format=nodelist,state,jobid | grep FAIL | wc -l)
 		
-		if [ $failed_jobs -gt 0 ]; then
+		if [ $failed_jobs -gt 2 ]; then
 			echo "SOME JOBS FAILED. EXITING SCRIPT."
 			exit 1
 		fi
