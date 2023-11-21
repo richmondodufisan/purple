@@ -7,7 +7,10 @@ module load mpi/mpich-4.0.2-gcc-10.4.0
 
 # Function to check if there are any jobs in the Slurm queue
 function check_squeue() {
-    squeue_output=$(squeue -t PD,R -u vtw1026 -h)  # Replace with your actual username
+    #squeue_output=$(squeue -t PD,R -u vtw1026 -h)  # Replace with your actual username
+	
+	squeue_output=$(squeue -t PD,R -u vtw1026 -h -o "%.18i %.9P %.30j %.8T %.10M %.6D %R" | grep Fourier_Standard_Formulation)
+	
     if [ -z "$squeue_output" ]; then
         return 0  # No jobs in the queue
     else
@@ -105,7 +108,7 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 			freq_noexp=$(python3 -c "import math; print(int($freq_val_num*1e-6))")
 			
 			# Replace the job name
-			sed -E -i "s/(#SBATCH --job-name=)[^[:space:]]+/\1${x0_val_num}${freq_noexp}${theta_val_num}/" "FDTR_Batch_MOOSE.sh"
+			sed -E -i "s/(#SBATCH --job-name=)[^[:space:]]+/\1${x0_val_num}${freq_noexp}${theta_val_num}_Fourier_Standard_Formulation/" "FDTR_Batch_MOOSE.sh"
 
 			# Submit job
 			#sbatch FDTR_Batch_MOOSE.sh
@@ -211,7 +214,7 @@ while [ $submission_count -lt $n_iterations ]; do
 					freq_noexp=$(python3 -c "import math; print(int($freq_val_num*1e-6))")
 					
 					# Replace the job name
-					sed -E -i "s/(#SBATCH --job-name=)[^[:space:]]+/\1${x0_val_num}${freq_noexp}${theta_val_num}/" "FDTR_Batch_MOOSE.sh"
+					sed -E -i "s/(#SBATCH --job-name=)[^[:space:]]+/\1${x0_val_num}${freq_noexp}${theta_val_num}_Fourier_Standard_Formulation/" "FDTR_Batch_MOOSE.sh"
 
 					# Submit job
 					sbatch FDTR_Batch_MOOSE.sh			
