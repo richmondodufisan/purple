@@ -9,7 +9,7 @@ module load mpi/mpich-4.0.2-gcc-10.4.0
 function check_squeue() {
     #squeue_output=$(squeue -t PD,R -u vtw1026 -h)  # Replace with your actual username
 	
-	squeue_output=$(squeue -t PD,R -u vtw1026 -h -o "%.18i %.9P %.30j %.8T %.10M %.6D %R" | grep Fourier_Mixed_Formulation)
+	squeue_output=$(squeue -t PD,R -u vtw1026 -h -o "%.18i %.9P %.80j %.8T %.10M %.6D %R" | grep Fourier_Mixed_Formulation)
 	
     if [ -z "$squeue_output" ]; then
         return 0  # No jobs in the queue

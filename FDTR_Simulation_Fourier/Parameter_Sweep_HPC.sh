@@ -9,7 +9,7 @@ module load mpi/mpich-4.0.2-gcc-10.4.0
 function check_squeue() {
     #squeue_output=$(squeue -t PD,R -u vtw1026 -h)  # Replace with your actual username
 	
-	squeue_output=$(squeue -t PD,R -u vtw1026 -h -o "%.18i %.9P %.30j %.8T %.10M %.6D %R" | grep Fourier_Standard_Formulation)
+	squeue_output=$(squeue -t PD,R -u vtw1026 -h -o "%.18i %.9P %.80j %.8T %.10M %.6D %R" | grep Fourier_Standard_Formulation)
 	
     if [ -z "$squeue_output" ]; then
         return 0  # No jobs in the queue
@@ -82,7 +82,7 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		
 		for freq_val_num in "${freq_vals_num[@]}"; do
 			# Create a new filename by appending x0_val to the original filename
-			new_filename="${og_filename}_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_v1.i"
+			new_filename="${og_filename}_Fourier_Standard_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_v1.i"
 
 			# Copy the original input file to the new filename
 			cp "$og_filename$extension" "$new_filename"
@@ -147,12 +147,12 @@ while [ $submission_count -lt $n_iterations ]; do
 		fi
 
 
-		mv *.e /scratch/vtw1026/		
+		mv *_Fourier_Standard*.e /scratch/vtw1026/		
 
 		# Delete mesh files from older submission
 		if [ $submission_count -gt 1 ]; then
 				older_submission=$((submission_count - 1))
-			rm /scratch/vtw1026/*v${older_submission}*e
+			rm /scratch/vtw1026/*_Fourier_Standard*v${older_submission}*e
 		fi
 
 
@@ -161,7 +161,7 @@ while [ $submission_count -lt $n_iterations ]; do
 		former_sim_ver="v${o_ver}"
 		new_sim_ver="v${n_ver}"
 		
-		rm *${former_sim_ver}*i
+		rm *_Fourier_Standard*${former_sim_ver}*i
 
 		o_stop=$(echo "$o_start + $n_periods_per_job" | bc -l)
 		n_stop=$(echo "$o_stop + $n_periods_per_job" | bc -l)
@@ -179,7 +179,7 @@ while [ $submission_count -lt $n_iterations ]; do
 				for freq_val_num in "${freq_vals_num[@]}"; do
 
 					# Create a new filename by appending x0_val to the original filename
-					new_filename="${init_filename}_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_${new_sim_ver}.i"
+					new_filename="${init_filename}_Fourier_Standard_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_${new_sim_ver}.i"
 
 					# Copy the original input file to the new filename
 					cp "$og_filename$extension" "$new_filename"
@@ -195,7 +195,7 @@ while [ $submission_count -lt $n_iterations ]; do
 					
 					# Replace the mesh in the MOOSE script
 					scratch_path="\/scratch\/vtw1026\/"
-					former_sim_output="${init_filename}_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_${former_sim_ver}_out.e"
+					former_sim_output="${init_filename}_Fourier_Standard_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_${former_sim_ver}_out.e"
 					sed -i "0,/file = [^ ]*/s/file = [^ ]*/file = \"$scratch_path$former_sim_output\"/" "$new_filename"
 					
 					
