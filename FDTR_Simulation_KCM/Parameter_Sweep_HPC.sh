@@ -115,15 +115,15 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 	done
 done
 
-submission_count=1
+#submission_count=1
 
 # Change this value to continue from nth simulation
-# submission_count=16
+submission_count=2
 
-o_start=$start_val
+#o_start=$start_val
 
 # Change this value to the START period of the nth simulation (nth_simulation * period_per_sim) - period_per_sim
-# o_start=7.5
+o_start=0.5
 
 #Initial input file name
 init_filename="FDTR_input"
