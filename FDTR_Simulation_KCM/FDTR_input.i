@@ -216,27 +216,51 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
   
   
   [heat_x_samp]
-    type = FourierHeatEquation
+    type = KCMHeatEquation
     variable = q_samp_x
 	temperature = temp_samp
 	component_flux = 0
+	
 	thermal_conductivity = k_samp
+	length_scale = l_nonlocal
+	alpha = alpha
+		
+	q_x = q_samp_x
+	q_y = q_samp_y
+	q_z = q_samp_z
+	
 	block = sample_material
   []
   [heat_y_samp]
-    type = FourierHeatEquation
+    type = KCMHeatEquation
     variable = q_samp_y
 	temperature = temp_samp
 	component_flux = 1
+	
 	thermal_conductivity = k_samp
+	length_scale = l_nonlocal
+	alpha = alpha
+		
+	q_x = q_samp_x
+	q_y = q_samp_y
+	q_z = q_samp_z
+	
 	block = sample_material
   []
   [heat_z_samp]
-    type = FourierHeatEquation
+    type = KCMHeatEquation
     variable = q_samp_z
 	temperature = temp_samp
 	component_flux = 2
+	
 	thermal_conductivity = k_samp
+	length_scale = l_nonlocal
+	alpha = alpha
+		
+	q_x = q_samp_x
+	q_y = q_samp_y
+	q_z = q_samp_z
+	
 	block = sample_material
   []
   
