@@ -20,10 +20,10 @@ function check_squeue() {
 
 
 # Set the maximum number of times to submit the batch job
-n_iterations=4
+n_iterations=1
 
 # Set the number of periods each job/sweep should solve for
-n_periods_per_job=0.5
+n_periods_per_job=2.0
 
 # Initial timestep
 start_val=0.0
@@ -110,7 +110,7 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 			sed -E -i "s/(#SBATCH --job-name=)[^[:space:]]+/\1${x0_val_num}${freq_noexp}${theta_val_num}_KCM_Mixed_Formulation/" "FDTR_Batch_MOOSE.sh"
 
 			#Submit job
-			# sbatch FDTR_Batch_MOOSE.sh
+			sbatch FDTR_Batch_MOOSE.sh
 		done
 	done
 done
