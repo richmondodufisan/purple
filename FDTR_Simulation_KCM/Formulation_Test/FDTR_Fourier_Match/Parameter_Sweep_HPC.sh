@@ -43,7 +43,9 @@ first_period=$n_periods_per_job
 
 x0_vals_num=("0")
 
-freq_vals_num=("1e6")
+#freq_vals_num=("2e6" "3e6" "4e6" "5e6" "6e6" "7e6" "8e6" "9e6" "10e6")
+
+freq_vals_num=("5e5" "6e5" "7e5" "8e5" "9e5" "2e7" "3e7" "4e7" "5e7" "6e7" "7e7" "8e7" "9e7" "1e8" "2e8" "3e8" "4e8" "5e8")
 
 theta_vals_num=("0")
 
