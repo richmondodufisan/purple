@@ -23,7 +23,7 @@ function check_squeue() {
 n_iterations=1
 
 # Set the number of periods each job/sweep should solve for
-n_periods_per_job=2.0
+n_periods_per_job=3.0
 
 # Initial timestep
 start_val=0.0
@@ -41,9 +41,9 @@ first_period=$n_periods_per_job
 
 # Define the range of values you want to loop over
 
-x0_vals_num=("0")
+x0_vals_num=("-15")
 
-freq_vals_num=("5e5" "6e5" "7e5" "8e5" "9e5" "2e7" "3e7" "4e7" "5e7" "6e7" "7e7" "8e7" "9e7" "1e8" "2e8" "3e8" "4e8" "5e8")
+freq_vals_num=("5e5" "6e5" "7e5" "8e5" "9e5" "1e6" "2e6" "3e6" "4e6" "5e6" "6e6" "7e6" "8e6" "9e6" "1e7" "2e7" "3e7" "4e7" "5e7" "6e7" "7e7" "8e7" "9e7" "1e8" "2e8" "3e8" "4e8" "5e8")
 
 #freq_vals_num=("4e6")
 
@@ -73,8 +73,8 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		#echo "$new_mesh_name"
 		
 		#Make new 3D mesh
-		# python3 FDTR_mesh.py >> gmsh_output.txt &
-		# wait
+		#python3 FDTR_mesh.py >> gmsh_output.txt &
+		#wait
 		
 		# Submit Job
 		#sbatch --wait FDTR_Batch_gmsh.sh
@@ -140,9 +140,9 @@ while [ $submission_count -lt $n_iterations ]; do
 		echo "No jobs in the queue. Submitting batch job script..."
 		
 		# Check for failed jobs. edit date/time/number of failed jobs as needed
-		failed_jobs=$(sacct -S 11/21/23 -X -u vtw1026 --format=nodelist,state,jobid | grep FAIL | wc -l)
+		failed_jobs=$(sacct -S 11/24/23 -X -u vtw1026 --format=nodelist,state,jobid | grep FAIL | wc -l)
 		
-		if [ $failed_jobs -gt 5 ]; then
+		if [ $failed_jobs -gt 0 ]; then
 			echo "SOME JOBS FAILED. EXITING SCRIPT."
 			exit 1
 		fi

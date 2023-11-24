@@ -1,20 +1,20 @@
 #!/bin/bash
 
-n_iterations=24
+n_iterations=4
 
 theta_angle=0
-n_periods_per_iteration=0.5
+#n_periods_per_iteration=0.5
 
-dphase=0.2
+#dphase=0.2
 
-n_timesteps=$(python3 -c "import math; print(round((1.1*$n_periods_per_iteration)/((3.5*$dphase)/360)))")
+#n_timesteps=$(python3 -c "import math; print(round((1.1*$n_periods_per_iteration)/((3.5*$dphase)/360)))")
 
-stop_line_number=$(python3 -c "import math; print($n_timesteps+1)")
+#stop_line_number=$(python3 -c "import math; print($n_timesteps+1)")
 
-echo $stop_line_number
+#echo $stop_line_number
 
 # Output file
-output_file="../MOOSE_theta_${theta_angle}_iteration_${n_iterations}_refined_just0.csv"
+output_file="../Fourier_Standard_Medium.csv"
 
 # Create header for the output file
 echo "x0, freq, time, delta_temp" > "$output_file"
@@ -36,13 +36,13 @@ for x0 in "${x0_vals_num[@]}"; do
 	
 		current_iteration=1
 		while [ $current_iteration -le $n_iterations ]; do
-			input_file="FDTR_input_theta_${theta_angle}_freq_${freq}_x0_${x0}_v${current_iteration}_out.csv"
+			input_file="FDTR_input_Fourier_Standard_theta_${theta_angle}_freq_${freq}_x0_${x0}_v${current_iteration}_out.csv"
 			
 			# Concatenate data to the output file using printf in awk, stopping at the specified line
-			awk -v freq="$freq" -v x0="$x0" -v stop_line="$stop_line_number" -F, 'NR>2{
-				if (NR <= stop_line) {
+			awk -v freq="$freq" -v x0="$x0" -F, 'NR>2{
+			
 					printf "%s, %s, %.20f, %.20f\n", x0, freq / 1e6, $1 * 1e6, $3
-				}
+			
 			}' "$input_file" >> "$output_file"
 			
 			current_iteration=$((current_iteration + 1))
