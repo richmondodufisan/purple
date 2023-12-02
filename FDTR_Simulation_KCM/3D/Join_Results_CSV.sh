@@ -36,7 +36,7 @@ for x0 in "${x0_vals_num[@]}"; do
 	
 		current_iteration=1
 		while [ $current_iteration -le $n_iterations ]; do
-			input_file="FDTR_input_KCM_Mixed_theta_${theta_angle}_freq_${freq}_x0_${x0}_v${current_iteration}_out.csv"
+			input_file="FDTR_input_theta_${theta_angle}_freq_${freq}_x0_${x0}_v${current_iteration}_out.csv"
 			
 			# Concatenate data to the output file using printf in awk, stopping at the specified line
 			awk -v freq="$freq" -v x0="$x0" -F, 'NR>2{
