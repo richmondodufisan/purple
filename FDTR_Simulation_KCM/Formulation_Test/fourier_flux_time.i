@@ -1,7 +1,9 @@
 [Mesh]
+  second_order = true
+
   [sample_mesh]
     type = FileMeshGenerator
-    file = simple_box.msh
+    file = Meshes/simple_box_2d.msh
   []
 []
 
