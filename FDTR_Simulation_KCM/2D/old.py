@@ -365,7 +365,7 @@ for ps in zip(p, s):
         # print(checkSphere)
         
         # assign small sphere refinement if yes, large sphere refinement otherwise
-        if (( checkSphere <= ((radius/dummy_factor)**2 + 1e-2)) and ((val[2]) <= 0)):
+        if (( checkSphere <= ((radius/dummy_factor)**2 + 1e-2)) and ((val[0]) < 0)):
             gmsh.model.mesh.setSize([ps[0]], sub_center_ref)
         else:
             gmsh.model.mesh.setSize([ps[0]], pump_refine)
@@ -379,8 +379,8 @@ gmsh.model.removeEntities([lastVolume], recursive=True)
 gmsh.option.setNumber("Mesh.Algorithm",5)
 
 # Create 3D mesh
-gmsh.model.mesh.generate(3)
+# gmsh.model.mesh.generate(3)
 
-gmsh.write(newMeshName)
+# gmsh.write(newMeshName)
 
-#gmsh.fltk.run()
+gmsh.fltk.run()
