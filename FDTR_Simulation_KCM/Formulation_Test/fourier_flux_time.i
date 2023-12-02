@@ -69,7 +69,7 @@
   [central_temp]
     type = PointValue
     variable = temperature
-    point = '5 5 2.5'
+    point = '10 10 0'
   []
 []
 

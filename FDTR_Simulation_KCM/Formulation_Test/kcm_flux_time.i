@@ -90,7 +90,7 @@
   [central_temp]
     type = PointValue
     variable = temperature
-    point = '5 5 2.5'
+    point = '10 10 0'
   []
 []
 
@@ -98,7 +98,7 @@
   [simulation_constants]
     type = ADGenericConstantMaterial
     prop_names = 'k_val length_scale_val alpha_val rho_c_val'
-    prop_values = '1.0 5.0 2.0 0.0001'
+    prop_values = '1.0 2.5 2.0 0.0001'
   []
 []
 
