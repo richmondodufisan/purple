@@ -1,5 +1,5 @@
 # Mesh files and other simulation junk
-*.msh
+
 *.txt
 slurm*
 FDTR_input_theta_*
