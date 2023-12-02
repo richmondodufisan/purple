@@ -98,7 +98,7 @@
   [simulation_constants]
     type = ADGenericConstantMaterial
     prop_names = 'k_val length_scale_val alpha_val rho_c_val'
-    prop_values = '1.0 5.0 2.0 0.0001'
+    prop_values = '1.0 1.0 2.0 0.0001'
   []
 []
 
