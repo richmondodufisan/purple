@@ -8,13 +8,13 @@ gmsh.model.add("FDTR_mesh")
 newMeshName = "FDTR_mesh_x0_-15_theta_0.msh"
 
 theta = 0
-xcen = 0
-ycen = 0
+xcen = -15
+
 radius = 8
 trans_thick = 0.09
 
 dummy_factor = 3
-trans_thick_ref = 0.09
+trans_thick_ref = 0.15
 sub_center_ref=0.09
 
 x_dir = 40
@@ -22,8 +22,8 @@ y_dir = 40
 gb_width = 0.1
 
 pump_refine = 0.4
-reg_element_refine = 6
-gb_refine = 0.8
+reg_element_refine = 8
+gb_refine = 1.5
 
 # Initialize gb refinement values
 x_left_up = 0
@@ -146,7 +146,7 @@ s4 = gmsh.model.occ.addPlaneSurface([cloop4])
 # Adding points for grain boundary refinement dummy volume
 p14 = gmsh.model.occ.addPoint(x_left_up, y_left_up, 0, gb_refine)
 p15 = gmsh.model.occ.addPoint(x_right_up, y_right_up, 0, gb_refine)
-p16 = gmsh.model.occ.addPoint(x_left_down, y_right_down, 0, gb_refine)
+p16 = gmsh.model.occ.addPoint(x_left_down, y_left_down, 0, gb_refine)
 p17 = gmsh.model.occ.addPoint(x_right_down, y_right_down, 0, gb_refine)
 
 # Adding lines..
@@ -228,6 +228,6 @@ gmsh.option.setNumber("Mesh.Algorithm",5)
 # Create 2D mesh
 gmsh.model.mesh.generate(2)
 
-# gmsh.write(newMeshName)
+gmsh.write(newMeshName)
 
 gmsh.fltk.run()
