@@ -40,7 +40,7 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 
   [sample_mesh]
     type = FileMeshGenerator
-    file = FDTR_mesh_x0_-15_theta_0.msh
+    file = FDTR_Infinite.msh
   []
   [sample_block]
     type = SubdomainBoundingBoxGenerator
