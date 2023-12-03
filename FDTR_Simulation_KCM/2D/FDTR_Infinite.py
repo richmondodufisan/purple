@@ -5,10 +5,10 @@ import sys
 gmsh.initialize()
 gmsh.model.add("FDTR_mesh")
 
-newMeshName = "FDTR_mesh_x0_-15_theta_0.msh"
+newMeshName = "FDTR_Infinite.msh"
 
 theta = 0
-xcen = -15
+xcen = 0
 
 radius = 8
 trans_thick = 0.09
@@ -24,64 +24,6 @@ gb_width = 0.1
 pump_refine = 0.4
 reg_element_refine = 8
 gb_refine = 1.5
-
-# Initialize gb refinement values
-x_left_up = 0
-x_right_up = 0
-y_left_up = 0
-y_right_up = 0
-
-x_left_down = 0
-x_right_down = 0
-y_left_down = 0
-y_right_down = 0
-
-###### Calculation for grain boundary refinement #######
-
-theta_rad = ((90.0 - theta) * 3.14159265359)/(180)
-theta_rad_og = (theta * 3.14159265359)/(180)
-tan_theta = -1.0*math.tan(theta_rad)
-cos_theta = math.cos(theta_rad_og)
-
-
-# Refine region ny a multiple of the grain boundary size to the left and right
-width_refine = 10
-part_width = (gb_width/cos_theta)*width_refine
-
-x_left_up = -part_width/2.0
-x_right_up = part_width/2.0
-
-# Check for zero angle
-is_angle_zero = ((-1e-8 <= theta) and (theta <= 1e-8))
-
-# Get x and y coordinates for LEFT side
-if (is_angle_zero):
-    x_left_down = x_left_up
-    y_left_down = -y_dir
-else:
-    x_left_down = (1.0/tan_theta)*(-y_dir + (tan_theta*x_left_up))
-    y_left_down = -y_dir
-    
-if (x_left_down >= x_dir):
-    x_left_down = x_dir
-    y_left_down = (tan_theta*x_dir)-(tan_theta*x_left_up)
-
-# Get x and y coordinates for RIGHT side
-if (is_angle_zero):
-    x_right_down = x_right_up
-    y_right_down = -y_dir
-else:
-    x_right_down = (1.0/tan_theta)*(-y_dir + (tan_theta*x_right_up))
-    y_right_down = -y_dir
-    
-if (x_right_down >= x_dir):
-    x_right_down = x_dir
-    y_right_down = (tan_theta*x_dir)-(tan_theta*x_right_up)
-
-y_left_up = 0
-y_right_up = 0
-
-###### END grain boundary refinement calculations #######
 
 
 
@@ -142,22 +84,6 @@ cloop4 = gmsh.model.occ.addCurveLoop([c11, c12, c13])
 s4 = gmsh.model.occ.addPlaneSurface([cloop4])
 
 ##### END SUB-CIRCLE DUMMY REFINEMENT #####
-
-# Adding points for grain boundary refinement dummy volume
-p14 = gmsh.model.occ.addPoint(x_left_up, y_left_up, 0, gb_refine)
-p15 = gmsh.model.occ.addPoint(x_right_up, y_right_up, 0, gb_refine)
-p16 = gmsh.model.occ.addPoint(x_left_down, y_left_down, 0, gb_refine)
-p17 = gmsh.model.occ.addPoint(x_right_down, y_right_down, 0, gb_refine)
-
-# Adding lines..
-c14 = gmsh.model.occ.addLine(p14, p15)
-c15 = gmsh.model.occ.addLine(p16, p17)
-c16 = gmsh.model.occ.addLine(p14, p16)
-c17 = gmsh.model.occ.addLine(p15, p17)
-
-# Surface
-cloop5 = gmsh.model.occ.addCurveLoop([c14, c16, c15, c17])
-s5 = gmsh.model.occ.addPlaneSurface([cloop5])
 
 # Adding mesh refinement for pump region in transducer
 p18 = gmsh.model.occ.addPoint(xcen+radius, 0, 0, pump_refine)
