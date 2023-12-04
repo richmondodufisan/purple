@@ -5,7 +5,7 @@ import sys
 gmsh.initialize()
 gmsh.model.add("FDTR_mesh")
 
-newMeshName = "FDTR_Infinite.msh"
+newMeshName = "FDTR_2D_Infinite.msh"
 
 theta = 0
 xcen = 0

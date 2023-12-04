@@ -366,7 +366,7 @@ for ps in zip(p, s):
         
         # assign small sphere refinement if yes, large sphere refinement otherwise
         if (( checkSphere <= ((radius/dummy_factor)**2 + 1e-2)) and ((val[2]) <= 0)):
-            gmsh.model.mesh.setSize([ps[0]], sub_center_ref)
+            gmsh.model.mesh.setSize([ps[0]], trans_thick_ref)
         else:
             gmsh.model.mesh.setSize([ps[0]], pump_refine)
    

@@ -21,10 +21,10 @@ function check_squeue() {
 
 # Set the maximum number of times to submit the batch job
 #n_iterations=60
-n_iterations=4
+n_iterations=1
 
 # Set the number of periods each job/sweep should solve for
-n_periods_per_job=0.5
+n_periods_per_job=20
 
 # Initial timestep
 start_val=0.0
@@ -42,7 +42,7 @@ first_period=$n_periods_per_job
 
 # Define the range of values you want to loop over
 
-x0_vals_num=("0")
+x0_vals_num=("-15")
 
 freq_vals_num=("1e6")
 
@@ -139,9 +139,9 @@ while [ $submission_count -lt $n_iterations ]; do
 		echo "No jobs in the queue. Submitting batch job script..."
 		
 		# Check for failed jobs. edit date/time/number of failed jobs as needed
-		failed_jobs=$(sacct -S 11/21/23 -X -u vtw1026 --format=nodelist,state,jobid | grep FAIL | wc -l)
+		failed_jobs=$(sacct -S 12/04/23 -X -u vtw1026 --format=nodelist,state,jobid | grep FAIL | wc -l)
 		
-		if [ $failed_jobs -gt 5 ]; then
+		if [ $failed_jobs -gt 0 ]; then
 			echo "SOME JOBS FAILED. EXITING SCRIPT."
 			exit 1
 		fi

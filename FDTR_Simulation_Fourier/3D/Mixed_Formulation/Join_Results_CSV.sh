@@ -3,15 +3,15 @@
 n_iterations=1
 
 theta_angle=0
-n_periods_per_iteration=2.0
+# n_periods_per_iteration=2.0
 
-dphase=0.2
+# dphase=0.2
 
 #n_timesteps=$(python3 -c "import math; print(round((1.1*$n_periods_per_iteration)/((3.5*$dphase)/360)))")
 
 #stop_line_number=$(python3 -c "import math; print($n_timesteps+1)")
 
-echo $stop_line_number
+#echo $stop_line_number
 
 # Output file
 output_file="../Fourier_Mixed_Coarse_1e6.csv"
@@ -25,7 +25,7 @@ echo "x0, freq, time, delta_temp" > "$output_file"
 #x0_vals_num=("-15" "-10" "-9" "-8" "-7" "-6" "-5" "-4" "-3" "-2" "-1" "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "15")
 #freq_vals_num=("1e6" "2e6" "4e6" "6e6" "10e6")
 
-x0_vals_num=("0")
+x0_vals_num=("-15")
 freq_vals_num=("1e6")
 
 
