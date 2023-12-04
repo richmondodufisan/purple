@@ -463,7 +463,7 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 [Outputs]
   interval = 1
   #execute_on = 'initial timestep_end'
-  print_linear_residuals = true
+  print_linear_residuals = false
   csv = true
   exodus = true
   [pgraph]
