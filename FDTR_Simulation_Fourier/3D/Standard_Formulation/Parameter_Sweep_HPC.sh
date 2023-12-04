@@ -24,7 +24,7 @@ function check_squeue() {
 n_iterations=1
 
 # Set the number of periods each job/sweep should solve for
-n_periods_per_job=20
+n_periods_per_job=20.0
 
 # Initial timestep
 start_val=0.0
