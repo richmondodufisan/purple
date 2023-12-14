@@ -30,7 +30,7 @@ dt_val_min = ${fparse 0.5*(dphase/360.0)*period*tp}
 start_period = 0.0
 start_val = ${fparse 2.2*period*tp*(start_period/2.0)}
 
-end_period = 10.0
+end_period = 200.0
 t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 
 [Mesh]
@@ -162,7 +162,7 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
     variable = temp_trans
     neighbor_var = temp_samp
     boundary = 'boundary_conductance'
-	conductance = ${interface_conductance_val}
+	conductance = ${au_si_conductance}
 	
 	Tbulk_mat = 0
 	h_primary = 0
