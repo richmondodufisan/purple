@@ -229,15 +229,15 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 [Functions]
   [heat_source_function]
     type = ADParsedFunction
-    expression = '((((Q0 * absorbance) / (pi * (Rpump ^ 2))) * exp(-(((x - x0) ^ 2) / (Rpump ^ 2))) * 0.5 * (1 - cos((2 * pi * freq * t)))))'
-    symbol_names = 'x0 Rpump Q0 absorbance freq'
-    symbol_values = '${x0_val} ${pump_radius} ${pump_power} ${pump_absorbance} ${freq_val}'
+    expression = '((((Q0*absorbance)/(pi*(Rpump^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rpump^2)))*0.5*(1-cos((2*pi*freq*t))))'
+    symbol_names = 'x0 y0 Rpump Q0 absorbance freq'
+    symbol_values = '${x0_val} ${y0_val} ${pump_radius} ${pump_power} ${pump_absorbance} ${freq_val}'
   []
   [grain_boundary_function]
     type = ADParsedFunction
-	expression = 'if ( (x<((-gb_width/(2*cos(theta)))+(abs(y)*tan(theta)))) | (x>((gb_width/(2*cos(theta)))+(abs(y)*tan(theta)))), k_bulk, k_gb)'
+	expression = 'if ( (x<((-gb_width/(2*cos(theta)))+(abs(z)*tan(theta)))) | (x>((gb_width/(2*cos(theta)))+(abs(z)*tan(theta)))), k_bulk, k_gb)'
 	symbol_names = 'gb_width theta k_bulk k_gb'
-	symbol_values = '${gb_width_val} ${theta_rad} ${kappa_bulk_sample} ${kappa_gb_sample}'
+	symbol_values = '${gb_width_val} ${theta_rad} ${kappa_bulk_si} ${kappa_gb_si}'
   []
 []
 
