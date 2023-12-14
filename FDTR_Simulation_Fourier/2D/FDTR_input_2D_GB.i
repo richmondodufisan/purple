@@ -30,7 +30,7 @@ dt_val_min = ${fparse 0.5*(dphase/360.0)*period*tp}
 start_period = 0.0
 start_val = ${fparse 2.2*period*tp*(start_period/2.0)}
 
-end_period = 200.0
+end_period = 75.0
 t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 
 [Mesh]
