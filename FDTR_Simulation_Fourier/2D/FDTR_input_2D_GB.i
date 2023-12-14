@@ -1,6 +1,6 @@
 #Global Parameters
-x0_val = -15
-
+x0_val = 0
+y0_val = 0
 freq_val = 1e6
 dphase = 0.2
 tp = 1
@@ -10,20 +10,15 @@ pump_radius = 1.53
 pump_power = 0.01
 pump_absorbance = 1
 room_temperature = 293.15
-
-rho_c_transducer = 2.48391e-12
-k_transducer = 215e-6
-
-rho_c_sample = 1.6049139e-12
-tau_sample = 42e-12
-nonlocal_length = 0.185
-alpha_sample = 2
-
 gb_width_val = 0.1
-kappa_bulk_sample = 130e-6
-kappa_gb_sample = 56.52e-6
-
-interface_conductance_val = 3e-5
+kappa_bulk_si = 130e-6
+kappa_gb_si = 56.52e-6
+rho_si = 2.329e-15
+c_si = 0.6891e3
+au_si_conductance = 3e-5
+kappa_bulk_au = 215e-6
+rho_au = 19.3e-15
+c_au = 0.1287e3
 
 theta_deg = 0
 theta_rad = ${fparse (theta_deg/180)*pi}
@@ -35,7 +30,7 @@ dt_val_min = ${fparse 0.5*(dphase/360.0)*period*tp}
 start_period = 0.0
 start_val = ${fparse 2.2*period*tp*(start_period/2.0)}
 
-end_period = 200.0
+end_period = 10.0
 t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 
 [Mesh]
@@ -118,42 +113,6 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 []
 
 [Variables]
-  [q_samp_x]
-    order = SECOND
-    family = LAGRANGE
-	block = sample_material
-  []
-  
-  [q_samp_y]
-    order = SECOND
-    family = LAGRANGE
-	block = sample_material
-  []
-  
-  [q_samp_z]
-    order = SECOND
-    family = LAGRANGE
-	block = sample_material
-  []
-  
-  [q_trans_x]
-    order = SECOND
-    family = LAGRANGE
-	block = transducer_material
-  []
-  
-  [q_trans_y]
-    order = SECOND
-    family = LAGRANGE
-	block = transducer_material
-  []
-  
-  [q_trans_z]
-    order = SECOND
-    family = LAGRANGE
-	block = transducer_material
-  []
-  
   [temp_samp]
     order = FIRST
     family = LAGRANGE
@@ -169,96 +128,30 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 
 
 [Kernels]
-  [heat_x_trans]
-    type = FourierHeatEquation
-    variable = q_trans_x
-	temperature = temp_trans
-	component_flux = 0
-	thermal_conductivity = k_trans
-	block = transducer_material
-  []
-  [heat_y_trans]
-    type = FourierHeatEquation
-    variable = q_trans_y
-	temperature = temp_trans
-	component_flux = 1
-	thermal_conductivity = k_trans
-	block = transducer_material
-  []
-  [heat_z_trans]
-    type = FourierHeatEquation
-    variable = q_trans_z
-	temperature = temp_trans
-	component_flux = 2
-	thermal_conductivity = k_trans
-	block = transducer_material
-  []
-
-
-  [diffuse_trans]
-    type = DiffusionTemperature
+  [heat_conduction_transducer]
+    type = ADHeatConduction
     variable = temp_trans
-	
-	q_x = q_trans_x
-	q_y = q_trans_y
-	q_z = q_trans_z
-	
+	thermal_conductivity = k_trans
 	block = transducer_material
   []
-  
-  
-  [diffuse_trans_time]
-    type = DiffusionTemperatureTimeDerivative
+  [heat_conduction_sample]
+    type = ADHeatConduction
+    variable = temp_samp
+	thermal_conductivity = k_samp
+	block = sample_material
+  []
+  [heat_conduction_time_dep_transducer]
+    type = ADHeatConductionTimeDerivative
     variable = temp_trans
-	rho_c = rho_c_trans
+	density_name = rho_trans
+	specific_heat = c_trans
 	block = transducer_material
   []
-  
-  
-  [heat_x_samp]
-    type = FourierHeatEquation
-    variable = q_samp_x
-	temperature = temp_samp
-	component_flux = 0
-	thermal_conductivity = k_samp
-	block = sample_material
-  []
-  [heat_y_samp]
-    type = FourierHeatEquation
-    variable = q_samp_y
-	temperature = temp_samp
-	component_flux = 1
-	thermal_conductivity = k_samp
-	block = sample_material
-  []
-  [heat_z_samp]
-    type = FourierHeatEquation
-    variable = q_samp_z
-	temperature = temp_samp
-	component_flux = 2
-	thermal_conductivity = k_samp
-	block = sample_material
-  []
-  
-  
-  
-  [diffuse_samp]
-    type = DiffusionTemperature
+  [heat_conduction_time_dep_sample]
+    type = ADHeatConductionTimeDerivative
     variable = temp_samp
-	
-	q_x = q_samp_x
-	q_y = q_samp_y
-	q_z = q_samp_z
-	
-	block = sample_material
-  []
-  
-  
-  
-  [diffuse_samp_time]
-    type = DiffusionTemperatureTimeDerivative
-    variable = temp_samp
-	rho_c = rho_c_samp
+	density_name = rho_samp
+	specific_heat = c_samp
 	block = sample_material
   []
 []
@@ -353,14 +246,14 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
   [basic_transducer_materials]
     type = ADGenericConstantMaterial
     block = transducer_material
-    prop_names = 'rho_c_trans k_trans'
-    prop_values = '${rho_c_transducer} ${k_transducer}'
+    prop_names = 'rho_trans c_trans k_trans'
+    prop_values = '${rho_au} ${c_au} ${kappa_bulk_au}'
   []
   [basic_sample_materials]
     type = ADGenericConstantMaterial
     block = sample_material
-    prop_names = 'rho_c_samp tau l_nonlocal alpha'
-    prop_values = '${rho_c_sample} ${tau_sample} ${nonlocal_length} ${alpha_sample}'
+    prop_names = 'rho_samp c_samp'
+    prop_values = '${rho_si} ${c_si}'
   []
   [thermal_conductivity_sample]
     type = ADGenericFunctionMaterial
@@ -406,7 +299,7 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 []
 
 [Preconditioning]
-  [preconditioner]
+  [smp]
     type = SMP
     full = true
   []
@@ -423,7 +316,6 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
   nl_max_its = 20
   
   automatic_scaling = true
-  scaling_group_variables = 'q_samp_x q_samp_y q_samp_z; q_trans_x q_trans_y q_trans_z'
 
   dtmin = ${dt_val_min}
   dtmax= ${dt_val}
@@ -445,10 +337,6 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
     scale = 1.0
     skip_after_failed_timestep = true
   []
-[]
-
-[Debug]
-  show_var_residual_norms = true
 []
 
 [Outputs]
