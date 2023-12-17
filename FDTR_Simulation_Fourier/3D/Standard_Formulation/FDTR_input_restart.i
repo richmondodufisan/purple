@@ -27,10 +27,10 @@ period = ${fparse 1/freq_val}
 dt_val = ${fparse 3.5*(dphase/360.0)*period*tp}
 dt_val_min = ${fparse 0.5*(dphase/360.0)*period*tp}
 
-prev_start = 0.0
-prev_start_val = ${fparse 2.2*period*tp*(prev_start/2.0)}
-prev_end = 0.0
-prev_end_val = ${fparse 2.2*period*tp*(prev_end/2.0)}
+#prev_start = 0.0
+#prev_start_val = ${fparse 2.2*period*tp*(prev_start/2.0)}
+#prev_end = 0.0
+#prev_end_val = ${fparse 2.2*period*tp*(prev_end/2.0)}
 
 #last_timestep = ${fparse int(((prev_end_val - prev_start_val)/dt_val))}
 
