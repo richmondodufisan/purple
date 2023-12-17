@@ -32,7 +32,7 @@ prev_start_val = ${fparse 2.2*period*tp*(prev_start/2.0)}
 prev_end = 0.0
 prev_end_val = ${fparse 2.2*period*tp*(prev_end/2.0)}
 
-last_timestep = ${fparse int(((prev_end_val - prev_start_val)/dt_val))}
+#last_timestep = ${fparse int(((prev_end_val - prev_start_val)/dt_val))}
 
 start_period = 0.0
 start_val = ${fparse 2.2*period*tp*(start_period/2.0)}
@@ -124,14 +124,14 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
     family = LAGRANGE
 	block = transducer_material
 	initial_from_file_var = temp_trans
-    initial_from_file_timestep = ${last_timestep}
+    initial_from_file_timestep = LATEST
   []
   [temp_samp]
     order = FIRST
     family = LAGRANGE
 	block = sample_material
 	initial_from_file_var = temp_samp
-    initial_from_file_timestep = ${last_timestep}
+    initial_from_file_timestep = LATEST
   []
 []
 
