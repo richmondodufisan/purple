@@ -1,6 +1,6 @@
 #!/bin/bash
 
-n_iterations=40
+n_iterations=4
 
 theta_angle=0
 #n_periods_per_iteration=0.5
@@ -14,7 +14,7 @@ theta_angle=0
 #echo $stop_line_number
 
 # Output file
-output_file="../Fourier_Standard_Medium_120.csv"
+output_file="../Fourier_Standard_Medium_120_4_periods.csv"
 
 # Create header for the output file
 echo "x0, freq, time, delta_temp" > "$output_file"
