@@ -21,10 +21,10 @@ function check_squeue() {
 
 # Set the maximum number of times to submit the batch job
 #n_iterations=60
-n_iterations=1
+n_iterations=40
 
 # Set the number of periods each job/sweep should solve for
-n_periods_per_job=200.0
+n_periods_per_job=2.0
 
 # Initial timestep
 start_val=0.0
