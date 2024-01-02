@@ -1,0 +1,41 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.optimize import curve_fit
+
+# Define a function to extract subframes based on ranges
+def extract_subframes(df, start_value, end_value):
+
+    # subtract the start/end value from every entry in the dataframe
+    # find the absolute value of that difference
+    # find the position of the minimum difference, i.e the position of the entry closest to the start/end value
+    start_time = df['time'].sub(start_value).abs().idxmin()
+    end_time = df['time'].sub(end_value).abs().idxmin()
+    return df.loc[start_time:end_time]
+    
+    
+def calculate_phase_amplitude(simulation_data, end_period):
+    FDTR_subframe = extract_subframes(simulation_data, end_period - 1, end_period)
+    
+    # Separate time and temperature data
+    time_array = np.array(FDTR_subframe['time'])
+    temp_array = np.array(FDTR_subframe['temp'])
+    
+    # Define your fitting function
+    def fitting_func(t, A, phi, C):
+      return A - (A * np.cos(2 * np.pi * 1 * t + phi)) + C
+      
+    # Perform curve fitting
+    initial_guess = [10, 0, 0]  # Initial guess for the parameters A and phi
+    params, covariance = curve_fit(fitting_func, time_array, temp_array, p0=initial_guess, maxfev=100)
+
+    # Extract fitted parameters
+    A, phi, C = params
+
+    # Phase = time difference * (1/period) * 2 * pi
+    phase = phi
+
+    # Amplitude = 2 * fitted amplitude (which calculates amplitude as "half" of wave)
+    amplitude = A * 2.0
+    
+    return phase, amplitude
