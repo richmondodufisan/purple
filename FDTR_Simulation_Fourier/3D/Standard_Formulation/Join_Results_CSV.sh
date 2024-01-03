@@ -13,7 +13,7 @@ echo "x0, freq, time, delta_temp" > "$output_file"
 #freq_vals_num=("1e6" "2e6" "4e6" "6e6" "10e6")
 
 x0_vals_num=("0")
-freq_vals_num=("1e6")
+freq_vals_num=("1e6" "2e6" "4e6" "6e6" "8e6" "10e6")
 
 
 for x0 in "${x0_vals_num[@]}"; do

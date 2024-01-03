@@ -10,7 +10,6 @@ pump_radius = 1.53
 pump_power = 0.01
 pump_absorbance = 1
 room_temperature = 293.15
-gb_width_val = 0.1
 kappa_bulk_si = 130e-6
 rho_si = 2.329e-15
 c_si = 0.6891e3
@@ -18,9 +17,6 @@ au_si_conductance = 3e-5
 kappa_bulk_au = 215e-6
 rho_au = 19.3e-15
 c_au = 0.1287e3
-
-theta_deg = 0
-theta_rad = ${fparse (theta_deg/180)*pi}
 
 period = ${fparse 1/freq_val}
 dt_val = ${fparse 5.0*(dphase/360.0)*period*tp}
