@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
 
+# This is a helper file for finding the phase difference from time domain data in an FDTR experiment
+# It works by fitting an expression similar to the pump signal with a phase lag
+
 # Define a function to extract subframes based on ranges
 def extract_subframes(df, start_value, end_value):
 

@@ -8,8 +8,45 @@ import math
 import cmath
 import pdb
 
-# This is the integrand in eq 3.5 of the thesis of AJ Schmidt (2008)
-# for calculating the analytical fourier response in the Hankel Space
+# This is a helper file for calculating phase and temperature increase in FDTR experiments
+# It is assumed that thermal transport is within the diffusive regime, hence Fourier's equation applies
+# This is the analytical solution for radial heat transfer as detailed in the thesis of AJ Schmidt (2008)
+# The calc_thermal_response should be used to find the phase and amplitude given the appropriate material properties
+
+
+
+# To use in another file, include the line: 
+# "from Layered_Heat_Conduction import calc_thermal_response"
+
+
+
+# Input arguments for calc_thermal_response:
+
+# N_layers: The number of layers. Must be an unsigned (positive) integer value
+
+# layer_props: This should be a NumPy array of arrays. The arrays should be organized in descending order,
+# i.e, from the bottom to the top (e.g [layer3, layer2, layer1]). Each layer array should contain the following material
+# properties: [h (layer thickness), k_z (cross plane thermal conductivity), k_r (in plane/radial thermal conductivity),
+# rho (density), c (heat capacity)]
+
+# interface_props: this is an array of the interface conductances between layers. There should be one less
+# conductance than the number of layers (e.g 1 interface conductance for a 2-layer system)
+
+# r_pump: radius of the pump laser
+
+# r_probe: radius of the probe laser
+
+# calib_constants: additional constants to calibrate model if comparing to FEM simulations. 
+# The calibration is done on the pump and probe radii.
+# If using experimental data, set each value to 1 (i.e calib_constants = [1, 1])
+
+# freq: frequency of the input signal (pump laser)
+
+# pump_power: the pump power, Q0
+
+
+
+# Integral in Equation 3.5
 
 def integrand(x, N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq):
 
@@ -31,7 +68,11 @@ def integrand(x, N_layers, layer_props, interface_props, r_pump, r_probe, calib_
     rho = layer_props[i][3]
     c = layer_props[i][4]
     
+    # Equation 3.44
+    
     gamma = cmath.sqrt((k_r * (x**2) + rho * c * 1j * 2 * np.pi * freq)/k_z)
+    
+    # Equation 3.34
     
     A = np.cosh(gamma * h)
     B = (-1.0/(k_z * gamma)) * np.sinh(gamma * h)
@@ -43,6 +84,8 @@ def integrand(x, N_layers, layer_props, interface_props, r_pump, r_probe, calib_
     ConductionMatrix = ConductionMatrix @ HeatLayer
     
     if (i < (N_layers - 1)):
+    
+      # Equation 3.38
     
       G = interface_props[i]
       InterfaceLayer = np.array([[1, -(1.0/G)], [0, 1]])
@@ -63,6 +106,8 @@ def integrand(x, N_layers, layer_props, interface_props, r_pump, r_probe, calib_
 
   beta2 = calib_consts[1]
   r_pump = r_pump*beta2
+  
+  # Integral part of Equation 3.5
 
   return x * (-D_total/C_total) * np.exp((2 * (-x**2) * (r_pump**2 + r_probe**2))/8.0)
   
@@ -71,6 +116,7 @@ def integrand(x, N_layers, layer_props, interface_props, r_pump, r_probe, calib_
 def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power):
   result, error = quad_vec(integrand, 0, 5000001, args=(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq))
 
+  # Hankel space variable, Equation 3.5
   H = (pump_power/(2 * np.pi)) * result
 
   phase = math.atan(H.imag/H.real)

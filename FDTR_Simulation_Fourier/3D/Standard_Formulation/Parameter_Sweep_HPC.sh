@@ -83,6 +83,7 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		for freq_val_num in "${freq_vals_num[@]}"; do
 			# Create a new filename by appending x0_val to the original filename
 			new_filename="${og_filename}_Fourier_Standard_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_v1.i"
+			# new_filename="${og_filename}_CALIBRATION_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}.i"
 
 			# Copy the original input file to the new filename
 			cp "$og_filename$extension" "$new_filename"
