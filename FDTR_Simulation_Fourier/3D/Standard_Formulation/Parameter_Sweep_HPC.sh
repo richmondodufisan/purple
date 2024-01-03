@@ -21,18 +21,22 @@ function check_squeue() {
 
 # Set the maximum number of times to submit the batch job
 #n_iterations=60
-n_iterations=40
+n_iterations=1
 
 # Set the number of periods each job/sweep should solve for
-n_periods_per_job=2.0
+n_periods_per_job=10.0
 
 # Initial timestep
 start_val=0.0
 
 # Submit the initial parameter sweep
 
-#Original file name
-og_filename="FDTR_input"
+# Original file name
+# og_filename="FDTR_input"
+# extension=".i"
+
+# Original file name (calibration)
+og_filename="FDTR_CALIBRATION"
 extension=".i"
 
 og_mesh_script="FDTR_mesh"
@@ -42,15 +46,15 @@ first_period=$n_periods_per_job
 
 # Define the range of values you want to loop over
 
-x0_vals_num=("-15")
+x0_vals_num=("0")
 
-freq_vals_num=("1e6")
+freq_vals_num=("1e6" "2e6" "4e6" "6e6" "8e6" "10e6")
 
 theta_vals_num=("0")
 
 #x0_vals_num=("-15" "-10" "-9" "-8" "-7" "-6" "-5" "-4" "-3" "-2" "-1" "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "15")
 
-#freq_vals_num=("1e6" "2e6" "4e6" "6e6" "10e6")
+#freq_vals_num=("1e6" "2e6" "4e6" "6e6" "8e6" "10e6")
 
 #theta_vals_num=("0" "75")
 
@@ -83,7 +87,6 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		for freq_val_num in "${freq_vals_num[@]}"; do
 			# Create a new filename by appending x0_val to the original filename
 			new_filename="${og_filename}_Fourier_Standard_theta_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}_v1.i"
-			# new_filename="${og_filename}_CALIBRATION_${theta_val_num}_freq_${freq_val_num}_x0_${x0_val_num}.i"
 
 			# Copy the original input file to the new filename
 			cp "$og_filename$extension" "$new_filename"
