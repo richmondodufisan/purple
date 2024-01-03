@@ -3,13 +3,13 @@
 #SBATCH --partition=short  ### PARTITION (buyin, short, normal, etc)
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=25 ## how many cpus or processors do you need on each computer
-#SBATCH --time=3:00:00 ## how long does this need to run (remember different partitions have restrictions on this param)
+#SBATCH --time=2:00:00 ## how long does this need to run (remember different partitions have restrictions on this param)
 #SBATCH --mem-per-cpu=1G ## how much RAM do you need per CPU (this effects your FairShare score so be careful to not ask for more than you need))
-#SBATCH --job-name=-1510_Fourier_Standard_Formulation  ## When you run squeue -u NETID this is how you can identify the job
+#SBATCH --job-name=0100_Fourier_Standard_Formulation  ## When you run squeue -u NETID this is how you can identify the job
 #SBATCH --exclude=qnode0565,qnode0626,qnode0637
 
 
-script_name="FDTR_input_Fourier_Standard_theta_0_freq_1e6_x0_-15_v40.i"
+script_name="FDTR_CALIBRATION_Fourier_Standard_theta_0_freq_10e6_x0_0_v1.i"
 
 #moose_exec.sh ../purple-opt -i ${script_name} --mesh-only
 #moose_exec.sh ../purple-opt -i ${script_name}
