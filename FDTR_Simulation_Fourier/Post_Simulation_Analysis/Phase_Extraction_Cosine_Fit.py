@@ -17,8 +17,10 @@ def extract_subframes(df, start_value, end_value):
     return df.loc[start_time:end_time]
     
     
-def calculate_phase_amplitude(simulation_data, end_period):
-    FDTR_subframe = extract_subframes(simulation_data, end_period - 1, end_period)
+def calculate_phase_amplitude(simulation_data, end_period, freq):
+    end_period = end_period/freq
+    begin_period = end_period - (1/freq)
+    FDTR_subframe = extract_subframes(simulation_data, begin_period, end_period)
     
     # Separate time and temperature data
     time_array = np.array(FDTR_subframe['time'])
@@ -26,11 +28,11 @@ def calculate_phase_amplitude(simulation_data, end_period):
     
     # Define your fitting function
     def fitting_func(t, A, phi, C):
-      return A - (A * np.cos(2 * np.pi * 1 * t + phi)) + C
+      return A - (A * np.cos(2 * np.pi * freq * t + phi)) + C
       
     # Perform curve fitting
     initial_guess = [10, 0, 0]  # Initial guess for the parameters A and phi
-    params, covariance = curve_fit(fitting_func, time_array, temp_array, p0=initial_guess, maxfev=100)
+    params, covariance = curve_fit(fitting_func, time_array, temp_array, p0=initial_guess, maxfev=1000)
 
     # Extract fitted parameters
     A, phi, C = params
@@ -40,5 +42,13 @@ def calculate_phase_amplitude(simulation_data, end_period):
 
     # Amplitude = 2 * fitted amplitude (which calculates amplitude as "half" of wave)
     amplitude = A * 2.0
+    
+    # fitted_curve = fitting_func(FDTR_subframe['time'], A, phi, C)
+    # plt.scatter(FDTR_subframe['time'], FDTR_subframe['temp'], label='Original Data')
+    # plt.plot(FDTR_subframe['time'], fitted_curve, 'r', label='Fitted Curve')
+    # plt.xlabel('Time')
+    # plt.ylabel('Temperature')
+    # plt.legend()
+    # plt.show()
     
     return phase, amplitude

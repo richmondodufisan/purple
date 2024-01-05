@@ -47,7 +47,6 @@ import pdb
 
 
 # Integral in Equation 3.5
-
 def integrand(x, N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq):
 
   # Checks to ensure data is properly submitted/formatted
@@ -68,12 +67,10 @@ def integrand(x, N_layers, layer_props, interface_props, r_pump, r_probe, calib_
     rho = layer_props[i][3]
     c = layer_props[i][4]
     
-    # Equation 3.44
-    
+    # Equation 3.44  
     gamma = cmath.sqrt((k_r * (x**2) + rho * c * 1j * 2 * np.pi * freq)/k_z)
     
-    # Equation 3.34
-    
+    # Equation 3.34  
     A = np.cosh(gamma * h)
     B = (-1.0/(k_z * gamma)) * np.sinh(gamma * h)
     C = -k_z * gamma * np.sinh(gamma * h)
@@ -86,7 +83,6 @@ def integrand(x, N_layers, layer_props, interface_props, r_pump, r_probe, calib_
     if (i < (N_layers - 1)):
     
       # Equation 3.38
-    
       G = interface_props[i]
       InterfaceLayer = np.array([[1, -(1.0/G)], [0, 1]])
       
@@ -108,13 +104,12 @@ def integrand(x, N_layers, layer_props, interface_props, r_pump, r_probe, calib_
   r_pump = r_pump*beta2
   
   # Integral part of Equation 3.5
-
   return x * (-D_total/C_total) * np.exp((2 * (-x**2) * (r_pump**2 + r_probe**2))/8.0)
   
   
 
 def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power):
-  result, error = quad_vec(integrand, 0, 5000001, args=(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq))
+  result, error = quad_vec(integrand, 0, 3000001, args=(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq))
 
   # Hankel space variable, Equation 3.5
   H = (pump_power/(2 * np.pi)) * result
