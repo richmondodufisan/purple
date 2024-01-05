@@ -4,6 +4,7 @@ import numpy as np
 from Layered_Heat_Conduction import calc_thermal_response
 from Phase_Extraction_Cosine_Fit import calculate_phase_amplitude
 from scipy.optimize import curve_fit
+from scipy.integrate import trapz
 
 
 ############################################# READING IN AND ORGANIZING DATA #############################################
@@ -11,6 +12,7 @@ from scipy.optimize import curve_fit
 # Read the CSV files into pandas DataFrames
 calibration_data = pd.read_csv('Fourier_Standard_Med_Coarse_CALIBRATE.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
 FDTR_data = pd.read_csv('MOOSE_theta_0_iteration_10_refined.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+theta_angle = 0
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
 calib_freq_vals = calibration_data['frequency'].unique().tolist()
@@ -50,7 +52,8 @@ for freq in calib_freq_vals:
 
 
 
-# Dictionary of phases to actual data. Each x0 value has a list phases for every frequency
+# Dictionary of actual data. Each x0 value has a list phases for every frequency
+# Key is x0 value, Value is list of phases for all frequencies
 # Formatted this way to make thermal conductivity fitting easier
 FDTR_phase_data = {} 
 
@@ -83,17 +86,15 @@ for i in range(0, len(FDTR_freq_vals)):
 
     phase_by_freq.append(phase_values)
     
-print(len(phase_by_freq))
-    
 for i in range(0, len(FDTR_freq_vals)):
     arr = np.array(phase_by_freq[i])
     relative_phase = arr - np.max(arr)
-    print(relative_phase)
 
     plt.plot(FDTR_x0_vals, relative_phase, marker='o', markersize=5, label=str(FDTR_freq_vals[i]) + "MHz")
 
 plt.xlabel('Pump/Probe Position')
 plt.ylabel('Relative Phase')
+plt.title("Relative Phase vs Position")
 plt.legend(title='Frequencies')
 plt.grid(True)
 plt.show()
@@ -152,7 +153,77 @@ calib_consts_optimized, _ = curve_fit(fit_function_calib, freq_data, phase_data,
 
 
 
-############################################# FITTING THERMAL CONDUCTIVITY FOR ACTUAL DATA #############################################
+############################################# FITTING THERMAL CONDUCTIVITY FROM ACTUAL DATA #############################################
 
-print(FDTR_phase_data[1])
+def fit_function_FDTR(freqs, k_Si, conductance):
+    phases = []
+    global calib_consts_optimized
 
+    for freq in freqs:
+        # Define other parameters required by calc_thermal_response function
+        N_layers = 2
+        layer2 = [40e-6, k_Si, k_Si, 2329, 689.1]
+        layer1 = [9e-8, 215, 215, 19300, 128.7]
+        layer_props = np.array([layer2, layer1])
+        interface_props = [conductance]
+        r_probe = 1.34e-6
+        r_pump = 1.53e-6
+        pump_power = 0.01
+        # calib_consts = calib_consts_optimized
+        calib_consts = [1,1]
+        freq = freq * 1e6
+
+        # Calculate analytical phase 
+        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
+        phases.append(phase)
+        
+    return np.array(phases)
+
+FDTR_freq = np.array(FDTR_freq_vals)
+
+thermal_conductivity = []
+interface_conductance = []
+
+for x0 in FDTR_x0_vals:
+
+    FDTR_phase = np.array(FDTR_phase_data[x0])
+    
+    # popt = optimized params (kappa and conductance), pcov = covariance (not needed, except maybe for debugging)
+    popt, pcov = curve_fit(
+        fit_function_FDTR,
+        FDTR_freq,   # Frequency data
+        FDTR_phase,  # Phase data
+        p0=(130, 3e7), # Initial guesses
+        bounds=([100, 1e7], [200, 5e7]),  # Set bounds for k_Si and conductance
+        method='trf',  # Use Trust Region Reflective algorithm
+        maxfev=5000,  # Maximum number of function evaluations
+        # args=(beta1_opt, beta2_opt)  # Pass fixed beta1 and beta2 (calib constants) as arguments
+    )
+    
+    k_Si_opt, conductance_opt = popt
+    
+    thermal_conductivity.append(k_Si_opt)
+    interface_conductance.append(conductance_opt)
+    
+plt.plot(FDTR_x0_vals, thermal_conductivity)
+plt.xlabel('Pump/Probe Position')
+plt.ylabel('Thermal Conductivity (W/(m.K)')
+plt.title("Thermal Conductivity Profile, θ = " + str(theta_angle))
+plt.grid(True)
+plt.show()
+
+# Invert to integrate under curve
+ydata = (1/np.array(thermal_conductivity)) 
+
+# Find minimum value and create a constant line
+y_min = np.min(ydata)
+ydata_const = np.full(len(ydata), y_min)
+
+# Convert to micrometers
+xdata = np.array(FDTR_x0_vals).astype(float) * 1e-6
+
+# Integrate and subtract difference from integral of constant line
+resistance = trapz(ydata, x=xdata) - trapz(ydata_const, x=xdata) 
+print("Resistance = " + str(resistance))
+
+############################################# END FITTING THERMAL CONDUCTIVITY FROM ACTUAL DATA #############################################
