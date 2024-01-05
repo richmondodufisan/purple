@@ -88,7 +88,8 @@ for i in range(0, len(FDTR_freq_vals)):
     
 for i in range(0, len(FDTR_freq_vals)):
     arr = np.array(phase_by_freq[i])
-    relative_phase = arr - np.max(arr)
+    #relative_phase = arr - np.max(arr)
+    relative_phase = arr - arr[0]
 
     plt.plot(FDTR_x0_vals, relative_phase, marker='o', markersize=5, label=str(FDTR_freq_vals[i]) + "MHz")
 
