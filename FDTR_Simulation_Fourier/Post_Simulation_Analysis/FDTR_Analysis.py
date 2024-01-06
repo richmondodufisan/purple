@@ -10,8 +10,8 @@ from scipy.integrate import trapz
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Read the CSV files into pandas DataFrames
-calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
-FDTR_data = pd.read_csv('FDTR_input_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0_Med_Fine.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+FDTR_data = pd.read_csv('FDTR_input_out_theta_0_Med_Fine.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
 theta_angle = 0
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -21,8 +21,11 @@ calib_x0_val = calibration_data['x0'].unique()[0] # Should be only one value
 FDTR_freq_vals = FDTR_data['frequency'].unique().tolist()
 FDTR_x0_vals = FDTR_data['x0'].unique().tolist()
 
+FDTR_freq_vals = FDTR_freq_vals[1:]
+calib_freq_vals = calib_freq_vals[1:]
+
 # End period of simulation
-end_period = 5
+end_period = 4
 
 ############################################# END READING IN AND ORGANIZING DATA #############################################
 
