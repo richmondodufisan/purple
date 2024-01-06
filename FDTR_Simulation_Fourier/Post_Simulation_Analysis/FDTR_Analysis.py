@@ -86,6 +86,7 @@ for i in range(0, len(FDTR_freq_vals)):
 
     phase_by_freq.append(phase_values)
     
+# Next, subtract all phase values by the value of the phase furthest from the GB    
 for i in range(0, len(FDTR_freq_vals)):
     arr = np.array(phase_by_freq[i])
     #relative_phase = arr - np.max(arr)
@@ -170,8 +171,8 @@ def fit_function_FDTR(freqs, k_Si, conductance):
         r_probe = 1.34e-6
         r_pump = 1.53e-6
         pump_power = 0.01
-        # calib_consts = calib_consts_optimized
-        calib_consts = [1,1]
+        # calib_consts = calib_consts_optimized # optimized to mesh refinement
+        calib_consts = [1,1] # default
         freq = freq * 1e6
 
         # Calculate analytical phase 
