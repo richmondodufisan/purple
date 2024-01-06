@@ -10,8 +10,8 @@ from scipy.integrate import trapz
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Read the CSV files into pandas DataFrames
-calibration_data = pd.read_csv('Fourier_Standard_Med_Coarse_CALIBRATE.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
-FDTR_data = pd.read_csv('MOOSE_theta_0_iteration_10_refined.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+FDTR_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
 theta_angle = 0
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -140,12 +140,12 @@ phase_data = np.array(calib_phase_vals)
 # Initial guess for calibration constants
 initial_guess = [1, 1]
 
-calib_consts_optimized, _ = curve_fit(fit_function_calib, freq_data, phase_data, p0=initial_guess)
+calib_consts_optimized, _ = curve_fit(fit_function_calib, freq_data, phase_data, p0=initial_guess, maxfev=5000, ftol=1e-12, xtol=1e-12, gtol=1e-12)
 
-# print("Optimized calib_constants:", calib_consts_optimized) 
-# print(fit_function_calib(freq_data, *calib_consts_optimized))
+print("Optimized calib_constants:", calib_consts_optimized) 
+print(fit_function_calib(freq_data, *calib_consts_optimized))
 # print(freq_data)
-# print(phase_data)
+print(phase_data)
 
 ############################################# END CALIBRATING ANALYTICAL MODEL TO MESH REFINEMENT #############################################
 
@@ -171,8 +171,8 @@ def fit_function_FDTR(freqs, k_Si, conductance):
         r_probe = 1.34e-6
         r_pump = 1.53e-6
         pump_power = 0.01
-        # calib_consts = calib_consts_optimized # optimized to mesh refinement
-        calib_consts = [1,1] # default
+        calib_consts = calib_consts_optimized # optimized to mesh refinement
+        # calib_consts = [1,1] # default
         freq = freq * 1e6
 
         # Calculate analytical phase 
@@ -198,15 +198,19 @@ for x0 in FDTR_x0_vals:
         p0=(130, 3e7), # Initial guesses
         bounds=([100, 1e7], [200, 5e7]),  # Set bounds for k_Si and conductance
         method='trf',  # Use Trust Region Reflective algorithm
-        maxfev=5000,  # Maximum number of function evaluations
-        # args=(beta1_opt, beta2_opt)  # Pass fixed beta1 and beta2 (calib constants) as arguments
+        maxfev=10000,  # Maximum number of function evaluations
+        ftol=1e-12,   # Set the tolerance on the relative error in the function values
+        xtol=1e-12,   # Set the tolerance on the relative error in the parameter values
+        gtol=1e-12    # Set the tolerance on the norm of the gradient
     )
     
     k_Si_opt, conductance_opt = popt
     
     thermal_conductivity.append(k_Si_opt)
     interface_conductance.append(conductance_opt)
-    
+ 
+print(thermal_conductivity)
+ 
 plt.plot(FDTR_x0_vals, thermal_conductivity)
 plt.xlabel('Pump/Probe Position')
 plt.ylabel('Thermal Conductivity (W/(m.K)')
