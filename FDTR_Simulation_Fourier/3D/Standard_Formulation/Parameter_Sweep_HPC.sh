@@ -24,7 +24,7 @@ function check_squeue() {
 n_iterations=1
 
 # Set the number of periods each job/sweep should solve for
-n_periods_per_job=10.0
+n_periods_per_job=4.0
 
 # Initial timestep
 start_val=0.0
@@ -56,7 +56,7 @@ theta_vals_num=("0")
 
 #freq_vals_num=("1e6" "2e6" "4e6" "6e6" "8e6" "10e6")
 
-#theta_vals_num=("0" "75")
+#theta_vals_num=("0")
 
 
 # Loop over values
