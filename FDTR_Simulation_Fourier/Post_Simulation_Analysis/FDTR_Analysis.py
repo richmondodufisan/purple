@@ -10,8 +10,8 @@ from scipy.integrate import trapz
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Read the CSV files into pandas DataFrames
-calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0_Med_Fine.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
-FDTR_data = pd.read_csv('FDTR_input_out_theta_0_Med_Fine.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+FDTR_data = pd.read_csv('FDTR_input_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
 theta_angle = 0
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -22,8 +22,8 @@ FDTR_freq_vals = FDTR_data['frequency'].unique().tolist()
 FDTR_x0_vals = FDTR_data['x0'].unique().tolist()
 
 # Skip first sampled frequency
-# FDTR_freq_vals = FDTR_freq_vals[2:]
-# calib_freq_vals = calib_freq_vals[2:]
+# FDTR_freq_vals = FDTR_freq_vals[1:]
+# calib_freq_vals = calib_freq_vals[1:]
 
 # End period of simulation
 end_period = 4
@@ -90,14 +90,12 @@ for i in range(0, len(FDTR_freq_vals)):
 
     phase_by_freq.append(phase_values)
     
-print(FDTR_freq_vals)
+# print(FDTR_freq_vals)
     
 # Next, subtract all phase values by the value of the phase furthest from the GB    
 for i in range(0, len(FDTR_freq_vals)):
     arr = np.array(phase_by_freq[i])
-    #relative_phase = arr - np.max(arr)
     relative_phase = arr - arr[0]
-    print(FDTR_freq_vals[i])
     plt.plot(FDTR_x0_vals, relative_phase, marker='o', markersize=5, label=str(FDTR_freq_vals[i]) + "MHz")
 
 plt.xlabel('Pump/Probe Position')
@@ -105,7 +103,7 @@ plt.ylabel('Relative Phase')
 plt.title("Relative Phase vs Position")
 plt.legend(title='Frequencies')
 plt.grid(True)
-plt.savefig("Phase_Profile.png", bbox_inches='tight')
+plt.savefig(f"Phase_Profile_Theta_{theta_angle}.png", bbox_inches='tight')
 plt.show()
     
 ############################################# END CALCULATING PHASE VALUES FROM DATA #############################################
@@ -152,12 +150,11 @@ initial_guess = [1, 1]
 
 calib_consts_optimized, _ = curve_fit(fit_function_calib, freq_data, phase_data, p0=initial_guess, maxfev=5000, ftol=1e-12, xtol=1e-12, gtol=1e-12)
 
-print("----------------------------------------------------------------")
+print("----------------------------------------------------------------------------------------------")
 print("Optimized calibration constants:", calib_consts_optimized) 
-print("Calculated phases: " + str(fit_function_calib(freq_data, *calib_consts_optimized)))
-print(freq_data)
+print("Calibrated phases: " + str(fit_function_calib(freq_data, *calib_consts_optimized)))
 print("Simulation phases: " + str(phase_data))
-print("----------------------------------------------------------------")
+print("----------------------------------------------------------------------------------------------")
 
 ############################################# END CALIBRATING ANALYTICAL MODEL TO MESH REFINEMENT #############################################
 
@@ -238,6 +235,9 @@ for x0 in FDTR_x0_vals:
 # Now, adjust all thermal conductivites according to calibration
 thermal_conductivity = np.array(thermal_conductivity)
 diff = calib_k_Si - k_Si_recovered
+print(f"Calibrated Thermal Conductivity is off actual value by {diff:.5f} W/(m.K)") 
+print("Final Thermal Conductivity will be adjusted to reflect this") 
+print("----------------------------------------------------------------------------------------------")
 thermal_conductivity = thermal_conductivity + diff
     
  
@@ -247,7 +247,7 @@ plt.xlabel('Pump/Probe Position')
 plt.ylabel('Thermal Conductivity (W/(m.K)')
 plt.title("Thermal Conductivity Profile, θ = " + str(theta_angle))
 plt.grid(True)
-plt.savefig("Thermal_Conductivity_Profile.png", bbox_inches='tight')
+plt.savefig(f"Thermal_Conductivity_Profile_Theta_{theta_angle}.png", bbox_inches='tight')
 plt.show()
 
 # Invert to integrate under curve
@@ -265,6 +265,6 @@ resistance = trapz(ydata, x=xdata) - trapz(ydata_const, x=xdata)
 
 
 print("Resistance = " + str(resistance))
-print("----------------------------------------------------------------")
+print("----------------------------------------------------------------------------------------------")
 
 ############################################# END FITTING THERMAL CONDUCTIVITY FROM ACTUAL DATA #############################################
