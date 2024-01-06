@@ -22,8 +22,8 @@ FDTR_freq_vals = FDTR_data['frequency'].unique().tolist()
 FDTR_x0_vals = FDTR_data['x0'].unique().tolist()
 
 # Skip first sampled frequency
-FDTR_freq_vals = FDTR_freq_vals[1:]
-calib_freq_vals = calib_freq_vals[1:]
+# FDTR_freq_vals = FDTR_freq_vals[2:]
+# calib_freq_vals = calib_freq_vals[2:]
 
 # End period of simulation
 end_period = 4
@@ -90,12 +90,14 @@ for i in range(0, len(FDTR_freq_vals)):
 
     phase_by_freq.append(phase_values)
     
+print(FDTR_freq_vals)
+    
 # Next, subtract all phase values by the value of the phase furthest from the GB    
 for i in range(0, len(FDTR_freq_vals)):
     arr = np.array(phase_by_freq[i])
     #relative_phase = arr - np.max(arr)
     relative_phase = arr - arr[0]
-
+    print(FDTR_freq_vals[i])
     plt.plot(FDTR_x0_vals, relative_phase, marker='o', markersize=5, label=str(FDTR_freq_vals[i]) + "MHz")
 
 plt.xlabel('Pump/Probe Position')
