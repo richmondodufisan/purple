@@ -21,6 +21,7 @@ calib_x0_val = calibration_data['x0'].unique()[0] # Should be only one value
 FDTR_freq_vals = FDTR_data['frequency'].unique().tolist()
 FDTR_x0_vals = FDTR_data['x0'].unique().tolist()
 
+# Skip first sampled frequency
 FDTR_freq_vals = FDTR_freq_vals[1:]
 calib_freq_vals = calib_freq_vals[1:]
 
@@ -116,13 +117,16 @@ plt.show()
 
 ############################################# CALIBRATING ANALYTICAL MODEL TO MESH REFINEMENT #############################################
 
+calib_k_Si = 130
+
 def fit_function_calib(freqs, beta1, beta2):
+    global calib_k_Si
     phases = []
 
     for freq in freqs:
         # Define other parameters required by calc_thermal_response function
         N_layers = 2
-        layer2 = [40e-6, 130, 130, 2329, 689.1]
+        layer2 = [40e-6, calib_k_Si, calib_k_Si, 2329, 689.1]
         layer1 = [9e-8, 215, 215, 19300, 128.7]
         layer_props = np.array([layer2, layer1])
         interface_props = [3e7]
@@ -187,6 +191,16 @@ def fit_function_FDTR(freqs, k_Si, conductance):
         
     return np.array(phases)
 
+# First, recover the calibrated thermal conductivity
+# The difference between this value and calib_k_Si (what it's supposed to be) 
+# will be subtracted from the actual simulation thermal conductivities
+recovered_params, _ = curve_fit(fit_function_FDTR, freq_data, phase_data, p0=(130, 3e7), bounds=([100, 1e7], [200, 5e7]), method='trf', maxfev=10000, ftol=1e-12, xtol=1e-12, gtol=1e-12)
+k_Si_recovered, conductance_recovered = recovered_params
+
+# print("Recovered Thermal Conductivity = " + str(k_Si_recovered))
+
+
+# Fit the actual simulation data
 FDTR_freq = np.array(FDTR_freq_vals)
 
 thermal_conductivity = []
@@ -215,7 +229,15 @@ for x0 in FDTR_x0_vals:
     thermal_conductivity.append(k_Si_opt)
     interface_conductance.append(conductance_opt)
  
+
 # print(thermal_conductivity)
+
+
+# Now, adjust all thermal conductivites according to calibration
+thermal_conductivity = np.array(thermal_conductivity)
+diff = calib_k_Si - k_Si_recovered
+thermal_conductivity = thermal_conductivity + diff
+    
  
 
 plt.plot(FDTR_x0_vals, thermal_conductivity, marker='o', linestyle='--', color='black', markersize=8)
