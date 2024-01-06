@@ -155,7 +155,7 @@ calib_consts_optimized, _ = curve_fit(fit_function_calib, freq_data, phase_data,
 print("----------------------------------------------------------------")
 print("Optimized calibration constants:", calib_consts_optimized) 
 print("Calculated phases: " + str(fit_function_calib(freq_data, *calib_consts_optimized)))
-# print(freq_data)
+print(freq_data)
 print("Simulation phases: " + str(phase_data))
 print("----------------------------------------------------------------")
 

@@ -321,7 +321,7 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
   #execute_on = 'initial timestep_end'
   print_linear_residuals = false
   csv = true
-  exodus = true
+  exodus = false
   [pgraph]
     type = PerfGraphOutput
     execute_on = 'final'  # Default is "final"
