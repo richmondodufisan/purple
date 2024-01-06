@@ -11,7 +11,7 @@ from scipy.integrate import trapz
 
 # Read the CSV files into pandas DataFrames
 calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
-FDTR_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+FDTR_data = pd.read_csv('MOOSE_theta_0_iteration_10_refined.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
 theta_angle = 0
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -99,6 +99,7 @@ plt.ylabel('Relative Phase')
 plt.title("Relative Phase vs Position")
 plt.legend(title='Frequencies')
 plt.grid(True)
+plt.savefig("Phase_Profile.png", bbox_inches='tight')
 plt.show()
     
 ############################################# END CALCULATING PHASE VALUES FROM DATA #############################################
@@ -213,11 +214,13 @@ for x0 in FDTR_x0_vals:
  
 # print(thermal_conductivity)
  
-plt.plot(FDTR_x0_vals, thermal_conductivity)
+
+plt.plot(FDTR_x0_vals, thermal_conductivity, marker='o', linestyle='--', color='black', markersize=8)
 plt.xlabel('Pump/Probe Position')
 plt.ylabel('Thermal Conductivity (W/(m.K)')
 plt.title("Thermal Conductivity Profile, θ = " + str(theta_angle))
 plt.grid(True)
+plt.savefig("Thermal_Conductivity_Profile.png", bbox_inches='tight')
 plt.show()
 
 # Invert to integrate under curve
