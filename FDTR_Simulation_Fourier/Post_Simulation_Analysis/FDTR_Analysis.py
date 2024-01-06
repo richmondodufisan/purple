@@ -142,10 +142,12 @@ initial_guess = [1, 1]
 
 calib_consts_optimized, _ = curve_fit(fit_function_calib, freq_data, phase_data, p0=initial_guess, maxfev=5000, ftol=1e-12, xtol=1e-12, gtol=1e-12)
 
-print("Optimized calib_constants:", calib_consts_optimized) 
-print(fit_function_calib(freq_data, *calib_consts_optimized))
+print("----------------------------------------------------------------")
+print("Optimized calibration constants:", calib_consts_optimized) 
+print("Calculated phases: " + str(fit_function_calib(freq_data, *calib_consts_optimized)))
 # print(freq_data)
-print(phase_data)
+print("Simulation phases: " + str(phase_data))
+print("----------------------------------------------------------------")
 
 ############################################# END CALIBRATING ANALYTICAL MODEL TO MESH REFINEMENT #############################################
 
@@ -209,7 +211,7 @@ for x0 in FDTR_x0_vals:
     thermal_conductivity.append(k_Si_opt)
     interface_conductance.append(conductance_opt)
  
-print(thermal_conductivity)
+# print(thermal_conductivity)
  
 plt.plot(FDTR_x0_vals, thermal_conductivity)
 plt.xlabel('Pump/Probe Position')
@@ -230,6 +232,9 @@ xdata = np.array(FDTR_x0_vals).astype(float) * 1e-6
 
 # Integrate and subtract difference from integral of constant line
 resistance = trapz(ydata, x=xdata) - trapz(ydata_const, x=xdata) 
+
+
 print("Resistance = " + str(resistance))
+print("----------------------------------------------------------------")
 
 ############################################# END FITTING THERMAL CONDUCTIVITY FROM ACTUAL DATA #############################################
