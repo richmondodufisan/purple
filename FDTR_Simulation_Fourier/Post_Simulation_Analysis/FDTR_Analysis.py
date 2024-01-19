@@ -192,11 +192,11 @@ def fit_function_FDTR(freqs, k_Si, conductance):
 
 # First, recover the calibrated thermal conductivity
 # The difference between this value and calib_k_Si (what it's supposed to be) 
-# will be subtracted from the actual simulation thermal conductivities
+# is the error of the calibration
 recovered_params, _ = curve_fit(fit_function_FDTR, freq_data, phase_data, p0=(130, 3e7), bounds=([100, 1e7], [200, 5e7]), method='trf', maxfev=10000, ftol=1e-12, xtol=1e-12, gtol=1e-12)
 k_Si_recovered, conductance_recovered = recovered_params
 
-# print("Recovered Thermal Conductivity = " + str(k_Si_recovered))
+print("Recovered Thermal Conductivity = " + str(k_Si_recovered))
 
 
 # Fit the actual simulation data
