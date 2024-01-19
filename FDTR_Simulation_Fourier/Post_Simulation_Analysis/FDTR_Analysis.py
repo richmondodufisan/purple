@@ -236,9 +236,9 @@ for x0 in FDTR_x0_vals:
 thermal_conductivity = np.array(thermal_conductivity)
 diff = calib_k_Si - k_Si_recovered
 print(f"Calibrated Thermal Conductivity is off actual value by {diff:.5f} W/(m.K)") 
-print("Final Thermal Conductivity will be adjusted to reflect this") 
+# print("Final Thermal Conductivity will be adjusted to reflect this") 
 print("----------------------------------------------------------------------------------------------")
-thermal_conductivity = thermal_conductivity + diff
+# thermal_conductivity = thermal_conductivity + diff
     
  
 
