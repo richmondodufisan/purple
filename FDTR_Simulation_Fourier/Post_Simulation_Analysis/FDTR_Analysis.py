@@ -11,8 +11,8 @@ from scipy.integrate import trapz
 
 # Read the CSV files into pandas DataFrames
 calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
-FDTR_data = pd.read_csv('FDTR_input_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
-theta_angle = 0
+FDTR_data = pd.read_csv('./STEP_FUNCTION/FDTR_input_out_theta_75.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+theta_angle = 75 # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
 calib_freq_vals = calibration_data['frequency'].unique().tolist()
