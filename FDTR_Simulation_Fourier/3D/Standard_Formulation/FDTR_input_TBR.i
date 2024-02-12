@@ -17,7 +17,7 @@ rho_si = 2.329e-15
 c_si = 0.6891e3
 
 au_si_conductance = 3e-5
-gb_conductance = 1e-4
+gb_conductance = 1e-3
 
 kappa_bulk_au = 215e-6
 rho_au = 19.3e-15
