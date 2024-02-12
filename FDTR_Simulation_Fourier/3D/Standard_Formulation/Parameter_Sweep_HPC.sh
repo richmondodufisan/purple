@@ -36,7 +36,7 @@ start_val=0.0
 # extension=".i"
 
 # Original file name (calibration)
-og_filename="FDTR_CALIBRATION"
+og_filename="FDTR_input_TBR"
 extension=".i"
 
 og_mesh_script="FDTR_mesh"

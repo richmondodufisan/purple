@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Set the maximum number of times to submit the batch job
-n_iterations=2
+n_iterations=1
 
 # Set the number of periods each job/sweep should solve for
-n_periods_per_job=1.0
+n_periods_per_job=2.0
 
 # Initial timestep
 start_val=0.0
@@ -12,7 +12,7 @@ start_val=0.0
 # Submit the initial parameter sweep
 
 #Original file name
-og_filename="FDTR_input"
+og_filename="FDTR_input_TBR"
 extension=".i"
 
 og_mesh_script="FDTR_mesh"
@@ -52,8 +52,8 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		#echo "$new_mesh_name"
 		
 		# Make new 3D mesh
-		#python3 FDTR_mesh.py >> gmsh_output.txt &
-		#wait
+		# python3 FDTR_mesh.py >> gmsh_output.txt &
+		# wait
 		
 		echo "Mesh Generated, x0 = ${x0_val_num}, theta = ${theta_val_num}"
 		
@@ -79,7 +79,7 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 			# Replace the end period
 			sed -i "s/\(end_period\s*=\s*\)[0-9.eE+-]\+/\1$first_period/g" "$new_filename"
 			
-			mpiexec -n 4 ../../../purple-opt -i ${new_filename} &
+			~/projects/purple/purple-opt -i ${new_filename} &
 			wait
 		done
 	done
@@ -146,7 +146,7 @@ while [ $submission_count -lt $n_iterations ]; do
 				
 				############# END Replacing end and start periods #############
 				
-				mpiexec -n 4 ../purple-opt -i ${new_filename} &
+				~/projects/purple/purple-opt -i ${new_filename} &
 				wait		
 			done
 		done
