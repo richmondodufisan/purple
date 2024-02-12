@@ -5,7 +5,7 @@ from Layered_Heat_Conduction import calc_thermal_response
 from Phase_Extraction_Cosine_Fit import calculate_phase_amplitude
 from scipy.optimize import curve_fit
 from scipy.integrate import trapz
-
+import pdb
 
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
@@ -208,7 +208,7 @@ interface_conductance = []
 for x0 in FDTR_x0_vals:
 
     FDTR_phase = np.array(FDTR_phase_data[x0])
-    
+    pdb.set_trace()
     # popt = optimized params (kappa and conductance), pcov = covariance (not needed, except maybe for debugging)
     popt, pcov = curve_fit(
         fit_function_FDTR,
