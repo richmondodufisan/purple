@@ -305,18 +305,6 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 []
 
 [BCs]
-  [ambient_temperature_left]
-    type = DirichletBC
-    variable = temp_samp_left
-    boundary = 'bottom_surface'
-    value = ${room_temperature}
-  []
-  [ambient_temperature_right]
-    type = DirichletBC
-    variable = temp_samp_right
-    boundary = 'bottom_surface'
-    value = ${room_temperature}
-  []
   [heat_source_term]
     type = FunctionNeumannBC
 	variable = temp_trans
