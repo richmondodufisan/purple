@@ -6,6 +6,7 @@ from Phase_Extraction_Cosine_Fit import calculate_phase_amplitude
 from scipy.optimize import curve_fit
 from scipy.integrate import trapz
 import pdb
+import csv
 
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
@@ -268,3 +269,24 @@ print("Resistance = " + str(resistance))
 print("----------------------------------------------------------------------------------------------")
 
 ############################################# END FITTING THERMAL CONDUCTIVITY FROM ACTUAL DATA #############################################
+
+
+
+
+############################################# EXPORT DATA TO CSV #############################################
+
+# Specify the file name
+file_name = f"Thermal_Conductivity_Profile_Theta_{theta_angle}.csv"
+
+# Write data to CSV
+with open(file_name, mode='w', newline='') as file:
+    writer = csv.writer(file)
+    # Write header
+    writer.writerow(['FDTR_x0_vals', 'thermal_conductivity'])
+    # Write data rows
+    for x0, tc in zip(FDTR_x0_vals, thermal_conductivity):
+        writer.writerow([x0, tc])
+
+print("CSV file of Thermal Conductivity data has been written successfully.")
+print("----------------------------------------------------------------------------------------------")
+############################################# END EXPORT DATA TO CSV #############################################
