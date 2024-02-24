@@ -6,7 +6,7 @@
 #SBATCH --time=4:00:00 ## how long does this need to run (remember different partitions have restrictions on this param)
 #SBATCH --mem-per-cpu=2G ## how much RAM do you need per CPU (this effects your FairShare score so be careful to not ask for more than you need))
 #SBATCH --job-name=0100_Fourier_Standard_Formulation  ## When you run squeue -u NETID this is how you can identify the job
-#SBATCH --exclude=qnode0565,qnode0626,qnode0637
+#SBATCH --exclude=qnode0565,qnode0626,qnode0637,qnode0019
 
 
 script_name="FDTR_CALIBRATION_Fourier_Standard_theta_0_freq_10e6_x0_0_v1.i"

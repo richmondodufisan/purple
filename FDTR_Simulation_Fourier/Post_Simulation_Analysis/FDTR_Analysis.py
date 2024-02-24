@@ -11,8 +11,8 @@ import csv
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Read the CSV files into pandas DataFrames
-calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
-FDTR_data = pd.read_csv('FDTR_input_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0_newradius1.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+FDTR_data = pd.read_csv('FDTR_input_out_theta_0_newradius1.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
 theta_angle = 0 # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -48,7 +48,7 @@ for freq in calib_freq_vals:
 
     # Filter the original DataFrame to get the subset DataFrame for the specific (x0, frequency) pair
     subset_df = calibration_data[(calibration_data['x0'] == calib_x0_val) & (calibration_data['frequency'] == freq)][['time', 'temp']]
-    
+
     # Calculate phase and amplitude (we only need phase though)
     phase, amplitude = calculate_phase_amplitude(subset_df, end_period, freq)
     
