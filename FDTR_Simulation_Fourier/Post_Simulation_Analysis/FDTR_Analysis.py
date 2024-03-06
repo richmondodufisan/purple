@@ -11,9 +11,9 @@ import csv
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Read the CSV files into pandas DataFrames
-calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0_newradius1.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
-FDTR_data = pd.read_csv('FDTR_input_out_theta_0_newradius1.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
-theta_angle = 0 # for output file name change
+calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0_newradius2.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+FDTR_data = pd.read_csv('FDTR_input_out_theta_0_newradius2.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+theta_angle = "0_newrad2" # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
 calib_freq_vals = calibration_data['frequency'].unique().tolist()
@@ -131,8 +131,8 @@ def fit_function_calib(freqs, beta1, beta2):
         layer1 = [9e-8, 215, 215, 19300, 128.7]
         layer_props = np.array([layer2, layer1])
         interface_props = [3e7]
-        r_probe = 1.34e-6
-        r_pump = 1.53e-6
+        r_probe = 0.63e-6
+        r_pump = 0.71e-6
         pump_power = 0.01
         calib_consts = [beta1, beta2]
         freq = freq * 1e6
@@ -178,8 +178,8 @@ def fit_function_FDTR(freqs, k_Si, conductance):
         layer1 = [9e-8, 215, 215, 19300, 128.7]
         layer_props = np.array([layer2, layer1])
         interface_props = [conductance]
-        r_probe = 1.34e-6
-        r_pump = 1.53e-6
+        r_probe = 0.63e-6
+        r_pump = 0.71e-6
         pump_power = 0.01
         calib_consts = calib_consts_optimized # optimized to mesh refinement
         # calib_consts = [1,1] # default
