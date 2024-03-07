@@ -21,10 +21,10 @@ class ConcreteGradientEnhancement : public DerivativeMaterialInterface<ADKernel>
 	/// Base name of the material system that this kernel applies to
     const std::string _base_name;
 
-    /// Displacement variables IDs
-    std::vector<unsigned int> _disp_var;
 	/// Coupled displacement variables
     unsigned int _ndisp;
+    /// Displacement variables IDs
+    std::vector<unsigned int> _disp_var;
 	
     /// Material Properties
     const ADMaterialProperty<Real> & _len_scale;
