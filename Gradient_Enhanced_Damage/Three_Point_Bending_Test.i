@@ -28,16 +28,19 @@
     type = ConcreteGradientDamageMomentum
     variable = disp_x
     component_disp = 0
+	save_in = force_x
   []
   [div_sig_y]
     type = ConcreteGradientDamageMomentum
     variable = disp_y
     component_disp = 1
+	save_in = force_y
   []
   [div_sig_z]
     type = ConcreteGradientDamageMomentum
     variable = disp_z
     component_disp = 2
+	save_in = force_z
   []
   [nonlocal_damage_kernel]
     type = ConcreteGradientEnhancement
@@ -50,19 +53,25 @@
     order = CONSTANT
     family = MONOMIAL
   []
+  [force_x]
+  []
+  [force_y]
+  []
+  [force_z]
+  []
 []
 
 
 [Postprocessors]
   [bot_react_z]
     type = NodalSum
-    variable = disp_y
+    variable = force_y
     boundary = top-line
   []
   [displace_z]
     type = PointValue
-    variable = disp_z
-    point = '0 0 200'
+    variable = disp_y
+    point = '0 -100 0'
   []
 []
 
