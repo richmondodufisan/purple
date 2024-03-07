@@ -63,13 +63,13 @@
 [Postprocessors]
   [bot_react_z]
     type = NodalSum
-    variable = force_y
+    variable = force_z
     boundary = top-line
   []
   [displace_z]
     type = PointValue
-    variable = disp_y
-    point = '0 -100 0'
+    variable = disp_z
+    point = '0 0 200'
   []
 []
 
