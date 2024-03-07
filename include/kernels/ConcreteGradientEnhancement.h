@@ -18,18 +18,18 @@ class ConcreteGradientEnhancement : public DerivativeMaterialInterface<ADKernel>
   protected:
     virtual ADReal computeQpResidual() override;
 	
-	/// Coupled displacement variables
-    unsigned int _ndisp;
+	/// Base name of the material system that this kernel applies to
+    const std::string _base_name;
+
     /// Displacement variables IDs
     std::vector<unsigned int> _disp_var;
-
+	/// Coupled displacement variables
+    unsigned int _ndisp;
+	
     /// Material Properties
     const ADMaterialProperty<Real> & _len_scale;
 	
 	const ADMaterialProperty<Real> & _kappa;
-
-    /// Base name of the material system that this kernel applies to
-    const std::string _base_name;
 	
     /// Number of dims
     unsigned n_dim;
