@@ -1,10 +1,4 @@
 #!/bin/bash
-
-module purge
-module use /software/spack_v20d1/spack/share/spack/modules/linux-rhel7-x86_64/
-module load singularity
-module load mpi/mpich-4.0.2-gcc-10.4.0
-
 #SBATCH --account=p32089  ## YOUR ACCOUNT pXXXX or bXXXX
 #SBATCH --partition=short  ### PARTITION (buyin, short, normal, etc)
 #SBATCH --nodes=1
@@ -19,5 +13,10 @@ script_name="Three_Point_Bending_Test.i"
 
 #moose_exec.sh ../purple-opt -i ${script_name} --mesh-only
 #moose_exec.sh ../purple-opt -i ${script_name}
+
+module purge
+module use /software/spack_v20d1/spack/share/spack/modules/linux-rhel7-x86_64/
+module load singularity
+module load mpi/mpich-4.0.2-gcc-10.4.0
 
 mpiexec -np ${SLURM_NTASKS} singularity exec -B /projects:/projects -B /scratch:/scratch -B /projects/p32089/singularity/moose/moose:/opt/moose /projects/p32089/singularity/moose_latest.sif /projects/p32089/MOOSE_Applications/purple/purple-opt -i ${script_name}
