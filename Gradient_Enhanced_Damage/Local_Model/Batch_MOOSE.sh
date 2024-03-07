@@ -1,4 +1,10 @@
 #!/bin/bash
+
+module purge
+module use /software/spack_v20d1/spack/share/spack/modules/linux-rhel7-x86_64/
+module load singularity
+module load mpi/mpich-4.0.2-gcc-10.4.0
+
 #SBATCH --account=p32089  ## YOUR ACCOUNT pXXXX or bXXXX
 #SBATCH --partition=short  ### PARTITION (buyin, short, normal, etc)
 #SBATCH --nodes=1
