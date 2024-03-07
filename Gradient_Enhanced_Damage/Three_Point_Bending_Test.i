@@ -1,7 +1,7 @@
 [Mesh]
   [beam_mesh]
     type = FileMeshGenerator
-    file = 3pt_bending_coarse.msh
+    file = three-point-bending-3D-3.inp
   []
 []
 

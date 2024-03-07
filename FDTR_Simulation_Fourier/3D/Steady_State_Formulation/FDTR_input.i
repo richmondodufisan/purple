@@ -249,6 +249,16 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     boundary = 'top_pump_area'
     variable = avg_surf_temp_imag
   []
+  [trans_real_center]
+    type = PointValue
+    variable = avg_surf_temp_real
+    point = '${x0_val} ${y0_val} ${transducer_thickness}'
+  []
+  [trans_imag_center]
+	type = PointValue
+    variable = avg_surf_temp_imag
+    point = '${x0_val} ${y0_val} ${transducer_thickness}'
+  []
 []
 
 [Functions]
