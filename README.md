@@ -1,6 +1,4 @@
 purple
 =====
 
-"Fork purple" to create a new MOOSE-based application.
-
-For more information see: [http://mooseframework.org/create-an-app/](http://mooseframework.org/create-an-app/)
+This directory contains code implemented to solve research problems during my PhD in Theoretical and Applied Mechanics at Northwestern University.
