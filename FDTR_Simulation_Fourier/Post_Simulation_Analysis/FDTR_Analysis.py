@@ -11,9 +11,9 @@ import csv
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Read the CSV files into pandas DataFrames
-calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0_newradius2.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
-FDTR_data = pd.read_csv('FDTR_input_out_theta_0_newradius2.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
-theta_angle = "0_newrad2" # for output file name change
+calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+FDTR_data = pd.read_csv('FDTR_input_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+theta_angle = "0" # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
 calib_freq_vals = calibration_data['frequency'].unique().tolist()
@@ -206,6 +206,8 @@ FDTR_freq = np.array(FDTR_freq_vals)
 thermal_conductivity = []
 interface_conductance = []
 
+counter = 0
+
 for x0 in FDTR_x0_vals:
 
     FDTR_phase = np.array(FDTR_phase_data[x0])
@@ -225,6 +227,22 @@ for x0 in FDTR_x0_vals:
     )
     
     k_Si_opt, conductance_opt = popt
+    
+    if (counter == 0):
+        fitted_phase_vals = fit_function_FDTR(FDTR_freq, k_Si_opt, conductance_opt)
+        
+        plt.figure()
+        plt.plot(FDTR_freq, fitted_phase_vals, marker='v', linestyle='solid', color='purple', markersize=8, label = "analytical model")
+        plt.plot(FDTR_freq, FDTR_phase, marker='v', linestyle='solid', color='green', markersize=8, label = "simulation")
+        plt.xlabel('Frequency')
+        plt.ylabel('Phase (radians)')
+        plt.title("Sample phase/frequency fit, θ = " + str(theta_angle))
+        plt.grid(True)
+        plt.legend()
+        plt.savefig(f"Phase_Fit_{theta_angle}.png", bbox_inches='tight')
+        plt.show()
+    
+    counter = counter + 1
     
     thermal_conductivity.append(k_Si_opt)
     interface_conductance.append(conductance_opt)
