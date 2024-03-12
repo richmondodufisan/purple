@@ -120,7 +120,7 @@
     type = FunctionDirichletBC
     variable = disp_y
     boundary = 'load_surface'
-    function = '-1 * t'
+    function = '1 * t'
     preset = false
   []
 []
