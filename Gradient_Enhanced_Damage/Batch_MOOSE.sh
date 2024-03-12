@@ -9,7 +9,7 @@
 #SBATCH --exclude=qnode0565,qnode0626,qnode0637,qnode0019
 
 
-script_name="Three_Point_Bending_Test.i"
+script_name="Notched_Tensile_Test.i"
 
 #moose_exec.sh ../purple-opt -i ${script_name} --mesh-only
 #moose_exec.sh ../purple-opt -i ${script_name}
