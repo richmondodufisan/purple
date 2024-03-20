@@ -331,13 +331,13 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   
   [heat_source_term_real]
     type = FunctionNeumannBC
-	variable = temp_trans_imag
+	variable = temp_trans_real
 	boundary = 'top_pump_area'
 	function = heat_source_function
   []
   [heat_source_term_imag]
     type = NeumannBC
-	variable = temp_trans_real
+	variable = temp_trans_imag
 	boundary = 'top_pump_area'
 	value = 0
   []
