@@ -24,7 +24,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator
-    file = FDTR_mesh.msh
+    file = FDTR_mesh_x0_0_theta_0.msh
   []
   [sample_block]
     type = SubdomainBoundingBoxGenerator
