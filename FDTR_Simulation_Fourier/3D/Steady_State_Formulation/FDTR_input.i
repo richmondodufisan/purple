@@ -1,5 +1,5 @@
 #Global Parameters
-x0_val = -10
+x0_val = 0
 y0_val = 0
 freq_val = 1e6
 
@@ -22,8 +22,6 @@ theta_deg = 0
 theta_rad = ${fparse (theta_deg/180)*pi}
 
 [Mesh]
-	second_order = true
-
   [sample_mesh]
     type = FileMeshGenerator
     file = FDTR_mesh.msh
@@ -102,22 +100,22 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 
 [Variables]
   [temp_trans_real]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
 	block = transducer_material
   []
   [temp_trans_imag]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
 	block = transducer_material
   []
   [temp_samp_real]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
 	block = sample_material
   []
   [temp_samp_imag]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
 	block = sample_material
   []
