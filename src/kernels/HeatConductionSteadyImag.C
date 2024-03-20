@@ -57,7 +57,7 @@ HeatConductionSteadyImag::computeQpResidual()
   auto grad_NA = _grad_test[_i][_qp];
   auto NA = _test[_i][_qp];
   
-  auto residual = - (_kappa[_qp] * _grad_u[_qp] * grad_NA) + (_omega[_qp] * _rho[_qp] * _c[_qp] * _X[_qp] * NA);
+  auto residual = (_kappa[_qp] * _grad_u[_qp] * grad_NA) + (_omega[_qp] * _rho[_qp] * _c[_qp] * _X[_qp] * NA);
   
   return  residual;
 }
