@@ -21,22 +21,14 @@ c_au = 0.1287e3
   [applied_pump_area]
     type = ParsedGenerateSideset
 	input = sample_mesh
-	combinatorial_geometry = '(z > ${transducer_thickness}-1e-8) & (z < ${transducer_thickness}+1e-8) & (((x-x0)^2 + (y-y0)^2)< 64)'
+	combinatorial_geometry = '(z > ${transducer_thickness}-1e-8) & (z < ${transducer_thickness}+1e-8)'
 	constant_names = 'x0 y0'
 	constant_expressions = '${x0_val} ${y0_val}'
 	new_sideset_name = top_pump_area
   []
-  [top_no_pump]
-    type = ParsedGenerateSideset
-	input = applied_pump_area
-	combinatorial_geometry = '(z > ${transducer_thickness}-1e-8) & (z < ${transducer_thickness}+1e-8) & (((x-x0)^2 + (y-y0)^2) >= 64)'
-	constant_names = 'x0 y0'
-	constant_expressions = '${x0_val} ${y0_val}'
-	new_sideset_name = top_no_pump_area
-  [] 
   [bottom_area]
     type = ParsedGenerateSideset
-	input = top_no_pump
+	input = applied_pump_area
 	combinatorial_geometry = '((z > -40-1e-8) & (z < -40+1e-8))'
 	new_sideset_name = bottom_surface
   []
