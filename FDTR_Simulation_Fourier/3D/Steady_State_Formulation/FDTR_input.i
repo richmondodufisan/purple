@@ -343,9 +343,15 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   []
 []
 
+[Preconditioning]
+  [my_prec]
+    type = FDP
+  []
+[]
+
 [Executioner]
   type = Steady
-  solve_type = 'PJFNK'
+  solve_type = 'NEWTON'
   
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
