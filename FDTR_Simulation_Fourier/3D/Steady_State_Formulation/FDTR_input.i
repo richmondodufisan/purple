@@ -38,7 +38,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     input = sample_block
     block_id = 2	
     top_right = '40 20 ${transducer_thickness}'
-    bottom_left = '-40 -20 0'
+    bottom_left = '-40 -20 0'=
   []
   
   [rename]
@@ -264,7 +264,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 [Functions]
   [heat_source_function]
     type = ADParsedFunction
-    expression = '(-sqrt(pi/2) * ((Q0*absorbance)/(pi*(Rpump^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rpump^2)))'
+    expression = '((Q0*absorbance)/(pi*(Rpump^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rpump^2))'
     symbol_names = 'x0 y0 Rpump Q0 absorbance'
     symbol_values = '${x0_val} ${y0_val} ${pump_radius} ${pump_power} ${pump_absorbance}'
   []
