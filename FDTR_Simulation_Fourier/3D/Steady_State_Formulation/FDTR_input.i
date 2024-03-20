@@ -38,7 +38,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     input = sample_block
     block_id = 2	
     top_right = '40 20 ${transducer_thickness}'
-    bottom_left = '-40 -20 0'=
+    bottom_left = '-40 -20 0'
   []
   
   [rename]
