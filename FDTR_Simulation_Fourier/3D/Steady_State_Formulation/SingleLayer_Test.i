@@ -128,7 +128,7 @@ c_au = 0.1287e3
 [Functions]
   [heat_source_function]
     type = ADParsedFunction
-    expression = '-((Q0*absorbance)/(pi*(Rpump^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rpump^2))'
+    expression = '((Q0*absorbance)/(pi*(Rpump^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rpump^2))'
     symbol_names = 'x0 y0 Rpump Q0 absorbance'
     symbol_values = '${x0_val} ${y0_val} ${pump_radius} ${pump_power} ${pump_absorbance}'
   []
@@ -170,9 +170,7 @@ c_au = 0.1287e3
     variable = temp_imag
     boundary = 'bottom_surface'
     value = 0
-  []
-  
-  
+  [] 
   [heat_source_term_real]
     type = FunctionNeumannBC
 	variable = temp_real
