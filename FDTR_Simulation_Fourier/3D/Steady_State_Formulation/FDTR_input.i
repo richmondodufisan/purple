@@ -22,6 +22,8 @@ theta_deg = 0
 theta_rad = ${fparse (theta_deg/180)*pi}
 
 [Mesh]
+	second_order = true
+
   [sample_mesh]
     type = FileMeshGenerator
     file = FDTR_mesh.msh
@@ -100,22 +102,22 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 
 [Variables]
   [temp_trans_real]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
 	block = transducer_material
   []
   [temp_trans_imag]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
 	block = transducer_material
   []
   [temp_samp_real]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
 	block = sample_material
   []
   [temp_samp_imag]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
 	block = sample_material
   []
@@ -352,9 +354,6 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 [Executioner]
   type = Steady
   solve_type = 'NEWTON'
-  
-  petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8
