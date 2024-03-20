@@ -10,7 +10,7 @@ newMeshName = "FDTR_mesh_x0_0_theta_0.msh"
 theta = 0
 xcen = 0
 ycen = 0
-radius = 8
+radius = 15
 trans_thick = 0.09
 
 dummy_factor = 3
@@ -22,9 +22,9 @@ y_dir = 20
 z_dir = 40
 gb_width = 0.1
 
-pump_refine = 0.25
+pump_refine = 0.4
 reg_element_refine = 4
-gb_refine = 0.8
+gb_refine = 1.0
 
 # Initialize gb refinement values
 x_left_up = 0

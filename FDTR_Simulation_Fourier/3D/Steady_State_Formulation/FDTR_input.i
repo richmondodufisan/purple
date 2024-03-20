@@ -24,7 +24,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator
-    file = FDTR_mesh.msh
+    file = FDTR_mesh:.msh
   []
   [sample_block]
     type = SubdomainBoundingBoxGenerator
@@ -51,7 +51,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   [applied_pump_area]
     type = ParsedGenerateSideset
 	input = rename
-	combinatorial_geometry = '(z > ${transducer_thickness}-1e-8) & (z < ${transducer_thickness}+1e-8) & (((x-x0)^2 + (y-y0)^2)< 64)'
+	combinatorial_geometry = '(z > ${transducer_thickness}-1e-8) & (z < ${transducer_thickness}+1e-8)'
 	constant_names = 'x0 y0'
 	constant_expressions = '${x0_val} ${y0_val}'
 	new_sideset_name = top_pump_area
@@ -66,18 +66,9 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 	new_sideset_name = sample_pump_area
   []
   
-  [top_no_pump]
-    type = ParsedGenerateSideset
-	input = applied_pump_sample
-	combinatorial_geometry = '(z > ${transducer_thickness}-1e-8) & (z < ${transducer_thickness}+1e-8) & (((x-x0)^2 + (y-y0)^2) >= 64)'
-	constant_names = 'x0 y0'
-	constant_expressions = '${x0_val} ${y0_val}'
-	new_sideset_name = top_no_pump_area
-  []
-  
   [conductance_area]	
     type = SideSetsBetweenSubdomainsGenerator
-    input = top_no_pump
+    input = applied_pump_sample
     primary_block = transducer_material
     paired_block = sample_material
     new_boundary = 'boundary_conductance'
