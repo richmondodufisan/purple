@@ -4,8 +4,8 @@ y0_val = 0
 freq_val = 1e6
 
 transducer_thickness = 0.09
-probe_radius = 0.63
-pump_radius = 0.71
+probe_radius = 1.34
+pump_radius = 1.53
 pump_power = 0.01
 pump_absorbance = 1
 gb_width_val = 0.1
@@ -264,7 +264,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 [Functions]
   [heat_source_function]
     type = ADParsedFunction
-    expression = '(-sqrt(pi/2) * ((Q0*absorbance)/(pi*(Rpump^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rpump^2)))'
+    expression = '((Q0*absorbance)/(pi*(Rpump^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rpump^2))'
     symbol_names = 'x0 y0 Rpump Q0 absorbance'
     symbol_values = '${x0_val} ${y0_val} ${pump_radius} ${pump_power} ${pump_absorbance}'
   []
