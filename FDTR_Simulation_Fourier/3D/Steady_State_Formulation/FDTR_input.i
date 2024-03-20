@@ -1,5 +1,5 @@
 #Global Parameters
-x0_val = 0
+x0_val = -10
 y0_val = 0
 freq_val = 1e6
 
