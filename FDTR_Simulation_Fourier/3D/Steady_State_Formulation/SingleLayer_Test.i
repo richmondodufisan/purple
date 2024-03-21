@@ -16,7 +16,7 @@ c_au = 0.1287e3
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator
-    file = FDTR_mesh.msh
+    file = FDTR_mesh5.msh
   []
   [applied_pump_area]
     type = ParsedGenerateSideset

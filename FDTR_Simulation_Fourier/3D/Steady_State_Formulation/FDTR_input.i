@@ -24,7 +24,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator
-    file = FDTR_mesh:.msh
+    file = FDTR_mesh5.msh
   []
   [sample_block]
     type = SubdomainBoundingBoxGenerator
@@ -60,7 +60,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   [applied_pump_sample]
     type = ParsedGenerateSideset
 	input = applied_pump_area
-	combinatorial_geometry = '(z > 0.0-1e-8) & (z < 0.0+1e-8) & (((x-x0)^2 + (y-y0)^2)< 64)'
+	combinatorial_geometry = '(z > 0.0-1e-8) & (z < 0.0+1e-8)'
 	constant_names = 'x0 y0'
 	constant_expressions = '${x0_val} ${y0_val}'
 	new_sideset_name = sample_pump_area
