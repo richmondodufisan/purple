@@ -24,7 +24,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator
-    file = FDTR_mesh5.msh
+    file = FDTR_mesh.msh
   []
   [sample_block]
     type = SubdomainBoundingBoxGenerator
@@ -172,8 +172,8 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 [InterfaceKernels]
   [interface_real]
     type = SideSetHeatTransferKernel
-    variable = temp_trans_real
-    neighbor_var = temp_samp_real
+    variable = temp_samp_real
+    neighbor_var = temp_trans_real
     boundary = 'boundary_conductance'
 	conductance = ${au_si_conductance}
 	
@@ -186,8 +186,8 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   
   [interface_imag]
     type = SideSetHeatTransferKernel
-    variable = temp_samp_imag
-    neighbor_var = temp_trans_imag
+    variable = temp_trans_imag
+    neighbor_var = temp_samp_imag
     boundary = 'boundary_conductance'
 	conductance = ${au_si_conductance}
 	
