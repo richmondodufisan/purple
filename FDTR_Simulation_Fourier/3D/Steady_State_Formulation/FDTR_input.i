@@ -187,10 +187,10 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   
   [interface_imag]
     type = SideSetHeatTransferKernel
-    variable = temp_trans_imag
-    neighbor_var = temp_samp_imag
+    variable = temp_samp_imag
+    neighbor_var = temp_trans_imag
     boundary = 'boundary_conductance'
-	conductance = ${au_si_conductance_negative}
+	conductance = ${au_si_conductance}
 	
 	Tbulk_mat = 0
 	h_primary = 0
