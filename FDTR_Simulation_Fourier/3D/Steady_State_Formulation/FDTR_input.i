@@ -172,8 +172,8 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 [InterfaceKernels]
   [interface_real]
     type = SideSetHeatTransferKernel
-    variable = temp_samp_real
-    neighbor_var = temp_trans_real
+    variable = temp_trans_real
+    neighbor_var = temp_samp_real
     boundary = 'boundary_conductance'
 	conductance = ${au_si_conductance}
 	
