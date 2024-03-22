@@ -333,7 +333,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 
 [Executioner]
   type = Steady
-  solve_type = 'NEWTON'
+  solve_type = 'FD'
   
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
