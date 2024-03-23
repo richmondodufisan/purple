@@ -14,7 +14,6 @@ kappa_gb_si = 130e-6
 rho_si = 2.329e-15
 c_si = 0.6891e3
 au_si_conductance = 3e-5
-au_si_conductance_negative = -3e-5
 kappa_bulk_au = 215e-6
 rho_au = 19.3e-15
 c_au = 0.1287e3
@@ -190,7 +189,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     variable = temp_trans_imag
     neighbor_var = temp_samp_imag
     boundary = 'boundary_conductance'
-	conductance = ${au_si_conductance_negative}
+	conductance = ${au_si_conductance}
 	
 	Tbulk_mat = 0
 	h_primary = 0
