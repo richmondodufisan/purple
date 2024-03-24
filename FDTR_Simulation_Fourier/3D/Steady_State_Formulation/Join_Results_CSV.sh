@@ -16,7 +16,7 @@ freq_vals_num=("1e6")
 output_file="../${og_filename}_out_theta_${theta_angle}.csv"
 
 # Create header for the output file
-echo "x0, freq, real_part, imag_part" > "$output_file"
+echo "x0, freq, imag_part, real_part" > "$output_file"
 
 for x0 in "${x0_vals_num[@]}"; do
 	for freq in "${freq_vals_num[@]}"; do
