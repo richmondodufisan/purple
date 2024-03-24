@@ -198,7 +198,7 @@ xdata = np.array(FDTR_x0_vals).astype(float) * 1e-6
 # Integrate and subtract difference from integral of constant line
 resistance = trapz(ydata, x=xdata) - trapz(ydata_const, x=xdata) 
 
-
+print("----------------------------------------------------------------------------------------------")
 print("Resistance = " + str(resistance))
 print("----------------------------------------------------------------------------------------------")
 

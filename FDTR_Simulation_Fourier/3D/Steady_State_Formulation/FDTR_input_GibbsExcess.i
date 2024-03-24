@@ -31,15 +31,15 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     type = SubdomainBoundingBoxGenerator
     input = sample_mesh
     block_id = 1
-    top_right = '40 20 0'
-    bottom_left = '-40 -20 -40'
+    top_right = '160 80 0'
+    bottom_left = '-160 -80 -40'
   []
   [transducer_block]
     type = SubdomainBoundingBoxGenerator
     input = sample_block
     block_id = 2	
-    top_right = '40 20 ${transducer_thickness}'
-    bottom_left = '-40 -20 0'
+    top_right = '160 80 ${transducer_thickness}'
+    bottom_left = '-160 -80 0'
   []
   
   [rename]
@@ -85,7 +85,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   [side_areas]
     type = ParsedGenerateSideset
 	input = bottom_area
-	combinatorial_geometry = '((x > -40-1e-8) & (x < -40+1e-8)) | ((x > 40-1e-8) & (x < 40+1e-8)) | ((y > -20-1e-8) & (y < -20+1e-8)) | ((y > 20-1e-8) & (y < 20+1e-8))'
+	combinatorial_geometry = '((x > -160-1e-8) & (x < -160+1e-8)) | ((x > 160-1e-8) & (x < 160+1e-8)) | ((y > -80-1e-8) & (y < -80+1e-8)) | ((y > 80-1e-8) & (y < 80+1e-8))'
 	new_sideset_name = side_surfaces
   []
 []
