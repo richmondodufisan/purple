@@ -6,29 +6,29 @@ module load singularity
 module load mpi/mpich-4.0.2-gcc-10.4.0
 
 # Original file name
-og_filename="FDTR_input_GibbsExcess"
-extension=".i"
+#og_filename="FDTR_input_GibbsExcess"
+#extension=".i"
 
 # Original file name (calibration)
-#og_filename="FDTR_CALIBRATION_GibbsExcess"
-#extension=".i"
+og_filename="FDTR_CALIBRATION_GibbsExcess"
+extension=".i"
 
 og_mesh_script="FDTR_mesh"
 og_mesh_ext=".py"
 
 # Define the range of values you want to loop over
 
-#x0_vals_num=("0")
-
-#freq_vals_num=("1e6" "2e6" "4e6" "6e6" "8e6" "10e6")
-
-#theta_vals_num=("0")
-
-x0_vals_num=("-15" "-10" "-9" "-8" "-7" "-6" "-5" "-4" "-3" "-2" "-1" "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "15")
+x0_vals_num=("0")
 
 freq_vals_num=("1e6" "2e6" "4e6" "6e6" "8e6" "10e6")
 
-theta_vals_num=("0" "15" "30" "45" "60" "75")
+theta_vals_num=("0")
+
+#x0_vals_num=("-15" "-10" "-9" "-8" "-7" "-6" "-5" "-4" "-3" "-2" "-1" "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "15")
+
+#freq_vals_num=("1e6" "2e6" "4e6" "6e6" "8e6" "10e6")
+
+#theta_vals_num=("0" "15" "30" "45" "60" "75")
 
 
 # Loop over values
@@ -48,8 +48,8 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		#echo "$new_mesh_name"
 		
 		# Make new 3D mesh
-		python3 FDTR_mesh.py >> gmsh_output.txt &
-		wait
+		#python3 FDTR_mesh.py >> gmsh_output.txt &
+		#wait
 		
 		echo "Mesh Generated, x0 = ${x0_val_num}, theta = ${theta_val_num}"
 		
