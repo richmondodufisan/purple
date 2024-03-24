@@ -7,24 +7,24 @@ gmsh.model.add("FDTR_mesh")
 
 newMeshName = "FDTR_mesh_x0_0_theta_0.msh"
 
-theta = 0
+theta = 75
 xcen = 0
 ycen = 0
 radius = 8
 trans_thick = 0.09
 
-dummy_factor = 3
+dummy_factor = 1.5
 trans_thick_ref = 0.09
 sub_center_ref=0.09
 
-x_dir = 40
-y_dir = 20
+x_dir = 160
+y_dir = 80
 z_dir = 40
 gb_width = 0.1
 
 pump_refine = 0.4
-reg_element_refine = 12
-gb_refine = 1.5
+reg_element_refine = 25
+gb_refine = 25
 
 # Initialize gb refinement values
 x_left_up = 0
@@ -62,10 +62,6 @@ if (is_angle_zero):
 else:
     x_left_down = (1.0/tan_theta)*(-z_dir + (tan_theta*x_left_up))
     z_left_down = -z_dir
-    
-if (x_left_down >= x_dir):
-    x_left_down = x_dir
-    z_left_down = (tan_theta*x_dir)-(tan_theta*x_left_up)
 
 # Get x and z coordinates for RIGHT side
 if (is_angle_zero):
@@ -74,10 +70,6 @@ if (is_angle_zero):
 else:
     x_right_down = (1.0/tan_theta)*(-z_dir + (tan_theta*x_right_up))
     z_right_down = -z_dir
-    
-if (x_right_down >= x_dir):
-    x_right_down = x_dir
-    z_right_down = (tan_theta*x_dir)-(tan_theta*x_right_up)
 
 z_left_up = 0
 z_right_up = 0

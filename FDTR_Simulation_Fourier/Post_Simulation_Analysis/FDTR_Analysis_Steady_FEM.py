@@ -11,7 +11,7 @@ import math
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Read the CSV files into pandas DataFrames
-FDTR_data = pd.read_csv('FDTR_input_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'time', 'temp'])
+FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
 theta_angle = "0" # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -45,16 +45,18 @@ for x0 in FDTR_x0_vals:
         # Filter the original DataFrame to get the subset DataFrame for the specific (x0, frequency) pair
         subset_df = FDTR_data[(FDTR_data['x0'] == x0) & (FDTR_data['frequency'] == freq)][['imag_part', 'real_part']]
         
-        # Calculate phase and amplitude (we only need phase though)
-        imag_val = subset_df['imag_part'][0]
-        real_val = subset_df['real_part'][0]
+        # Check if subset_df is not empty
+        if not subset_df.empty:
+            # Assuming you want to use the first row if there are multiple matching rows
+            imag_val = subset_df['imag_part'].iloc[0]
+            real_val = subset_df['real_part'].iloc[0]
+            
+            phase = math.atan2(imag_val, real_val)
         
-        phase = math.atan(imag_val/real_val)
+            amplitude = math.sqrt(imag_val**2 + real_val**2)
         
-        amplitude = math.sqrt(imag_val**2 + real_val**2)
-        
-        # Save phase values
-        phase_vals.append(phase)
+            # Save phase values
+            phase_vals.append(phase)
         
     FDTR_phase_data[x0] = phase_vals
 
