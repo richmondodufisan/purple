@@ -1,8 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from Layered_Heat_Conduction import calc_thermal_response as calc_thermal_response_Gibbs_Excess
-from Layered_Heat_Conduction_Traditional_FDTR import calc_thermal_response as calc_thermal_response_trad_FDTR
+from Layered_Heat_Conduction import calc_thermal_response
 from scipy.optimize import curve_fit
 from scipy.integrate import trapz
 import pdb
@@ -153,7 +152,7 @@ def fit_function_calib(freqs, beta1, beta2):
         freq = freq * 1e6
 
         # Calculate analytical phase 
-        phase, _ = calc_thermal_response_Gibbs_Excess(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
+        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
         phases.append(phase)
         
     return np.array(phases)
@@ -189,12 +188,10 @@ def fit_function_FDTR(freqs, k_Si, conductance):
 
     for freq in freqs:
         # Define other parameters required by calc_thermal_response function
-        N_layers = 4
-        layer4 = [38.9e-6, 130, 130, 2329, 689.1]
-        layer3 = [10e-8, k_Si, k_Si, 2329, 689.1]
-        layer2 = [1e-6, 130, 130, 2329, 689.1]
+        N_layers = 2
+        layer2 = [40e-6, k_Si, k_Si, 2329, 689.1]
         layer1 = [9e-8, 215, 215, 19300, 128.7]
-        layer_props = np.array([layer4, layer3, layer2, layer1])
+        layer_props = np.array([layer2, layer1])
         interface_props = [conductance]
         r_probe = 1.34e-6
         r_pump = 1.53e-6
@@ -204,7 +201,7 @@ def fit_function_FDTR(freqs, k_Si, conductance):
         freq = freq * 1e6
 
         # Calculate analytical phase 
-        phase, _ = calc_thermal_response_trad_FDTR(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
+        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
         phases.append(phase)
         
     return np.array(phases)
