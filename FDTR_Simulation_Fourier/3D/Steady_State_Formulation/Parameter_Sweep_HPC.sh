@@ -6,12 +6,12 @@ module load singularity
 module load mpi/mpich-4.0.2-gcc-10.4.0
 
 # Original file name
-og_filename="FDTR_input_GibbsExcess"
-extension=".i"
+# og_filename="FDTR_input_GibbsExcess"
+# extension=".i"
 
 # Original file name (calibration)
-#og_filename="FDTR_CALIBRATION_GibbsExcess"
-#extension=".i"
+og_filename="FDTR_CALIBRATION_GibbsExcess"
+extension=".i"
 
 og_mesh_script="FDTR_mesh"
 og_mesh_ext=".py"
@@ -20,13 +20,13 @@ og_mesh_ext=".py"
 
 x0_vals_num=("0")
 
-freq_vals_num=("1e6")
+# freq_vals_num=("1e6")
 
 theta_vals_num=("0")
 
 #x0_vals_num=("-30" "-25" "-20" "-17" "-15" "-14" "-13" "-11" "-12" "-10" "-9" "-8" "-7" "-6" "-5" "-4" "-3" "-2" "-1" "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "17" "20" "25" "30")
 
-#freq_vals_num=("1e6" "2e6" "4e6" "6e6" "8e6" "10e6")
+freq_vals_num=("1e6" "2e6" "4e6" "6e6" "8e6" "10e6")
 
 #theta_vals_num=("0" "15" "30" "45" "60" "75")
 
