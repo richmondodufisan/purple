@@ -55,7 +55,7 @@ c_au = 0.1287e3
   [rename]
     type = RenameBlockGenerator
     old_block = '1 2 3 4'
-    new_block = 'sample_material_bottom sample_material_top gb_material transducer_material'
+    new_block = 'sample_material_bottom gb_material sample_material_top transducer_material'
     input = transducer_block
   []
   
