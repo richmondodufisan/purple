@@ -4,8 +4,8 @@ y0_val = 0
 freq_val = 1e6
 
 transducer_thickness = 0.09
-probe_radius = 0.63
-pump_radius = 0.71
+probe_radius = 1.34
+pump_radius = 1.53
 pump_power = 0.01
 pump_absorbance = 1
 kappa_bulk_si = 130e-6
