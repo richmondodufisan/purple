@@ -9,6 +9,7 @@ pump_radius = 1.53
 pump_power = 0.01
 pump_absorbance = 1
 kappa_bulk_si = 130e-6
+kappa_gb_si = 56.52e-6
 rho_si = 2.329e-15
 c_si = 0.6891e3
 au_si_conductance = -3e-5
@@ -20,27 +21,41 @@ c_au = 0.1287e3
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator
-    file = FDTR_mesh5.msh
+    file = FDTR_mesh.msh
   []
-  [sample_block]
+  [sample_block_bottom]
     type = SubdomainBoundingBoxGenerator
     input = sample_mesh
     block_id = 1
-    top_right = '160 80 0'
+    top_right = '160 80 -1.1'
     bottom_left = '-160 -80 -40'
+  []
+  [grain_boundary_block]
+    type = SubdomainBoundingBoxGenerator
+    input = sample_block_bottom
+    block_id = 2
+    top_right = '160 80 -1.0'
+    bottom_left = '-160 -80 -1.1'
+  []
+  [sample_block_top]
+    type = SubdomainBoundingBoxGenerator
+    input = grain_boundary_block
+    block_id = 3
+    top_right = '160 80 0'
+    bottom_left = '-160 -80 -1.0'
   []
   [transducer_block]
     type = SubdomainBoundingBoxGenerator
-    input = sample_block
-    block_id = 2	
+    input = sample_block_top
+    block_id = 4	
     top_right = '160 80 ${transducer_thickness}'
     bottom_left = '-160 -80 0'
   []
   
   [rename]
     type = RenameBlockGenerator
-    old_block = '1 2'
-    new_block = 'sample_material transducer_material'
+    old_block = '1 2 3 4'
+    new_block = 'sample_material_bottom sample_material_top gb_material transducer_material'
     input = transducer_block
   []
   
@@ -66,7 +81,7 @@ c_au = 0.1287e3
     type = SideSetsBetweenSubdomainsGenerator
     input = applied_pump_sample
     primary_block = transducer_material
-    paired_block = sample_material
+    paired_block = sample_material_top
     new_boundary = 'boundary_conductance'
   []
     
@@ -99,12 +114,12 @@ c_au = 0.1287e3
   [temp_samp_real]
     order = FIRST
     family = LAGRANGE
-	block = sample_material
+	block = 'sample_material_bottom gb_material sample_material_top'
   []
   [temp_samp_imag]
     order = FIRST
     family = LAGRANGE
-	block = sample_material
+	block = 'sample_material_bottom gb_material sample_material_top'
   []
 []
 
@@ -148,7 +163,7 @@ c_au = 0.1287e3
 	omega = omega
 	density = rho_samp
 	
-	block = sample_material
+	block = 'sample_material_bottom sample_material_top'
   []
   [heat_conduction_sample_imag]
     type = HeatConductionSteadyImag
@@ -161,7 +176,35 @@ c_au = 0.1287e3
 	omega = omega
 	density = rho_samp
 	
-	block = sample_material
+	block = 'sample_material_bottom sample_material_top'
+  []
+  
+  
+  [heat_conduction_gb_real]
+    type = HeatConductionSteadyReal
+	
+    variable = temp_samp_real
+	imaginary_temp = temp_samp_imag
+	
+	thermal_conductivity = k_gb
+	heat_capacity = c_samp
+	omega = omega
+	density = rho_samp
+	
+	block = 'gb_material'
+  []
+  [heat_conduction_gb_imag]
+    type = HeatConductionSteadyImag
+	
+    variable = temp_samp_imag
+	real_temp = temp_samp_real
+	
+	thermal_conductivity = k_gb
+	heat_capacity = c_samp
+	omega = omega
+	density = rho_samp
+	
+	block = 'gb_material'
   []
 []
 
@@ -262,15 +305,15 @@ c_au = 0.1287e3
   []
   [basic_sample_materials]
     type = ADGenericConstantMaterial
-    block = sample_material
-    prop_names = 'rho_samp c_samp k_samp'
-    prop_values = '${rho_si} ${c_si} ${kappa_bulk_si}'
+    block = 'sample_material_bottom sample_material_top gb_material'
+    prop_names = 'rho_samp c_samp k_samp k_gb'
+    prop_values = '${rho_si} ${c_si} ${kappa_bulk_si} ${kappa_gb_si}'
   []
   [simulation_frequency]
     type = ADGenericFunctionMaterial
 	prop_names = omega
     prop_values = angular_frequency
-	block = 'transducer_material sample_material'
+	block = 'transducer_material sample_material_bottom sample_material_top gb_material'
   []
   [heat_source_material]
     type = ADGenericFunctionMaterial
@@ -330,7 +373,7 @@ c_au = 0.1287e3
   #execute_on = 'initial timestep_end'
   print_linear_residuals = false
   csv = true
-  exodus = true
+  exodus = false
   [pgraph]
     type = PerfGraphOutput
     execute_on = 'final'  # Default is "final"

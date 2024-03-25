@@ -9,9 +9,12 @@ module load mpi/mpich-4.0.2-gcc-10.4.0
 # og_filename="FDTR_input_GibbsExcess"
 # extension=".i"
 
-# Original file name (calibration)
-og_filename="FDTR_CALIBRATION_GibbsExcess"
+og_filename=FDTR_input_Traditional
 extension=".i"
+
+# Original file name (calibration)
+# og_filename="FDTR_CALIBRATION"
+# extension=".i"
 
 og_mesh_script="FDTR_mesh"
 og_mesh_ext=".py"
