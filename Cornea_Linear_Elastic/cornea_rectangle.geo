@@ -1,7 +1,7 @@
 // Gmsh project created on Wed Mar 27 12:03:52 2024
 SetFactory("OpenCASCADE");
 //+
-refinement = 0.00025;
+refinement = 0.000025;
 //+
 Point(1) = {0, 0, 0, refinement};
 //+

@@ -1,5 +1,5 @@
 #Global Parameters
-freq_val = 1e6
+freq_val = 10e3
 youngs_modulus_val = 60e3
 poissons_ratio_val = 0.4999
 shear_modulus_val = ${fparse (youngs_modulus_val/(2*(1+poissons_ratio_val)))}
@@ -93,6 +93,28 @@ h_plate = 0.001
     type = ADReaction
 	variable = disp_y_imag
 	rate = ${fparse -freq_val*freq_val*density}
+  []
+[]
+
+[AuxVariables]
+  [disp_x]
+  []
+  [disp_y]
+  []
+[]
+
+[AuxKernels]
+  [x_displacement]
+    type = ParsedAux
+    variable = disp_x
+    coupled_variables = 'disp_x_real disp_x_imag'
+	expression = 'sqrt(disp_x_real^2 + disp_x_imag^2)'
+  []
+  [y_displacement]
+    type = ParsedAux
+    variable = disp_y
+    coupled_variables = 'disp_y_real disp_y_imag'
+	expression = 'sqrt(disp_y_real^2 + disp_y_imag^2)'
   []
 []
 
