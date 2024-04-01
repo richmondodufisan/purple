@@ -12,7 +12,7 @@ import math
 
 # Read the CSV files into pandas DataFrames
 calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
-FDTR_data = pd.read_csv('FDTR_input_Traditional_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
 theta_angle = "0" # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -182,7 +182,7 @@ print("-------------------------------------------------------------------------
 ############################################# FITTING THERMAL CONDUCTIVITY FROM ACTUAL DATA #############################################
 
 # Define wrapper function and material properties for fitting actual data
-def fit_function_FDTR(freqs, k_Si, conductance):
+def fit_function_FDTR(freqs, k_Si):
     phases = []
     global calib_consts_optimized
 
@@ -192,12 +192,12 @@ def fit_function_FDTR(freqs, k_Si, conductance):
         layer2 = [40e-6, k_Si, k_Si, 2329, 689.1]
         layer1 = [9e-8, 215, 215, 19300, 128.7]
         layer_props = np.array([layer2, layer1])
-        interface_props = [conductance]
+        interface_props = [3e7]
         r_probe = 1.34e-6
         r_pump = 1.53e-6
         pump_power = 0.01
-        # calib_consts = calib_consts_optimized # optimized to mesh refinement
-        calib_consts = [1,1] # default i.e no calibration
+        calib_consts = calib_consts_optimized # optimized to mesh refinement
+        # calib_consts = [1,1] # default i.e no calibration
         freq = freq * 1e6
 
         # Calculate analytical phase 
@@ -210,10 +210,15 @@ def fit_function_FDTR(freqs, k_Si, conductance):
 # First, recover the calibrated thermal conductivity
 # The difference between this value and calib_k_Si (what it's supposed to be) 
 # is the error of the calibration
-recovered_params, _ = curve_fit(fit_function_FDTR, freq_data, phase_data, p0=(130, 3e7), bounds=([100, 1e7], [200, 5e7]), method='trf', maxfev=10000, ftol=1e-12, xtol=1e-12, gtol=1e-12)
-k_Si_recovered, conductance_recovered = recovered_params
+recovered_params, _ = curve_fit(fit_function_FDTR, freq_data, phase_data, p0=(130), bounds=([100], [200]), method='trf', maxfev=10000, ftol=1e-12, xtol=1e-12, gtol=1e-12)
+k_Si_recovered = recovered_params[0]
 
 print("Recovered Thermal Conductivity = " + str(k_Si_recovered))
+
+# Calculate the difference between the recovered (calibrated) thermal conductivity and what it should be
+diff = calib_k_Si - k_Si_recovered
+print(f"Calibrated Thermal Conductivity is off actual value by {diff:.5f} W/(m.K)") 
+print("----------------------------------------------------------------------------------------------")
 
 
 # Fit the actual simulation data
@@ -233,8 +238,8 @@ for x0 in FDTR_x0_vals:
         fit_function_FDTR,
         FDTR_freq,   # Frequency data
         FDTR_phase,  # Phase data
-        p0=(130, 3e7), # Initial guesses
-        bounds=([100, 1e7], [200, 5e7]),  # Set bounds for k_Si and conductance
+        p0=(130), # Initial guesses
+        bounds=([100], [200]),  # Set bounds for k_Si and conductance
         method='trf',  # Use Trust Region Reflective algorithm
         maxfev=10000,  # Maximum number of function evaluations
         ftol=1e-12,   # Set the tolerance on the relative error in the function values
@@ -242,11 +247,11 @@ for x0 in FDTR_x0_vals:
         gtol=1e-12    # Set the tolerance on the norm of the gradient
     )
     
-    k_Si_opt, conductance_opt = popt
-    
+    k_Si_opt = popt[0]
+    # pdb.set_trace()
     # Plot phase/frequency fit for one location
     if (counter == 0):
-        fitted_phase_vals = fit_function_FDTR(FDTR_freq, k_Si_opt, conductance_opt)
+        fitted_phase_vals = fit_function_FDTR(FDTR_freq, k_Si_opt)
         
         plt.figure()
         plt.plot(FDTR_freq, fitted_phase_vals, marker='v', linestyle='solid', color='purple', markersize=8, label = "analytical model")
@@ -262,16 +267,7 @@ for x0 in FDTR_x0_vals:
     counter = counter + 1
     
     thermal_conductivity.append(k_Si_opt)
-    interface_conductance.append(conductance_opt)
- 
- 
-# Now, adjust all thermal conductivites according to calibration
-thermal_conductivity = np.array(thermal_conductivity)
-diff = calib_k_Si - k_Si_recovered
-print(f"Calibrated Thermal Conductivity is off actual value by {diff:.5f} W/(m.K)") 
-# print("Final Thermal Conductivity will be adjusted to reflect this") 
-print("----------------------------------------------------------------------------------------------")
-# thermal_conductivity = thermal_conductivity + diff
+
 
 plt.plot(FDTR_x0_vals, thermal_conductivity, marker='o', linestyle='--', color='black', markersize=8)
 plt.xlabel('Pump/Probe Position')
@@ -303,7 +299,7 @@ print("-------------------------------------------------------------------------
 
 
 
-############################################# EXPORT DATA TO CSV #############################################
+############################################# EXPORT DATA TO CSV ################################################
 
 # Specify the file name
 file_name = f"Thermal_Conductivity_Profile_Theta_{theta_angle}.csv"
