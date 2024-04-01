@@ -196,8 +196,8 @@ def fit_function_FDTR(freqs, k_Si):
         r_probe = 1.34e-6
         r_pump = 1.53e-6
         pump_power = 0.01
-        # calib_consts = calib_consts_optimized # optimized to mesh refinement
-        calib_consts = [1,1] # default i.e no calibration
+        calib_consts = calib_consts_optimized # optimized to mesh refinement
+        # calib_consts = [1,1] # default i.e no calibration
         freq = freq * 1e6
 
         # Calculate analytical phase 
