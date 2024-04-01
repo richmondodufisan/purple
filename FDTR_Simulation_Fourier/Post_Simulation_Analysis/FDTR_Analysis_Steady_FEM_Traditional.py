@@ -12,7 +12,7 @@ import math
 
 # Read the CSV files into pandas DataFrames
 calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
-FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+FDTR_data = pd.read_csv('FDTR_input_Traditional_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
 theta_angle = "0" # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -182,22 +182,23 @@ print("-------------------------------------------------------------------------
 ############################################# FITTING THERMAL CONDUCTIVITY FROM ACTUAL DATA #############################################
 
 # Define wrapper function and material properties for fitting actual data
-def fit_function_FDTR(freqs, k_Si):
+def fit_function_FDTR(freqs, G):
     phases = []
     global calib_consts_optimized
 
     for freq in freqs:
         # Define other parameters required by calc_thermal_response function
-        N_layers = 2
-        layer2 = [40e-6, k_Si, k_Si, 2329, 689.1]
+        N_layers = 3
+        layer3 = [39e-6, 130, 130, 2329, 689.1]
+        layer2 = [1e-6, 130, 130, 2329, 689.1]
         layer1 = [9e-8, 215, 215, 19300, 128.7]
-        layer_props = np.array([layer2, layer1])
-        interface_props = [3e7]
+        layer_props = np.array([layer3, layer2, layer1])
+        interface_props = [G, 3e7]
         r_probe = 1.34e-6
         r_pump = 1.53e-6
         pump_power = 0.01
-        calib_consts = calib_consts_optimized # optimized to mesh refinement
-        # calib_consts = [1,1] # default i.e no calibration
+        # calib_consts = calib_consts_optimized # optimized to mesh refinement
+        calib_consts = [1,1] # default i.e no calibration
         freq = freq * 1e6
 
         # Calculate analytical phase 
@@ -205,41 +206,27 @@ def fit_function_FDTR(freqs, k_Si):
         phases.append(phase)
         
     return np.array(phases)
-    
-    
-# First, recover the calibrated thermal conductivity
-# The difference between this value and calib_k_Si (what it's supposed to be) 
-# is the error of the calibration
-recovered_params, _ = curve_fit(fit_function_FDTR, freq_data, phase_data, p0=(130), bounds=([100], [200]), method='trf', maxfev=10000, ftol=1e-12, xtol=1e-12, gtol=1e-12)
-k_Si_recovered = recovered_params[0]
 
-print("Recovered Thermal Conductivity = " + str(k_Si_recovered))
-
-# Calculate the difference between the recovered (calibrated) thermal conductivity and what it should be
-diff = calib_k_Si - k_Si_recovered
-print(f"Calibrated Thermal Conductivity is off actual value by {diff:.5f} W/(m.K)") 
-print("----------------------------------------------------------------------------------------------")
 
 
 # Fit the actual simulation data
 FDTR_freq = np.array(FDTR_freq_vals)
 
-thermal_conductivity = []
-interface_conductance = []
+interface_conductance = 0 # initialize outside the loop
 
 counter = 0
 
+# code is copied from GibbsExcess version hence the loop
+# but it should only be one value
 for x0 in FDTR_x0_vals:
 
     FDTR_phase = np.array(FDTR_phase_data[x0])
-    #pdb.set_trace()
-    # popt = optimized params (kappa and conductance), pcov = covariance (not needed, except maybe for debugging)
+
+    # popt = optimized params (conductance), pcov = covariance (not needed, except maybe for debugging)
     popt, pcov = curve_fit(
         fit_function_FDTR,
         FDTR_freq,   # Frequency data
         FDTR_phase,  # Phase data
-        p0=(130), # Initial guesses
-        bounds=([100], [200]),  # Set bounds for k_Si and conductance
         method='trf',  # Use Trust Region Reflective algorithm
         maxfev=10000,  # Maximum number of function evaluations
         ftol=1e-12,   # Set the tolerance on the relative error in the function values
@@ -247,11 +234,11 @@ for x0 in FDTR_x0_vals:
         gtol=1e-12    # Set the tolerance on the norm of the gradient
     )
     
-    k_Si_opt = popt[0]
-    # pdb.set_trace()
+    interface_conductance = popt[0] # only one value anyway
+
     # Plot phase/frequency fit for one location
     if (counter == 0):
-        fitted_phase_vals = fit_function_FDTR(FDTR_freq, k_Si_opt)
+        fitted_phase_vals = fit_function_FDTR(FDTR_freq, interface_conductance)
         
         plt.figure()
         plt.plot(FDTR_freq, fitted_phase_vals, marker='v', linestyle='solid', color='purple', markersize=8, label = "analytical model")
@@ -265,54 +252,12 @@ for x0 in FDTR_x0_vals:
         plt.show()
     
     counter = counter + 1
-    
-    thermal_conductivity.append(k_Si_opt)
 
 
-plt.plot(FDTR_x0_vals, thermal_conductivity, marker='o', linestyle='--', color='black', markersize=8)
-plt.xlabel('Pump/Probe Position')
-plt.ylabel('Thermal Conductivity (W/(m.K)')
-plt.title("Thermal Conductivity Profile, θ = " + str(theta_angle))
-plt.grid(True)
-plt.savefig(f"Thermal_Conductivity_Profile_Theta_{theta_angle}.png", bbox_inches='tight')
-plt.show()
-
-# Invert to integrate under curve
-ydata = (1/np.array(thermal_conductivity)) 
-
-# Find minimum value and create a constant line
-y_min = np.min(ydata)
-ydata_const = np.full(len(ydata), y_min)
-
-# Convert to micrometers
-xdata = np.array(FDTR_x0_vals).astype(float) * 1e-6
-
-# Integrate and subtract difference from integral of constant line
-resistance = trapz(ydata, x=xdata) - trapz(ydata_const, x=xdata) 
+resistance = 1/interface_conductance
 
 print("----------------------------------------------------------------------------------------------")
 print("Resistance = " + str(resistance))
 print("----------------------------------------------------------------------------------------------")
 
 ############################################# END FITTING THERMAL CONDUCTIVITY FROM ACTUAL DATA #############################################
-
-
-
-
-############################################# EXPORT DATA TO CSV ################################################
-
-# Specify the file name
-file_name = f"Thermal_Conductivity_Profile_Theta_{theta_angle}.csv"
-
-# Write data to CSV
-with open(file_name, mode='w', newline='') as file:
-    writer = csv.writer(file)
-    # Write header
-    writer.writerow(['FDTR_x0_vals', 'thermal_conductivity'])
-    # Write data rows
-    for x0, tc in zip(FDTR_x0_vals, thermal_conductivity):
-        writer.writerow([x0, tc])
-
-print("CSV file of Thermal Conductivity data has been written successfully.")
-print("----------------------------------------------------------------------------------------------")
-############################################# END EXPORT DATA TO CSV #############################################
