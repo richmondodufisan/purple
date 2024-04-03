@@ -1,5 +1,5 @@
 #Global Parameters
-freq_val = 10e3
+freq_val = 1e3
 youngs_modulus_val = 60e3
 poissons_ratio_val = 0.4999
 shear_modulus_val = ${fparse (youngs_modulus_val/(2*(1+poissons_ratio_val)))}
