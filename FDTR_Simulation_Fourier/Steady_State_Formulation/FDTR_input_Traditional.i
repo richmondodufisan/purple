@@ -27,22 +27,22 @@ c_au = 0.1287e3
     type = SubdomainBoundingBoxGenerator
     input = sample_mesh
     block_id = 1
-    top_right = '160 80 -2.1'
+    top_right = '160 80 -1.3'
     bottom_left = '-160 -80 -40'
   []
   [grain_boundary_block]
     type = SubdomainBoundingBoxGenerator
     input = sample_block_bottom
     block_id = 2
-    top_right = '160 80 -2'
-    bottom_left = '-160 -80 -2.1'
+    top_right = '160 80 -1.2'
+    bottom_left = '-160 -80 -1.3'
   []
   [sample_block_top]
     type = SubdomainBoundingBoxGenerator
     input = grain_boundary_block
     block_id = 3
     top_right = '160 80 0'
-    bottom_left = '-160 -80 -2'
+    bottom_left = '-160 -80 -1.2'
   []
   [transducer_block]
     type = SubdomainBoundingBoxGenerator
