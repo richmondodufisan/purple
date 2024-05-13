@@ -27,14 +27,14 @@ c_au = 0.1287e3
     type = SubdomainBoundingBoxGenerator
     input = sample_mesh
     block_id = 1
-    top_right = '160 80 -1.1'
+    top_right = '160 80 -0.6'
     bottom_left = '-160 -80 -40'
   []
   [grain_boundary_block]
     type = SubdomainBoundingBoxGenerator
     input = sample_block_bottom
     block_id = 2
-    top_right = '160 80 -1.0'
+    top_right = '160 80 -0.5'
     bottom_left = '-160 -80 -0.6'
   []
   [sample_block_top]
