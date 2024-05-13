@@ -12,7 +12,7 @@ import math
 
 # Read the CSV files into pandas DataFrames
 calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
-FDTR_data = pd.read_csv('FDTR_input_Traditional_out_0_2_um.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+FDTR_data = pd.read_csv('FDTR_input_Traditional_out_1_2_um.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
 theta_angle = "0" # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -189,8 +189,8 @@ def fit_function_FDTR(freqs, G):
     for freq in freqs:
         # Define other parameters required by calc_thermal_response function
         N_layers = 3
-        layer3 = [37.95e-6, 130, 130, 2329, 689.1]
-        layer2 = [2.05e-6, 130, 130, 2329, 689.1]
+        layer3 = [38.75e-6, 130, 130, 2329, 689.1]
+        layer2 = [1.25e-6, 130, 130, 2329, 689.1]
         layer1 = [9e-8, 215, 215, 19300, 128.7]
         layer_props = np.array([layer3, layer2, layer1])
         interface_props = [G, 3e7]
