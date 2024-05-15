@@ -12,8 +12,8 @@ import math
 
 # Read the CSV files into pandas DataFrames
 calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
-FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
-theta_angle = "0" # for output file name change
+FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_out_theta_75.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+theta_angle = "75" # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
 calib_freq_vals = calibration_data['frequency'].unique().tolist()
@@ -132,6 +132,8 @@ plt.show()
 
 ############################################# CALIBRATING ANALYTICAL MODEL TO MESH REFINEMENT #############################################
 
+# This section was only used for very small pump/probe radii to combat limitations in computational power
+# In general, this "calibration" is not necessary, only needed when FEM mesh is too coarse
 calib_k_Si = 130
 
 def fit_function_calib(freqs, beta1, beta2):
@@ -196,8 +198,8 @@ def fit_function_FDTR(freqs, k_Si):
         r_probe = 1.34e-6
         r_pump = 1.53e-6
         pump_power = 0.01
-        calib_consts = calib_consts_optimized # optimized to mesh refinement
-        # calib_consts = [1,1] # default i.e no calibration
+        # calib_consts = calib_consts_optimized # optimized to mesh refinement
+        calib_consts = [1,1] # default i.e no calibration
         freq = freq * 1e6
 
         # Calculate analytical phase 
@@ -269,10 +271,13 @@ for x0 in FDTR_x0_vals:
 
 
 plt.plot(FDTR_x0_vals, thermal_conductivity, marker='o', linestyle='--', color='black', markersize=8)
-plt.xlabel('Pump/Probe Position')
-plt.ylabel('Thermal Conductivity (W/(m.K)')
-plt.title("Thermal Conductivity Profile, θ = " + str(theta_angle))
-plt.grid(True)
+plt.xlabel('Pump/Probe Position', fontsize=15)
+plt.ylabel('Thermal Conductivity (W/(m.K))', fontsize=15)
+# plt.title("Thermal Conductivity Profile, θ = " + str(theta_angle))
+# plt.grid(True)
+plt.xticks(fontsize=15)
+plt.yticks(fontsize=15)
+plt.ylim(126.9, 130.15)
 plt.savefig(f"Thermal_Conductivity_Profile_Theta_{theta_angle}.png", bbox_inches='tight')
 plt.show()
 
