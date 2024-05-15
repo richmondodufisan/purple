@@ -271,7 +271,7 @@ for x0 in FDTR_x0_vals:
 
 
 plt.plot(FDTR_x0_vals, thermal_conductivity, marker='o', linestyle='--', color='black', markersize=8)
-plt.xlabel('Pump/Probe Position', fontsize=15)
+plt.xlabel('Pump/Probe Position (μm)', fontsize=15)
 plt.ylabel('Thermal Conductivity (W/(m.K))', fontsize=15)
 # plt.title("Thermal Conductivity Profile, θ = " + str(theta_angle))
 # plt.grid(True)
