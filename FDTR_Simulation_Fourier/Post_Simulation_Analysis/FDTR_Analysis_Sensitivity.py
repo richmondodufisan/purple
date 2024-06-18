@@ -9,7 +9,7 @@ import csv
 import math
 from scipy.stats import linregress
 
-frequency = 10e6
+frequency = 0.2e6
 
 # Define ranges for k_r and k_z
 k_r_values = np.linspace(126, 131, 50) 

@@ -198,8 +198,8 @@ def fit_function_FDTR(freqs, k_Si_z, k_Si_r):
         r_probe = 1.34e-6
         r_pump = 1.53e-6
         pump_power = 0.01
-        # calib_consts = calib_consts_optimized # optimized to mesh refinement
-        calib_consts = [1,1] # default i.e no calibration
+        calib_consts = calib_consts_optimized # optimized to mesh refinement
+        # calib_consts = [1,1] # default i.e no calibration
         freq = freq * 1e6
 
         # Calculate analytical phase 
@@ -284,7 +284,7 @@ plt.title("Thermal Conductivity Profile, θ = " + str(theta_angle) + " (vertical
 plt.grid(True)
 plt.xticks(fontsize=15)
 plt.yticks(fontsize=15)
-plt.ylim(126.9, 130.15)
+# plt.ylim(126.9, 130.15)
 plt.tight_layout()
 plt.savefig(f"Thermal_Conductivity_Profile_Theta_{theta_angle}_z.png", bbox_inches='tight')
 plt.show()
@@ -298,7 +298,7 @@ plt.title("Thermal Conductivity Profile, θ = " + str(theta_angle) + " (radial (
 plt.grid(True)
 plt.xticks(fontsize=15)
 plt.yticks(fontsize=15)
-plt.ylim(126.9, 130.15)
+# plt.ylim(126.9, 130.15)
 plt.tight_layout()
 plt.savefig(f"Thermal_Conductivity_Profile_Theta_{theta_angle}_r.png", bbox_inches='tight')
 plt.show()
