@@ -12,7 +12,7 @@ import math
 
 # Read the CSV files into pandas DataFrames
 calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
-FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_out_theta_0_multi_freq.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
 theta_angle = "0" # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -198,8 +198,8 @@ def fit_function_FDTR(freqs, k_Si_z, k_Si_r):
         r_probe = 1.34e-6
         r_pump = 1.53e-6
         pump_power = 0.01
-        calib_consts = calib_consts_optimized # optimized to mesh refinement
-        # calib_consts = [1,1] # default i.e no calibration
+        # calib_consts = calib_consts_optimized # optimized to mesh refinement
+        calib_consts = [1,1] # default i.e no calibration
         freq = freq * 1e6
 
         # Calculate analytical phase 
