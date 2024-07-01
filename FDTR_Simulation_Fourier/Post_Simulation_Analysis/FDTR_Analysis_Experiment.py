@@ -13,7 +13,7 @@ import pdb
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Read the CSV files into pandas DataFrames
-FDTR_data = pd.read_csv('./Point2.csv', skiprows=0, names=['frequency', 'phase'])
+FDTR_data = pd.read_csv('./Results_SiSi_interface_6.csv', skiprows=1, names=['frequency', 'phase'])
 
 # FDTR_data['frequency'] = FDTR_data['frequency'] * 1e6 # Convert to Hz (EDIT: Do not convert here, will be converted elsewhere)
 FDTR_data['phase'] = FDTR_data['phase'] * (math.pi/180) # Convert to radians
@@ -61,8 +61,8 @@ popt, pcov = curve_fit(
     fit_function_FDTR,
     FDTR_freq,   # Frequency data
     FDTR_phase,  # Phase data
-    p0=(130, 3e7), # Initial guesses
-    bounds=([0, 1e7], [300, 5e7]),  # Set bounds for k_Si and conductance
+    # p0=(130, 3e7), # Initial guesses
+    bounds=([0, 1e7], [300, 20e7]),  # Set bounds for k_Si and conductance
     method='trf',  # Use Trust Region Reflective algorithm
     maxfev=10000,  # Maximum number of function evaluations
     ftol=1e-12,   # Set the tolerance on the relative error in the function values
