@@ -8,19 +8,25 @@ probe_radius = 1.34
 pump_radius = 1.53
 pump_power = 0.01
 pump_absorbance = 1
-gb_width_val = 0.1
+
 kappa_bulk_si = 130e-6
-kappa_gb_si = 56.52e-6
 rho_si = 2.329e-15
 c_si = 0.6891e3
+
 au_si_conductance = -3e-5
 au_si_conductance_positive = 3e-5
+
+si_si_conductance = -0.56e-6
+si_si_conductance_positive = 0.56e-6
+
 kappa_bulk_au = 215e-6
 rho_au = 19.3e-15
 c_au = 0.1287e3
 
 theta_deg = 0
 theta_rad = ${fparse (theta_deg/180)*pi}
+
+theta_surf_rad = ${fparse ((90.0 - theta_deg)*pi)/(180)}
 
 [Mesh]
   [sample_mesh]
@@ -87,6 +93,13 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 	input = bottom_area
 	combinatorial_geometry = '((x > -160-1e-8) & (x < -160+1e-8)) | ((x > 160-1e-8) & (x < 160+1e-8)) | ((y > -80-1e-8) & (y < -80+1e-8)) | ((y > 80-1e-8) & (y < 80+1e-8))'
 	new_sideset_name = side_surfaces
+  []
+  
+  [gb_side]
+    type = ParsedGenerateSideset
+	input = side_areas
+	combinatorial_geometry = '(x > ((-1/tan(theta_surf_rad))*z)+1e-8) & (x < ((-1/tan(theta_surf_rad))*z)+1e-8) & (z < 0.0)'
+	new_sideset_name = gb_interface
   []
 []
 
@@ -198,6 +211,34 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 	emissivity_eff_primary = 0
 	emissivity_eff_neighbor = 0
   []
+  
+  [gb_real]
+    type = SideSetHeatTransferKernel
+    variable = temp_trans_real
+    neighbor_var = temp_samp_real
+    boundary = 'gb_interface'
+	conductance = ${si_si_conductance}
+	
+	Tbulk_mat = 0
+	h_primary = 0
+	h_neighbor = 0
+	emissivity_eff_primary = 0
+	emissivity_eff_neighbor = 0
+  []
+  
+  [gb_imag]
+    type = SideSetHeatTransferKernel
+    variable = temp_trans_imag
+    neighbor_var = temp_samp_imag
+    boundary = 'gb_interface'
+	conductance = ${si_si_conductance_positive}
+	
+	Tbulk_mat = 0
+	h_primary = 0
+	h_neighbor = 0
+	emissivity_eff_primary = 0
+	emissivity_eff_neighbor = 0
+  []
 []
 
 [AuxVariables]
@@ -250,12 +291,6 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     symbol_names = 'x0 y0 Rpump Q0 absorbance'
     symbol_values = '${x0_val} ${y0_val} ${pump_radius} ${pump_power} ${pump_absorbance}'
   []
-  [grain_boundary_function]
-    type = ADParsedFunction
-	expression = 'if ( (x<((-gb_width/(2*cos(theta)))+(abs(z)*tan(theta)))) | (x>((gb_width/(2*cos(theta)))+(abs(z)*tan(theta)))), k_bulk, k_gb)'
-	symbol_names = 'gb_width theta k_bulk k_gb'
-	symbol_values = '${gb_width_val} ${theta_rad} ${kappa_bulk_si} ${kappa_gb_si}'
-  []
   [angular_frequency]
 	type = ADParsedFunction
 	expression = '2 * pi * freq'
@@ -274,20 +309,14 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   [basic_sample_materials]
     type = ADGenericConstantMaterial
     block = sample_material
-    prop_names = 'rho_samp c_samp'
-    prop_values = '${rho_si} ${c_si}'
+    prop_names = 'rho_samp c_samp k_samp'
+    prop_values = '${rho_si} ${c_si} ${kappa_bulk_si}'
   []
   [simulation_frequency]
     type = ADGenericFunctionMaterial
 	prop_names = omega
     prop_values = angular_frequency
 	block = 'transducer_material sample_material'
-  []
-  [thermal_conductivity_sample]
-    type = ADGenericFunctionMaterial
-    prop_names = k_samp
-    prop_values = grain_boundary_function
-	block = sample_material
   []
   [heat_source_material]
     type = ADGenericFunctionMaterial
