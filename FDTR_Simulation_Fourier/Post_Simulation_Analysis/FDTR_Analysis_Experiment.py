@@ -30,15 +30,14 @@ def fit_function_FDTR(freqs, k_Si, conductance):
     for freq in freqs:
         # Define other parameters required by calc_thermal_response function
         N_layers = 2
-        layer2 = [40e-6, k_Si, k_Si, 2329, 689.1]
-        layer1 = [9e-8, 215, 215, 19300, 128.7]
+        layer2 = [100e-6, k_Si, k_Si, 2329, 689.1]
+        layer1 = [13.3e-8, 194, 194, 19300, 128.7]
         layer_props = np.array([layer2, layer1])
         interface_props = [conductance]
         r_probe = 1.34e-6
         r_pump = 1.53e-6
         pump_power = 0.01
         calib_consts = [1, 1] # no calibration
-        # calib_consts = [1,1] # default
         freq = freq * 1e6
 
         # Calculate analytical phase 
@@ -84,5 +83,6 @@ print("-------------------------------------------------------------------------
 print("Thermal Conductivity = " + str(thermal_conductivity) + " in (W/m.K)")
 print("Interface Conductance = " + str(interface_conductance) + " in (W/m^2.K)")
 print("MSE = " + str(mse))
+print("----------------------------------------------------------------------------------------------")
 
 

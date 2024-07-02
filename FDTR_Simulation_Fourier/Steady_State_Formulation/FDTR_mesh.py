@@ -22,7 +22,7 @@ y_dir = 80
 z_dir = 40
 gb_width = 0.1
 
-pump_refine = 0.35
+pump_refine = 0.15
 reg_element_refine =25
 gb_refine = 2
 
