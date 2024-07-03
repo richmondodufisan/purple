@@ -11,7 +11,7 @@ og_filename=FDTR_CALIBRATION
 # freq_vals_num=("1e6" "2e6" "4e6" "6e6" "8e6" "10e6")
 
 x0_vals_num=("0")
-freq_vals_num=("0.01e6" "0.02e6" "0.04e6" "0.06e6" "0.08e6" "0.1e6" "0.2e6" "0.4e6" "0.6e6" "0.8e6" "1e6"  "2e6" "4e6" "6e6" "8e6" "10e6" "20e6" "40e6" "60e6" "100e6")
+freq_vals_num=("0.1e6" "0.2e6" "0.4e6" "0.6e6" "0.8e6" "1e6"  "2e6" "4e6" "6e6" "8e6" "10e6" "20e6" "40e6" "60e6" "100e6")
 
 # Output file
 output_file="../${og_filename}_out_theta_${theta_angle}.csv"
