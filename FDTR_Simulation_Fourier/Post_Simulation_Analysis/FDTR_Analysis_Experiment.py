@@ -31,12 +31,12 @@ def fit_function_FDTR(freqs, k_Si, conductance):
         # Define other parameters required by calc_thermal_response function
         N_layers = 2
         layer2 = [100e-6, k_Si, k_Si, 2329, 689.1]
-        layer1 = [13.3e-8, 194, 194, 19300, 126.4]
+        layer1 = [1.33e-7, 194, 194, 19300, 126.4]
         layer_props = np.array([layer2, layer1])
         interface_props = [conductance]
         r_probe = 1.249e-6
         r_pump = 2.216e-6
-        pump_power = 0.01
+        pump_power = 1.5
         calib_consts = [1, 1] # no calibration
         freq = freq * 1e6
 
@@ -60,7 +60,7 @@ popt, pcov = curve_fit(
     fit_function_FDTR,
     FDTR_freq,   # Frequency data
     FDTR_phase,  # Phase data
-    # p0=(130, 3e7), # Initial guesses
+    p0=(130, 10e7), # Initial guesses
     bounds=([0, 1e7], [300, 20e7]),  # Set bounds for k_Si and conductance
     method='trf',  # Use Trust Region Reflective algorithm
     maxfev=10000,  # Maximum number of function evaluations
@@ -86,3 +86,15 @@ print("MSE = " + str(mse))
 print("----------------------------------------------------------------------------------------------")
 
 
+# Generate fitted data
+FDTR_phase_fitted = fit_function_FDTR(FDTR_freq, k_Si_opt, conductance_opt)
+
+# Plot the data points and the fitted line, excluding the last point
+plt.figure(figsize=(10, 6))
+plt.scatter(FDTR_freq[:-1], FDTR_phase[:-1], label='Data Points', color='blue')
+plt.plot(FDTR_freq[:-1], FDTR_phase_fitted[:-1], label='Fitted Line', color='red')
+plt.xlabel('Frequency')
+plt.ylabel('Phase')
+plt.title('FDTR Phase vs Frequency')
+plt.legend()
+plt.show()
