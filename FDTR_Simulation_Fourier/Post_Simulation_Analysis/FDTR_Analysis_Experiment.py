@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,20 +10,16 @@ import math
 
 import pdb
 
+# This code is for calculating thermal properties (thermal conductivity and interface conductance) for a Two-Layer System
+# The code is for point measurements, and assumes that the necessary data points are in the same folder with the same file prefix,
+# with a number at the end denoting which sample it is. The "num_files" variable denotes how many files to read.
 
-############################################# READING IN AND ORGANIZING DATA #############################################
+# For some samples, higher frequencies enter the non-Fourier regime, and need to be removed before fitting. The "cutoff"
+# variable within the "process_file" function is responsible for adjusting the number of points to cut off.
 
-# Read the CSV files into pandas DataFrames
-FDTR_data = pd.read_csv('./Results_SiSi_interface_6.csv', skiprows=1, names=['frequency', 'phase'])
+##################################################### FUNCTION DEFINITIONS ###################################################
 
-# FDTR_data['frequency'] = FDTR_data['frequency'] * 1e6 # Convert to Hz (EDIT: Do not convert here, will be converted elsewhere)
-FDTR_data['phase'] = FDTR_data['phase'] * (math.pi/180) # Convert to radians
-
-############################################# END READING IN AND ORGANIZING DATA #############################################
-
-
-
-############################################# FITTING THERMAL CONDUCTIVITY FROM ACTUAL DATA #############################################
+# Two-Layer FDTR Function
 
 def fit_function_FDTR(freqs, k_Si, conductance):
     phases = []
@@ -45,56 +42,71 @@ def fit_function_FDTR(freqs, k_Si, conductance):
         phases.append(phase)
         
     return np.array(phases)
-
-
-# Fit the actual simulation data
-thermal_conductivity = []
-interface_conductance = []
-
-FDTR_freq = np.array(FDTR_data['frequency'])
-FDTR_phase = np.array(FDTR_data['phase'])
-
     
-# popt = optimized params (kappa and conductance), pcov = covariance (not needed, except maybe for debugging)
-popt, pcov = curve_fit(
-    fit_function_FDTR,
-    FDTR_freq,   # Frequency data
-    FDTR_phase,  # Phase data
-    p0=(130, 10e7), # Initial guesses
-    bounds=([0, 1e7], [300, 20e7]),  # Set bounds for k_Si and conductance
-    method='trf',  # Use Trust Region Reflective algorithm
-    maxfev=10000,  # Maximum number of function evaluations
-    ftol=1e-12,   # Set the tolerance on the relative error in the function values
-    xtol=1e-12,   # Set the tolerance on the relative error in the parameter values
-    gtol=1e-12    # Set the tolerance on the norm of the gradient
-)
+    
+def process_file(file_path):
+    # Read the CSV file into a pandas DataFrame
+    FDTR_data = pd.read_csv(file_path, skiprows=1, names=['frequency', 'phase'])
+    FDTR_data['phase'] = FDTR_data['phase'] * (math.pi / 180)  # Convert to radians
+    
+    cutoff = 14 #number of points to cutoff from the end
+    FDTR_data = FDTR_data[:-cutoff]
 
-k_Si_opt, conductance_opt = popt
-perr = np.sqrt(np.diag(pcov))   # Standard Deviation of solution, diagonal elements of pcov are the variances of each param with itself
-
-# Find MSE
-residuals = FDTR_phase - fit_function_FDTR(FDTR_freq, *popt)
-mse = np.mean(residuals**2)
-
-thermal_conductivity.append(k_Si_opt)
-interface_conductance.append(conductance_opt)
- 
-print("----------------------------------------------------------------------------------------------")
-print("Thermal Conductivity = " + str(thermal_conductivity) + " in (W/m.K)")
-print("Interface Conductance = " + str(interface_conductance) + " in (W/m^2.K)")
-print("MSE = " + str(mse))
-print("----------------------------------------------------------------------------------------------")
+    # Perform the curve fitting
+    popt, pcov = curve_fit(
+        fit_function_FDTR,
+        FDTR_data['frequency'],   # Frequency data
+        FDTR_data['phase'],  # Phase data
+        p0=(130, 100e6), # Initial guesses
+        bounds=([0, 10e6], [300, 500e6]),  # Set bounds for kappa and conductance
+        method='trf',  # Use Trust Region Reflective algorithm
+        maxfev=10000,  # Maximum number of function evaluations
+        ftol=1e-12,   # Set the tolerance on the relative error in the function values
+        xtol=1e-12,   # Set the tolerance on the relative error in the parameter values
+        gtol=1e-12    # Set the tolerance on the norm of the gradient
+    )
+    
+    return FDTR_data, popt
+    
+##################################################### END FUNCTION DEFINITIONS ###################################################
 
 
-# Generate fitted data
-FDTR_phase_fitted = fit_function_FDTR(FDTR_freq, k_Si_opt, conductance_opt)
 
-# Plot the data points and the fitted line, excluding the last point
-plt.figure(figsize=(10, 6))
-plt.scatter(FDTR_freq[:-1], FDTR_phase[:-1], label='Data Points', color='blue')
-plt.plot(FDTR_freq[:-1], FDTR_phase_fitted[:-1], label='Fitted Line', color='red')
-plt.xlabel('Frequency')
-plt.ylabel('Phase')
-plt.title('FDTR Phase vs Frequency')
-plt.legend()
+
+
+
+##################################################### READ DATA AND PERFORM FITTING ###################################################
+
+# Specify the folder and number of files
+folder_path = './richmond_si'  
+num_files = 6  # Specify the number of files
+
+# Initialize subplots
+fig, axes = plt.subplots(2, 3, figsize=(18, 12))
+axes = axes.flatten()
+
+# Loop through each file
+for i in range(num_files):
+    file_path = os.path.join(folder_path, f'Results_SiSi_interface_{i + 1}.csv')
+    FDTR_data, popt = process_file(file_path)
+    kappa_opt, conductance_opt = popt
+    
+    # Generate fitted data
+    FDTR_phase_fitted = fit_function_FDTR(FDTR_data['frequency'], kappa_opt, conductance_opt)
+    
+    # Calculate the mean square error
+    mse = np.mean((FDTR_data['phase'] - FDTR_phase_fitted) ** 2)
+    
+    # Plot the data points and the fitted line, excluding the last point
+    axes[i].scatter(FDTR_data['frequency'][:-1], FDTR_data['phase'][:-1], label='Data Points', color='blue')
+    axes[i].plot(FDTR_data['frequency'][:-1], FDTR_phase_fitted[:-1], label='Fitted Line', color='red')
+    axes[i].set_xscale('log')  # Set the x-axis to a logarithmic scale
+    axes[i].set_xlabel('Frequency')
+    axes[i].set_ylabel('Phase')
+    axes[i].legend()
+    axes[i].set_title(f'kappa: {kappa_opt:.2f} W/(m.K), conductance: {(conductance_opt/1e6):.2f} MW/(m^2.K) \nMSE: {mse:.2e}')
+
+plt.subplots_adjust(wspace=0.3, hspace=0.5)
 plt.show()
+
+##################################################### END READ DATA AND PERFORM FITTING ###################################################
