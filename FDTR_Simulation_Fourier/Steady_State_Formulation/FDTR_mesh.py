@@ -14,15 +14,15 @@ radius = 8
 trans_thick = 0.09
 
 dummy_factor = 2
-trans_thick_ref = 0.045
-sub_center_ref=0.045
+trans_thick_ref = 0.075
+sub_center_ref=0.075
 
 x_dir = 160
 y_dir = 80
 z_dir = 40
 gb_width = 0.1
 
-pump_refine = 0.5
+pump_refine = 0.3
 reg_element_refine =25
 gb_refine = 2
 
