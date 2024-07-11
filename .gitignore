@@ -2,6 +2,9 @@
 
 ./classes
 *.txt
+*.mat
+*.m
+*.fig
 slurm*
 FDTR_input_theta_*
 FDTR_input_KCM_*
