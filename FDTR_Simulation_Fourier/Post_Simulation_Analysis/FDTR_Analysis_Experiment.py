@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from Layered_Heat_Conduction import calc_thermal_response
+from Layered_Heat_Conduction_Approximation import calc_thermal_response
 from Phase_Extraction_Cosine_Fit import calculate_phase_amplitude
 from scipy.optimize import curve_fit
 from scipy.integrate import trapz
@@ -10,7 +10,7 @@ import math
 
 import pdb
 
-# This code is for calculating thermal properties (thermal conductivity and interface conductance) for a Two-Layer System
+# This code is for calculating thermal properties (thermal conductivity and interface conductance) from experimental data
 # The code is for point measurements, and assumes that the necessary data points are in the same folder with the same file prefix,
 # with a number at the end denoting which sample it is. The "num_files" variable denotes how many files to read.
 
@@ -21,16 +21,42 @@ import pdb
 
 # Two-Layer FDTR Function
 
+# def fit_function_FDTR(freqs, k_Si, conductance):
+    # phases = []
+
+    # for freq in freqs:
+        # # Define other parameters required by calc_thermal_response function
+        # N_layers = 2
+        # layer2 = [100e-6, k_Si, k_Si, 2630, 741.79]
+        # layer1 = [133e-9, 194, 194, 19300, 126.4]
+        # layer_props = np.array([layer2, layer1])
+        # interface_props = [conductance]
+        # r_probe = 1.249e-6
+        # r_pump = 2.216e-6
+        # pump_power = 1.5
+        # calib_consts = [1, 1] # no calibration
+        # freq = freq * 1e6
+
+        # # Calculate analytical phase 
+        # phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
+        # phases.append(phase)
+        
+    # return np.array(phases)
+    
+
+# Three-Layer FDTR Function
+
 def fit_function_FDTR(freqs, k_Si, conductance):
     phases = []
 
     for freq in freqs:
         # Define other parameters required by calc_thermal_response function
-        N_layers = 2
-        layer2 = [100e-6, k_Si, k_Si, 2329, 689.1]
-        layer1 = [1.33e-7, 194, 194, 19300, 126.4]
-        layer_props = np.array([layer2, layer1])
-        interface_props = [conductance]
+        N_layers = 3
+        layer3 = [100e-6, k_Si, k_Si, 2329, 689.1]              #Si
+        layer2 = [1000e-9, 2.748, 2.748, 2630, 741.79]           #SiO2
+        layer1 = [133e-9, 194, 194, 19300, 126.4]               #Au
+        layer_props = np.array([layer3, layer2, layer1])
+        interface_props = [conductance, 43.873e6]
         r_probe = 1.249e-6
         r_pump = 2.216e-6
         pump_power = 1.5
@@ -49,8 +75,13 @@ def process_file(file_path):
     FDTR_data = pd.read_csv(file_path, skiprows=1, names=['frequency', 'phase'])
     FDTR_data['phase'] = FDTR_data['phase'] * (math.pi / 180)  # Convert to radians
     
-    cutoff = 14 #number of points to cutoff from the end
-    FDTR_data = FDTR_data[:-cutoff]
+    
+    # cutoff_start = 20 # number of points to cutoff from the start
+    # FDTR_data = FDTR_data[cutoff_start:]
+    
+    
+    cutoff_end = 4 # number of points to cutoff from the end
+    FDTR_data = FDTR_data[:-cutoff_end]
 
     # Perform the curve fitting
     popt, pcov = curve_fit(
@@ -78,7 +109,7 @@ def process_file(file_path):
 ##################################################### READ DATA AND PERFORM FITTING ###################################################
 
 # Specify the folder and number of files
-folder_path = './richmond_si'  
+folder_path = './Sandia_1000nm_SiO2_on_Si'  
 num_files = 6  # Specify the number of files
 
 # Initialize subplots
@@ -107,6 +138,9 @@ for i in range(num_files):
     axes[i].set_title(f'kappa: {kappa_opt:.2f} W/(m.K), conductance: {(conductance_opt/1e6):.2f} MW/(m^2.K) \nMSE: {mse:.2e}')
 
 plt.subplots_adjust(wspace=0.3, hspace=0.5)
-plt.show()
 
+save_path = f'{folder_path}_NIST.png'
+plt.savefig(save_path)
+
+plt.show()
 ##################################################### END READ DATA AND PERFORM FITTING ###################################################
