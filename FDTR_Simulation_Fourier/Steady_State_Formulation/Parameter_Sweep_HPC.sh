@@ -23,13 +23,13 @@ og_mesh_ext=".py"
 
 x0_vals_num=("0")
 
-freq_vals_num=("1e6")
+# freq_vals_num=("1e6")
 
 theta_vals_num=("0")
 
 # x0_vals_num=("-30" "-25" "-20" "-17" "-15" "-14" "-13" "-11" "-12" "-10" "-9" "-8" "-7" "-6" "-5" "-4" "-3" "-2" "-1" "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "17" "20" "25" "30")
 
-# freq_vals_num=("0.1e6" "0.2e6" "0.4e6" "0.6e6" "0.8e6" "1e6"  "2e6" "4e6" "6e6" "8e6" "10e6" "20e6" "40e6" "60e6" "100e6")
+freq_vals_num=("0.1e6" "0.2e6" "0.4e6" "0.6e6" "0.8e6" "1e6"  "2e6" "4e6" "6e6" "8e6" "10e6" "20e6" "40e6" "60e6" "100e6")
 
 #theta_vals_num=("0" "15" "30" "45" "60" "75")
 
@@ -51,8 +51,8 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		#echo "$new_mesh_name"
 		
 		# Make new 3D mesh
-		python3 FDTR_mesh.py >> gmsh_output.txt &
-		wait
+		# python3 FDTR_mesh.py >> gmsh_output.txt &
+		# wait
 		
 		echo "Mesh Generated, x0 = ${x0_val_num}, theta = ${theta_val_num}"
 		
