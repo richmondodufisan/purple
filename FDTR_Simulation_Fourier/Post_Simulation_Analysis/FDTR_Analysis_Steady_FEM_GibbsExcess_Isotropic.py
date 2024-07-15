@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from Layered_Heat_Conduction import calc_thermal_response
+from Layered_Heat_Conduction_Approximation import calc_thermal_response
 from scipy.optimize import curve_fit
 from scipy.integrate import trapz
 import pdb
@@ -11,8 +11,8 @@ import math
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Read the CSV files into pandas DataFrames
-calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0_log_freq_refined.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
-FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_StepFunction_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0_multi_freq.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_out_theta_0_multi_freq.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
 theta_angle = "0" # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
