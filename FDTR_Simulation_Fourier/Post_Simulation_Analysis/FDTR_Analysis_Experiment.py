@@ -21,42 +21,16 @@ import pdb
 
 # Two-Layer FDTR Function
 
-def fit_function_FDTR(freqs, k_Si, conductance):
-    phases = []
-
-    for freq in freqs:
-        # Define other parameters required by calc_thermal_response function
-        N_layers = 2
-        layer2 = [100e-6, k_Si, k_Si, 2630, 741.79]
-        layer1 = [133e-9, 194, 194, 19300, 126.4]
-        layer_props = np.array([layer2, layer1])
-        interface_props = [conductance]
-        r_probe = 1.249e-6
-        r_pump = 2.216e-6
-        pump_power = 1.5
-        calib_consts = [1, 1] # no calibration
-        freq = freq * 1e6
-
-        # Calculate analytical phase 
-        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
-        phases.append(phase)
-        
-    return np.array(phases)
-    
-
-# Three-Layer FDTR Function
-
 # def fit_function_FDTR(freqs, k_Si, conductance):
     # phases = []
 
     # for freq in freqs:
         # # Define other parameters required by calc_thermal_response function
-        # N_layers = 3
-        # layer3 = [100e-6, k_Si, k_Si, 2329, 689.1]              #Si
-        # layer2 = [1000e-9, 2.748, 2.748, 2630, 741.79]           #SiO2
-        # layer1 = [133e-9, 194, 194, 19300, 126.4]               #Au
-        # layer_props = np.array([layer3, layer2, layer1])
-        # interface_props = [conductance, 43.873e6]
+        # N_layers = 2
+        # layer2 = [100e-6, k_Si, k_Si, 2630, 741.79]
+        # layer1 = [133e-9, 194, 194, 19300, 126.4]
+        # layer_props = np.array([layer2, layer1])
+        # interface_props = [conductance]
         # r_probe = 1.249e-6
         # r_pump = 2.216e-6
         # pump_power = 1.5
@@ -69,6 +43,32 @@ def fit_function_FDTR(freqs, k_Si, conductance):
         
     # return np.array(phases)
     
+
+# Three-Layer FDTR Function
+
+def fit_function_FDTR(freqs, k_Si, conductance):
+    phases = []
+
+    for freq in freqs:
+        # Define other parameters required by calc_thermal_response function
+        N_layers = 3
+        layer3 = [100e-6, k_Si, k_Si, 2329, 689.1]              #Si
+        layer2 = [1000e-9, 2.711, 2.711, 2630, 741.79]           #SiO2
+        layer1 = [133e-9, 194, 194, 19300, 126.4]               #Au
+        layer_props = np.array([layer3, layer2, layer1])
+        interface_props = [conductance, 37.6983e6]
+        r_probe = 1.249e-6
+        r_pump = 2.216e-6
+        pump_power = 1.5
+        calib_consts = [1, 1] # no calibration
+        freq = freq * 1e6
+
+        # Calculate analytical phase 
+        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
+        phases.append(phase)
+        
+    return np.array(phases)
+    
     
 def process_file(file_path):
     # Read the CSV file into a pandas DataFrame
@@ -76,11 +76,11 @@ def process_file(file_path):
     FDTR_data['phase'] = FDTR_data['phase'] * (math.pi / 180)  # Convert to radians
     
     
-    # cutoff_start = 20 # number of points to cutoff from the start
+    # cutoff_start = 14 # number of points to cutoff from the start
     # FDTR_data = FDTR_data[cutoff_start:]
     
     
-    cutoff_end = 15 # number of points to cutoff from the end
+    cutoff_end = 13 # number of points to cutoff from the end
     FDTR_data = FDTR_data[:-cutoff_end]
 
     # Perform the curve fitting
@@ -88,7 +88,7 @@ def process_file(file_path):
         fit_function_FDTR,
         FDTR_data['frequency'],   # Frequency data
         FDTR_data['phase'],  # Phase data
-        p0=(130, 100e6), # Initial guesses
+        p0=(3, 40e6), # Initial guesses
         bounds=([0, 10e6], [300, 500e6]),  # Set bounds for kappa and conductance
         method='trf',  # Use Trust Region Reflective algorithm
         maxfev=10000,  # Maximum number of function evaluations
@@ -109,7 +109,7 @@ def process_file(file_path):
 ##################################################### READ DATA AND PERFORM FITTING ###################################################
 
 # Specify the folder and number of files
-folder_path = './Rosemary_SiO2_Standard'  
+folder_path = './Richmond_1000nm_SiO2_on_Si'  
 num_files = 6  # Specify the number of files
 
 # Initialize subplots
@@ -132,14 +132,15 @@ for i in range(num_files):
     axes[i].scatter(FDTR_data['frequency'][:-1], FDTR_data['phase'][:-1], label='Data Points', color='blue')
     axes[i].plot(FDTR_data['frequency'][:-1], FDTR_phase_fitted[:-1], label='Fitted Line', color='red')
     axes[i].set_xscale('log')  # Set the x-axis to a logarithmic scale
-    axes[i].set_xlabel('Frequency')
-    axes[i].set_ylabel('Phase')
+    axes[i].set_xlabel('Frequency (MHz)', fontsize=15)
+    axes[i].set_ylabel('Phase (Radians)', fontsize=15)
     axes[i].legend()
-    axes[i].set_title(f'kappa: {kappa_opt:.2f} W/(m.K), conductance: {(conductance_opt/1e6):.2f} MW/(m^2.K) \nMSE: {mse:.2e}')
+    axes[i].set_title(f'κ: {kappa_opt:.2f} W/(m.K), G: {(conductance_opt/1e6):.2f} MW/(m^2.K) \nMSE: {mse:.2e}', fontsize=15)
+    axes[i].tick_params(axis='both', which='major', labelsize=15)
 
 plt.subplots_adjust(wspace=0.3, hspace=0.5)
 
-save_path = f'{folder_path}_NIST.png'
+save_path = f'{folder_path}.png'
 plt.savefig(save_path)
 
 plt.show()

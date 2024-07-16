@@ -109,7 +109,7 @@ def integrand(x, N_layers, layer_props, interface_props, r_pump, r_probe, calib_
   
 
 def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power):
-  result, error = quad_vec(integrand, 0, 3000001, args=(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq))
+  result, error = quad_vec(integrand, 0, 10000001, args=(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq))
 
   # Hankel space variable, Equation 3.5
   H = (pump_power/(2 * np.pi)) * result
