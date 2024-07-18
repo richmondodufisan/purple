@@ -1,5 +1,5 @@
 #Global Parameters
-freq_val = 1e3
+freq_val = 10e3
 youngs_modulus_val = 60e3
 poissons_ratio_val = 0.4999
 shear_modulus_val = ${fparse (youngs_modulus_val/(2*(1+poissons_ratio_val)))}
@@ -9,7 +9,12 @@ mechanical_impedance = ${fparse density*(shear_wave_speed/2)}
 
 h_plate = 0.001
 
+[GlobalParams]
+  volumetric_locking_correction = true
+[]
+
 [Mesh]
+  second_order = true
   [sample_mesh]
     type = FileMeshGenerator
     file = Cornea_Stretch_out.e
@@ -18,19 +23,19 @@ h_plate = 0.001
 
 [Variables]
   [disp_x_real]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
   [disp_y_real]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
   [disp_x_imag]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
   [disp_y_imag]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
 []
@@ -234,6 +239,7 @@ h_plate = 0.001
   nl_max_its = 20
   
   automatic_scaling = true
+  line_search = none
 []
 
 [Outputs]

@@ -6,24 +6,25 @@ stretch_ratio = 1.1
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
+[GlobalParams]
+  volumetric_locking_correction = true
+[]
+
 [Mesh]
+  second_order = true
   [sample_mesh]
     type = FileMeshGenerator
     file = cornea_rectangle.msh
   []
 []
 
-[GlobalParams]
-  volumetric_locking_correction = true
-[]
-
 [Variables]
   [disp_x]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
   [disp_y]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
 []
@@ -115,6 +116,7 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
   nl_max_its = 20
   
   automatic_scaling = true
+  line_search = none
 []
 
 [Outputs]
