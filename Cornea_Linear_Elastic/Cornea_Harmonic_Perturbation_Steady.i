@@ -160,7 +160,7 @@ h_plate = 0.001
   []
   
   [strain_imag]
-    type = ADComputeIncrementalSmallStrain
+    type = ADComputeFiniteStrain
 	displacements = 'disp_x_imag disp_y_imag'
 	base_name = imag
   []
@@ -177,6 +177,7 @@ h_plate = 0.001
     variable = disp_y_real
     boundary = 'loading_point'
     value = ${fparse (h_plate/10)}
+	preset = false
   []
   
   [harmonic_perturbation_imag]
@@ -184,6 +185,7 @@ h_plate = 0.001
     variable = disp_y_imag
     boundary = 'loading_point'
     value = 0
+	preset = false
   []
   
   [low_reflecting_boundary_x_real]

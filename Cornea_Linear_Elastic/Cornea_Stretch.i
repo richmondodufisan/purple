@@ -60,7 +60,7 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
   []
   
   [strain]
-    type = ADComputeIncrementalSmallStrain
+    type = ADComputeFiniteStrain
 	displacements = 'disp_x disp_y'
   []
   
@@ -75,24 +75,28 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
     variable = disp_x
     boundary = 'left'
     value = 0
+	preset = false
   []
   [left_y]
     type = DirichletBC
     variable = disp_y
     boundary = 'left'
     value = 0
+	preset = false
   []
   [right_x]
     type = DirichletBC
     variable = disp_x
     boundary = 'right'
     value = ${right_disp_val}
+	preset = false
   []
   [bottom_y]
     type = DirichletBC
     variable = disp_y
     boundary = 'bottom'
     value = 0
+	preset = false
   []
 []
 
