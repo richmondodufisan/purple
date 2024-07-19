@@ -1,10 +1,5 @@
 #!/bin/bash
 
-module purge
-module use /software/spack_v20d1/spack/share/spack/modules/linux-rhel7-x86_64/
-module load singularity
-module load mpi/mpich-4.0.2-gcc-10.4.0
-
 # Step 1, Stretch
 step1_filename="Cornea_Stretch"
 extension=".i"
@@ -19,7 +14,7 @@ og_mesh_ext=".py"
 
 
 # Define the range of values you want to loop over
-freq_vals_num=("1e6")
+freq_vals_num=("10e3")
 
 
 for freq_val_num in "${freq_vals_num[@]}"; do
@@ -38,7 +33,7 @@ for freq_val_num in "${freq_vals_num[@]}"; do
 
 
 	# Create a new filename by appending x0_val to the original filename
-	new_filename="${step1_filename}_Cornea_Stretch_freq_${freq_val_num}.i"
+	new_filename="${step1_filename}_freq_${freq_val_num}.i"
 
 	# Copy the original input file to the new filename
 	cp "$step1_filename$extension" "$new_filename"

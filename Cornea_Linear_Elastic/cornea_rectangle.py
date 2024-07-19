@@ -33,12 +33,12 @@ cloop1 = gmsh.model.occ.addCurveLoop([c5, c1, c2, c3, c4])
 s1 = gmsh.model.occ.addPlaneSurface([cloop1])
 
 # Add physical groups
-group1 = gmsh.model.addPhysicalGroup(1, [c4, c5], name = "top")
-group2 = gmsh.model.addPhysicalGroup(1, [c2], name = "bottom")
-group2 = gmsh.model.addPhysicalGroup(1, [c1], name = "left")
-group2 = gmsh.model.addPhysicalGroup(1, [c3], name = "right")
-group2 = gmsh.model.addPhysicalGroup(0, [p4], name = "loading_point")
-group2 = gmsh.model.addPhysicalGroup(0, [p5], name = "data_point")
+gmsh.model.occ.addPhysicalGroup(1, [c4, c5], name = "top")
+gmsh.model.occ.addPhysicalGroup(1, [c2], name = "bottom")
+gmsh.model.occ.addPhysicalGroup(1, [c1], name = "left")
+gmsh.model.occ.addPhysicalGroup(1, [c3], name = "right")
+gmsh.model.occ.addPhysicalGroup(0, [p4], name = "loading_point")
+gmsh.model.occ.addPhysicalGroup(0, [p5], name = "data_point")
 
 gmsh.model.occ.synchronize()
 
