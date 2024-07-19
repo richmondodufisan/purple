@@ -46,14 +46,6 @@ for freq_val_num in "${freq_vals_num[@]}"; do
 	# Replace the mesh in the MOOSE script
 	sed -i "0,/file = [^ ]*/s/file = [^ ]*/file = \"$new_mesh_name\"/" "$new_filename"
 	
-	# Replace the input file in the Batch script
-	sed -i "0,/script_name=[^ ]*/s/script_name=[^ ]*/script_name=\"$new_filename\"/" "Batch_MOOSE.sh"
-	
-	freq_noexp=$(python3 -c "import math; print(int($freq_val_num*1e-6))")
-	
-	# Replace the job name
-	sed -E -i "s/(#SBATCH --job-name=)[^[:space:]]+/\1${freq_noexp}_Cornea_Stretch/" "Batch_MOOSE.sh"
-
-	# Submit job
-	sbatch Batch_MOOSE.sh
+	# Run the new input file
+	../purple-opt -i ${new_filename}
 done
