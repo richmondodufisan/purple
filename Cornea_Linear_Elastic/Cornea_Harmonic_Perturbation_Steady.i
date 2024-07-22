@@ -10,7 +10,7 @@ mechanical_impedance = ${fparse density*(shear_wave_speed/2)}
 h_plate = 0.001
 l_plate = 0.02
 mid_height = ${fparse h_plate/2}
-number_of_points = ${fparse l_plate/0.000025}
+number_of_points = 800
 
 [GlobalParams]
   volumetric_locking_correction = true

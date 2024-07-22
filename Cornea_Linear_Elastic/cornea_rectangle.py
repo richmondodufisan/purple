@@ -12,7 +12,7 @@ freq = 10e3
 xlen = 0.2/(freq/1e3)
 ylen = 0.001
 
-mesh_refine = 0.000025
+mesh_refine = xlen/800
 
 # Adding points 
 p1 = gmsh.model.occ.addPoint(0, 0, 0, mesh_refine)
