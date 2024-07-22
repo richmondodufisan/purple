@@ -2,11 +2,11 @@
 
 # Step 1, Stretch
 step1_filename="Cornea_Stretch"
-extension=".i"
+extension1=".i"
 
 # Step 2, Harmonic Perturbation
 step2_filename="Cornea_Harmonic_Perturbation_Steady"
-extension=".i"
+extension2=".i"
 
 # Mesh Script
 og_mesh_script="cornea_rectangle"
@@ -41,7 +41,7 @@ for stretch_val_num in "${stretch_vals_num[@]}"; do
 		new_filename="${step1_filename}_freq_${freq_val_num}_stretch_${stretch_val_num}.i"
 
 		# Copy the original input file to the new filename
-		cp "$step1_filename$extension" "$new_filename"
+		cp "$step1_filename$extension1" "$new_filename"
 		
 		# Replace the mesh in the MOOSE script
 		sed -i "0,/file = [^ ]*/s/file = [^ ]*/file = \"$new_mesh_name\"/" "$new_filename"
@@ -55,4 +55,34 @@ for stretch_val_num in "${stretch_vals_num[@]}"; do
 		# Run the new input file
 		../purple-opt -i ${new_filename}
 	done
+done
+
+
+part2_complete=0
+
+while [ $part2_complete -eq 0 ]; do
+
+	for stretch_val_num in "${stretch_vals_num[@]}"; do
+		for freq_val_num in "${freq_vals_num[@]}"; do
+
+			# Create a new filename 
+			new_filename_2="${step2_filename}_freq_${freq_val_num}_stretch_${stretch_val_num}.i"
+			mesh_filename_2="${step1_filename}_freq_${freq_val_num}_stretch_${stretch_val_num}_out.e"
+
+			# Copy the original input file to the new filename
+			cp "$step2_filename$extension2" "$new_filename_2"
+			
+			# Replace the mesh in the MOOSE script
+			sed -i "0,/file = [^ ]*/s/file = [^ ]*/file = \"$mesh_filename_2\"/" "$new_filename_2"
+			
+			# Replace the frequency in the MOOSE script
+			sed -i "s/\(freq_val\s*=\s*\)[0-9.eE+-]\+/\1$freq_val_num/g" "$new_filename_2"
+			
+			# Run the new input file
+			../purple-opt -i ${new_filename_2}
+		done
+	done
+	
+	part2_complete=1
+
 done
