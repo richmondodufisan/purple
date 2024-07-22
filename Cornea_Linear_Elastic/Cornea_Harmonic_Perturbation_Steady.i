@@ -8,6 +8,9 @@ shear_wave_speed = ${fparse sqrt(shear_modulus_val/density)}
 mechanical_impedance = ${fparse density*(shear_wave_speed/2)}
 
 h_plate = 0.001
+l_plate = 0.02
+mid_height = ${fparse h_plate/2}
+number_of_points = ${fparse l_plate/0.000025}
 
 [GlobalParams]
   volumetric_locking_correction = true
@@ -134,6 +137,17 @@ h_plate = 0.001
     type = PointValue
     variable = disp_y_imag
     point = '0.002 0.001 0'
+  []
+[]
+
+[VectorPostprocessors]
+  [wave_profile]
+    type = LineValueSampler
+    variable = disp_y
+    start_point = '0 ${mid_height} 0'
+    end_point = '${l_plate} ${mid_height} 0'
+    num_points = ${number_of_points}
+    sort_by = x
   []
 []
 
