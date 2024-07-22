@@ -32,13 +32,15 @@ c5 = gmsh.model.occ.addLine(p5, p4)
 cloop1 = gmsh.model.occ.addCurveLoop([c5, c1, c2, c3, c4])
 s1 = gmsh.model.occ.addPlaneSurface([cloop1])
 
+gmsh.model.occ.synchronize()
+
 # Add physical groups
-gmsh.model.occ.addPhysicalGroup(1, [c4, c5], name = "top")
-gmsh.model.occ.addPhysicalGroup(1, [c2], name = "bottom")
-gmsh.model.occ.addPhysicalGroup(1, [c1], name = "left")
-gmsh.model.occ.addPhysicalGroup(1, [c3], name = "right")
-gmsh.model.occ.addPhysicalGroup(0, [p4], name = "loading_point")
-gmsh.model.occ.addPhysicalGroup(0, [p5], name = "data_point")
+gmsh.model.addPhysicalGroup(1, [c4, c5], name = "top")
+gmsh.model.addPhysicalGroup(1, [c2], name = "bottom")
+gmsh.model.addPhysicalGroup(1, [c1], name = "left")
+gmsh.model.addPhysicalGroup(1, [c3], name = "right")
+gmsh.model.addPhysicalGroup(0, [p4], name = "loading_point")
+gmsh.model.addPhysicalGroup(0, [p5], name = "data_point")
 
 gmsh.model.occ.synchronize()
 
@@ -46,6 +48,8 @@ gmsh.model.occ.synchronize()
 gmsh.model.mesh.generate(2)
 
 # gmsh.fltk.run()
+
+gmsh.option.setNumber("Mesh.SaveAll", 1)
 
 gmsh.write(newMeshName)
 

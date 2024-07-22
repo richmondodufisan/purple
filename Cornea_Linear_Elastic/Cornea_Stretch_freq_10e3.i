@@ -14,7 +14,7 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
   second_order = true
   [sample_mesh]
     type = FileMeshGenerator
-    file = cornea_rectangle.msh
+    file = "cornea_rectangle_freq_10e3.msh"
   []
 []
 

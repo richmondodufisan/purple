@@ -32,7 +32,10 @@ for freq_val_num in "${freq_vals_num[@]}"; do
 	wait
 
 
-	# Create a new filename by appending x0_val to the original filename
+	# Calculate the new length of the plate
+	plate_length=$(python3 -c "import math; print(0.2 / ($freq_val_num / 1e3))")
+
+	# Create a new filename 
 	new_filename="${step1_filename}_freq_${freq_val_num}.i"
 
 	# Copy the original input file to the new filename
@@ -40,6 +43,9 @@ for freq_val_num in "${freq_vals_num[@]}"; do
 	
 	# Replace the mesh in the MOOSE script
 	sed -i "0,/file = [^ ]*/s/file = [^ ]*/file = \"$new_mesh_name\"/" "$new_filename"
+	
+	# Replace the plate length in the MOOSE script
+	sed -i "s/\(l_plate\s*=\s*\)[0-9.eE+-]\+/\1$plate_length/g" "$new_filename"
 	
 	# Run the new input file
 	../purple-opt -i ${new_filename}
