@@ -134,7 +134,7 @@ while [ $part2_complete -eq 0 ]; do
 	
 		part2_complete=1
 	else
-        echo "Jobs are in the queue. Currently solving iteration no ${submission_count}. Waiting..."
+        echo "Jobs are in the queue. Waiting..."
     fi
 
     # Sleep for a while before checking again (e.g., 5 minutes)
