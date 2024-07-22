@@ -2,16 +2,17 @@
 youngs_modulus_val = 60000
 poissons_ratio_val = 0.4999
 
-stretch_ratio = 1.1
+stretch_ratio = 1.5
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
+
+observation_point = ${fparse l_plate/10}
 
 [GlobalParams]
   volumetric_locking_correction = true
 []
 
 [Mesh]
-  second_order = true
   [sample_mesh]
     type = FileMeshGenerator
     file = cornea_rectangle.msh
@@ -48,8 +49,8 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 [Postprocessors]
   [displace_x]
     type = PointValue
-    variable = disp_y
-    point = '0.002 0.001 0'
+    variable = disp_x
+    point = '${observation_point} 0.001 0'
   []
 []
 
@@ -96,6 +97,13 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
     type = DirichletBC
     variable = disp_y
     boundary = 'bottom'
+    value = 0
+	preset = false
+  []
+  [top_y]
+    type = DirichletBC
+    variable = disp_y
+    boundary = 'top'
     value = 0
 	preset = false
   []
