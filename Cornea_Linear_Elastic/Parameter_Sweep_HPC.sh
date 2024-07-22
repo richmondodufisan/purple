@@ -32,7 +32,7 @@ og_mesh_ext=".py"
 
 
 # Define the range of values you want to loop over
-freq_vals_num=("10e3")
+freq_vals_num=("1e3" "10e3")
 
 stretch_vals_num=("1.1")
 
@@ -74,7 +74,7 @@ for stretch_val_num in "${stretch_vals_num[@]}"; do
 		
 		
 		# Replace the input file in the Batch script
-		sed -i "0,/script_name=[^ ]*/s/script_name=[^ ]*/script_name=\"$new_filename\"/" "FDTR_Batch_MOOSE.sh"
+		sed -i "0,/script_name=[^ ]*/s/script_name=[^ ]*/script_name=\"$new_filename\"/" "Batch_MOOSE.sh"
 		
 		freq_noexp=$(python3 -c "import math; print(int($freq_val_num*1e-6))")
 		
@@ -82,7 +82,7 @@ for stretch_val_num in "${stretch_vals_num[@]}"; do
 		sed -E -i "s/(#SBATCH --job-name=)[^[:space:]]+/\1${stretch_val_num}_${freq_noexp}_Cornea_Stretch/" "Batch_MOOSE.sh"
 		
 		# Submit job
-		sbatch FDTR_Batch_MOOSE.sh
+		sbatch Batch_MOOSE.sh
 			
 	done
 done
@@ -119,7 +119,7 @@ while [ $part2_complete -eq 0 ]; do
 			
 			
 			# Replace the input file in the Batch script
-			sed -i "0,/script_name=[^ ]*/s/script_name=[^ ]*/script_name=\"$new_filename_2\"/" "FDTR_Batch_MOOSE.sh"
+			sed -i "0,/script_name=[^ ]*/s/script_name=[^ ]*/script_name=\"$new_filename_2\"/" "Batch_MOOSE.sh"
 			
 			freq_noexp=$(python3 -c "import math; print(int($freq_val_num*1e-6))")
 			
@@ -127,7 +127,7 @@ while [ $part2_complete -eq 0 ]; do
 			sed -E -i "s/(#SBATCH --job-name=)[^[:space:]]+/\1${stretch_val_num}_${freq_noexp}_Cornea_Harmonic/" "Batch_MOOSE.sh"
 			
 			# Submit job
-			sbatch FDTR_Batch_MOOSE.sh
+			sbatch Batch_MOOSE.sh
 		done
 	done
 	
