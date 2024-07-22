@@ -14,7 +14,7 @@ og_mesh_ext=".py"
 
 
 # Define the range of values you want to loop over
-freq_vals_num=("10e3")
+freq_vals_num=("1e3")
 
 stretch_vals_num=("1.1")
 
