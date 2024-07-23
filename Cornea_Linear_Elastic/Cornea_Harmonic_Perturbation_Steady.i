@@ -160,7 +160,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   []
   
   [strain_real]
-    type = ADComputeIncrementalSmallStrain
+    type = ADComputeFiniteStrain
 	displacements = 'disp_x_real disp_y_real'
 	base_name = real
   []
