@@ -103,12 +103,6 @@ while [ $part2_complete -eq 0 ]; do
 				# Copy the original input file to the new filename
 				cp "$step2_filename$extension2" "$new_filename_2"
 				
-				# Calculate the new length of the plate
-				plate_length=$(python3 -c "import math; print(0.2 / ($freq_val_num / 1e3))")
-				
-				# Replace the plate length in the MOOSE script
-				sed -i "s/\(l_plate\s*=\s*\)[0-9.eE+-]\+/\1$plate_length/g" "$new_filename"
-				
 				# Replace the mesh in the MOOSE script
 				sed -i "0,/file = [^ ]*/s/file = [^ ]*/file = \"$mesh_filename_2\"/" "$new_filename_2"
 				
