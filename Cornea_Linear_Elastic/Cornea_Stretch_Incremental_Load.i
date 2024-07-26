@@ -217,6 +217,7 @@ dt_val_min = ${fparse dt_val_max/10.0}
   nl_max_its = 20
   
   automatic_scaling = true
+  line_search = none
 
   dtmin = ${dt_val_min}
   dtmax= ${dt_val_max}
