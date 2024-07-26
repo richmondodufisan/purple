@@ -13,6 +13,7 @@ observation_point = ${fparse l_plate/10}
 []
 
 [Mesh]
+  second_order = true
   [sample_mesh]
     type = FileMeshGenerator
     file = cornea_rectangle_freq_10e3.msh
@@ -21,19 +22,19 @@ observation_point = ${fparse l_plate/10}
 
 [Variables]
   [disp_x_real]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
   [disp_y_real]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
   [disp_x_imag]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
   [disp_y_imag]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
 []
@@ -186,35 +187,17 @@ observation_point = ${fparse l_plate/10}
     value = 0
 	preset = false
   []
-  
-  
-  
-  [bottom_y_real]
+  [right_y_real]
     type = DirichletBC
     variable = disp_y_real
-    boundary = 'bottom'
+    boundary = 'right'
     value = 0
 	preset = false
   []
-  [bottom_y_imag]
+  [right_y_imag]
     type = DirichletBC
     variable = disp_y_imag
-    boundary = 'bottom'
-    value = 0
-	preset = false
-  []
-  
-  [top_y_real]
-    type = DirichletBC
-    variable = disp_y_real
-    boundary = 'top'
-    value = 0
-	preset = false
-  []
-  [top_y_imag]
-    type = DirichletBC
-    variable = disp_y_imag
-    boundary = 'top'
+    boundary = 'right'
     value = 0
 	preset = false
   []
@@ -235,6 +218,7 @@ observation_point = ${fparse l_plate/10}
   nl_max_its = 20
   
   automatic_scaling = true
+  line_search = none
 []
 
 [Outputs]
