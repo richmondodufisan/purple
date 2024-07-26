@@ -21,6 +21,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   [sample_mesh]
     type = FileMeshGenerator
     file = Cornea_Stretch_out.e
+	use_for_exodus_restart = true
   []
 []
 
@@ -28,18 +29,26 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   [disp_x_real]
     order = SECOND
     family = LAGRANGE
+	initial_from_file_var = disp_x_real
+    initial_from_file_timestep = LATEST
   []
   [disp_y_real]
     order = SECOND
     family = LAGRANGE
+	initial_from_file_var = disp_y_real
+    initial_from_file_timestep = LATEST
   []
   [disp_x_imag]
     order = SECOND
     family = LAGRANGE
+	initial_from_file_var = disp_x_imag
+    initial_from_file_timestep = LATEST
   []
   [disp_y_imag]
     order = SECOND
     family = LAGRANGE
+	initial_from_file_var = disp_y_imag
+    initial_from_file_timestep = LATEST
   []
 []
 
