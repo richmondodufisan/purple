@@ -15,34 +15,82 @@ observation_point = ${fparse l_plate/10}
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator
-    file = cornea_rectangle.msh
+    file = cornea_rectangle_freq_10e3.msh
   []
 []
 
 [Variables]
-  [disp_x]
+  [disp_x_real]
     order = FIRST
     family = LAGRANGE
   []
-  [disp_y]
+  [disp_y_real]
+    order = FIRST
+    family = LAGRANGE
+  []
+  [disp_x_imag]
+    order = FIRST
+    family = LAGRANGE
+  []
+  [disp_y_imag]
     order = FIRST
     family = LAGRANGE
   []
 []
 
 [Kernels]
-  [div_sig_x]
+  [div_sig_x_real]
     type = ADStressDivergenceTensors
 	component = 0
-	displacements = 'disp_x disp_y'
-    variable = disp_x
+	displacements = 'disp_x_real disp_y_real'
+    variable = disp_x_real
+	base_name = real
   []
   
-  [div_sig_y]
+  [div_sig_y_real]
     type = ADStressDivergenceTensors
 	component = 1
-	displacements = 'disp_x disp_y'
+	displacements = 'disp_x_real disp_y_real'
+    variable = disp_y_real
+	base_name = real
+  []
+  
+  [div_sig_x_imag]
+    type = ADStressDivergenceTensors
+	component = 0
+	displacements = 'disp_x_imag disp_y_imag'
+    variable = disp_x_imag
+	base_name = imag
+  []
+  
+  [div_sig_y_imag]
+    type = ADStressDivergenceTensors
+	component = 1
+	displacements = 'disp_x_imag disp_y_imag'
+    variable = disp_y_imag
+	base_name = imag
+  []
+[]
+
+[AuxVariables]
+  [disp_x]
+  []
+  [disp_y]
+  []
+[]
+
+[AuxKernels]
+  [x_displacement]
+    type = ParsedAux
+    variable = disp_x
+    coupled_variables = 'disp_x_real disp_x_imag'
+	expression = 'sqrt(disp_x_real^2 + disp_x_imag^2)'
+  []
+  [y_displacement]
+    type = ParsedAux
     variable = disp_y
+    coupled_variables = 'disp_y_real disp_y_imag'
+	expression = 'sqrt(disp_y_real^2 + disp_y_imag^2)'
   []
 []
 
@@ -55,54 +103,117 @@ observation_point = ${fparse l_plate/10}
 []
 
 [Materials]
-  [elasticity_tensor]
+  [elasticity_tensor_real]
     type = ADComputeIsotropicElasticityTensor
     youngs_modulus = ${youngs_modulus_val}
     poissons_ratio = ${poissons_ratio_val}
+	base_name = real
   []
   
-  [strain]
+  [strain_real]
     type = ADComputeFiniteStrain
-	displacements = 'disp_x disp_y'
+	displacements = 'disp_x_real disp_y_real'
+	base_name = real
   []
   
-  [stress]
+  [stress_real]
     type = ADComputeFiniteStrainElasticStress
+	base_name = real
+  []
+  
+  
+  [elasticity_tensor_imag]
+    type = ADComputeIsotropicElasticityTensor
+    youngs_modulus = ${youngs_modulus_val}
+    poissons_ratio = ${poissons_ratio_val}
+	base_name = imag
+  []
+  
+  [strain_imag]
+    type = ADComputeFiniteStrain
+	displacements = 'disp_x_imag disp_y_imag'
+	base_name = imag
+  []
+  
+  [stress_imag]
+    type = ADComputeFiniteStrainElasticStress
+	base_name = imag
   []
 []
 
 [BCs]
-  [left_x]
+  [left_x_real]
     type = DirichletBC
-    variable = disp_x
+    variable = disp_x_real
     boundary = 'left'
     value = 0
 	preset = false
   []
-  [left_y]
+  [left_x_imag]
     type = DirichletBC
-    variable = disp_y
+    variable = disp_x_imag
     boundary = 'left'
     value = 0
 	preset = false
   []
-  [right_x]
+  [left_y_real]
     type = DirichletBC
-    variable = disp_x
+    variable = disp_y_real
+    boundary = 'left'
+    value = 0
+	preset = false
+  []
+  [left_y_imag]
+    type = DirichletBC
+    variable = disp_y_imag
+    boundary = 'left'
+    value = 0
+	preset = false
+  []
+  
+  
+  [right_x_real]
+    type = DirichletBC
+    variable = disp_x_real
     boundary = 'right'
     value = ${right_disp_val}
 	preset = false
   []
-  [bottom_y]
+  [right_x_imag]
     type = DirichletBC
-    variable = disp_y
+    variable = disp_x_imag
+    boundary = 'right'
+    value = 0
+	preset = false
+  []
+  
+  
+  
+  [bottom_y_real]
+    type = DirichletBC
+    variable = disp_y_real
     boundary = 'bottom'
     value = 0
 	preset = false
   []
-  [top_y]
+  [bottom_y_imag]
     type = DirichletBC
-    variable = disp_y
+    variable = disp_y_imag
+    boundary = 'bottom'
+    value = 0
+	preset = false
+  []
+  
+  [top_y_real]
+    type = DirichletBC
+    variable = disp_y_real
+    boundary = 'top'
+    value = 0
+	preset = false
+  []
+  [top_y_imag]
+    type = DirichletBC
+    variable = disp_y_imag
     boundary = 'top'
     value = 0
 	preset = false
