@@ -8,6 +8,9 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
 observation_point = ${fparse l_plate/10}
 
+dt_val_max = ${fparse right_disp_val/10.0}
+dt_val_min = ${fparse dt_val_max/10.0}
+
 [GlobalParams]
   volumetric_locking_correction = true
 []
@@ -174,10 +177,10 @@ observation_point = ${fparse l_plate/10}
   
   
   [right_x_real]
-    type = DirichletBC
+    type = FunctionDirichletBC
     variable = disp_x_real
     boundary = 'right'
-    value = ${right_disp_val}
+    function = 't'
 	preset = false
   []
   [right_x_imag]
@@ -204,12 +207,8 @@ observation_point = ${fparse l_plate/10}
 []
 
 [Executioner]
-  type = Steady
+  type = Transient
   solve_type = 'NEWTON'
-  
-  petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
-
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8
@@ -218,7 +217,27 @@ observation_point = ${fparse l_plate/10}
   nl_max_its = 20
   
   automatic_scaling = true
-  line_search = none
+
+  dtmin = ${dt_val_min}
+  dtmax= ${dt_val_max}
+  
+  start_time = 0
+  end_time = ${right_disp_val}
+   
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    optimal_iterations = 15
+    iteration_window = 3
+    linear_iteration_ratio = 100
+    growth_factor=1.5
+    cutback_factor=0.5
+    dt = ${dt_val_max}
+  []
+  [Predictor]
+    type = SimplePredictor
+    scale = 1.0
+    skip_after_failed_timestep = true
+  []
 []
 
 [Outputs]
