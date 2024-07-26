@@ -192,7 +192,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 
 [BCs]
   [harmonic_perturbation_real]
-    type = DirichletBC
+    type = ADDirichletBC
     variable = disp_y_real
     boundary = 'loading_point'
     value = ${fparse (h_plate/10)}
@@ -200,7 +200,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   []
   
   [harmonic_perturbation_imag]
-    type = DirichletBC
+    type = ADDirichletBC
     variable = disp_y_imag
     boundary = 'loading_point'
     value = 0

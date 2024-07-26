@@ -143,28 +143,28 @@ observation_point = ${fparse l_plate/10}
 
 [BCs]
   [left_x_real]
-    type = DirichletBC
+    type = ADDirichletBC
     variable = disp_x_real
     boundary = 'left'
     value = 0
 	preset = false
   []
   [left_x_imag]
-    type = DirichletBC
+    type = ADDirichletBC
     variable = disp_x_imag
     boundary = 'left'
     value = 0
 	preset = false
   []
   [left_y_real]
-    type = DirichletBC
+    type = ADDirichletBC
     variable = disp_y_real
     boundary = 'left'
     value = 0
 	preset = false
   []
   [left_y_imag]
-    type = DirichletBC
+    type = ADDirichletBC
     variable = disp_y_imag
     boundary = 'left'
     value = 0
@@ -173,48 +173,60 @@ observation_point = ${fparse l_plate/10}
   
   
   [right_x_real]
-    type = DirichletBC
+    type = ADDirichletBC
     variable = disp_x_real
     boundary = 'right'
     value = ${right_disp_val}
 	preset = false
   []
   [right_x_imag]
-    type = DirichletBC
+    type = ADDirichletBC
     variable = disp_x_imag
     boundary = 'right'
     value = 0
 	preset = false
   []
-  
-  
-  
-  [bottom_y_real]
-    type = DirichletBC
+  [right_y_real]
+    type = ADDirichletBC
     variable = disp_y_real
-    boundary = 'bottom'
+    boundary = 'right'
     value = 0
 	preset = false
   []
-  [bottom_y_imag]
-    type = DirichletBC
+  [right_y_imag]
+    type = ADDirichletBC
     variable = disp_y_imag
-    boundary = 'bottom'
+    boundary = 'right'
     value = 0
 	preset = false
   []
   
   [top_y_real]
-    type = DirichletBC
+    type = ADDirichletBC
     variable = disp_y_real
     boundary = 'top'
     value = 0
 	preset = false
   []
   [top_y_imag]
-    type = DirichletBC
+    type = ADDirichletBC
     variable = disp_y_imag
     boundary = 'top'
+    value = 0
+	preset = false
+  []
+  
+  [bottom_y_real]
+    type = ADDirichletBC
+    variable = disp_y_real
+    boundary = 'bottom'
+    value = 0
+	preset = false
+  []
+  [bottom_y_imag]
+    type = ADDirichletBC
+    variable = disp_y_imag
+    boundary = 'bottom'
     value = 0
 	preset = false
   []
