@@ -8,15 +8,11 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
 observation_point = ${fparse l_plate/10}
 
-dt_val_max = ${fparse right_disp_val/10.0}
-dt_val_min = ${fparse dt_val_max/10.0}
-
 [GlobalParams]
   volumetric_locking_correction = true
 []
 
 [Mesh]
-  second_order = true
   [sample_mesh]
     type = FileMeshGenerator
     file = cornea_rectangle_freq_10e3.msh
@@ -25,19 +21,19 @@ dt_val_min = ${fparse dt_val_max/10.0}
 
 [Variables]
   [disp_x_real]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
   []
   [disp_y_real]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
   []
   [disp_x_imag]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
   []
   [disp_y_imag]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
   []
 []
@@ -177,10 +173,10 @@ dt_val_min = ${fparse dt_val_max/10.0}
   
   
   [right_x_real]
-    type = FunctionDirichletBC
+    type = DirichletBC
     variable = disp_x_real
     boundary = 'right'
-    function = 't'
+    value = ${right_disp_val}
 	preset = false
   []
   [right_x_imag]
@@ -190,25 +186,47 @@ dt_val_min = ${fparse dt_val_max/10.0}
     value = 0
 	preset = false
   []
-  [right_y_real]
+  
+  
+  
+  [bottom_y_real]
     type = DirichletBC
     variable = disp_y_real
-    boundary = 'right'
+    boundary = 'bottom'
     value = 0
 	preset = false
   []
-  [right_y_imag]
+  [bottom_y_imag]
     type = DirichletBC
     variable = disp_y_imag
-    boundary = 'right'
+    boundary = 'bottom'
+    value = 0
+	preset = false
+  []
+  
+  [top_y_real]
+    type = DirichletBC
+    variable = disp_y_real
+    boundary = 'top'
+    value = 0
+	preset = false
+  []
+  [top_y_imag]
+    type = DirichletBC
+    variable = disp_y_imag
+    boundary = 'top'
     value = 0
 	preset = false
   []
 []
 
 [Executioner]
-  type = Transient
+  type = Steady
   solve_type = 'NEWTON'
+  
+  petsc_options_iname = '-pc_type'
+  petsc_options_value = 'lu'
+
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8
@@ -217,27 +235,6 @@ dt_val_min = ${fparse dt_val_max/10.0}
   nl_max_its = 20
   
   automatic_scaling = true
-
-  dtmin = ${dt_val_min}
-  dtmax= ${dt_val_max}
-  
-  start_time = 0
-  end_time = ${right_disp_val}
-   
-  [TimeStepper]
-    type = IterationAdaptiveDT
-    optimal_iterations = 15
-    iteration_window = 3
-    linear_iteration_ratio = 100
-    growth_factor=1.5
-    cutback_factor=0.5
-    dt = ${dt_val_max}
-  []
-  [Predictor]
-    type = SimplePredictor
-    scale = 1.0
-    skip_after_failed_timestep = true
-  []
 []
 
 [Outputs]
