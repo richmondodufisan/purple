@@ -179,7 +179,7 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
   []
   [q_flux_samp]
 	order = FIRST
-    family = MONOMIAL
+    family = MONOMIAL_VEC
   []
 []
 
