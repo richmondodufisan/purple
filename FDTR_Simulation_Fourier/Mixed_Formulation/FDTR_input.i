@@ -29,7 +29,7 @@ theta_deg = 0
 theta_rad = ${fparse (theta_deg/180)*pi}
 
 period = ${fparse 1/freq_val}
-dt_val = ${fparse 5.0*(dphase/360.0)*period*tp}
+dt_val = ${fparse 20.0*(dphase/360.0)*period*tp}
 dt_val_min = ${fparse 0.5*(dphase/360.0)*period*tp}
 
 start_period = 0.0
@@ -332,6 +332,75 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
   []
 []
 
+[VectorPostprocessors]
+  [temperature_profile_surface]
+    type = LineValueSampler
+    variable = temp_samp
+    start_point = '-40 0 0'
+    end_point = '40 0 0'
+    num_points = 8000
+    sort_by = x
+  []
+  [flux_x_profile_surface]
+    type = LineValueSampler
+    variable = q_samp_x
+    start_point = '-40 0 0'
+    end_point = '40 0 0'
+    num_points = 8000
+    sort_by = x
+  []
+  [flux_y_profile_surface]
+    type = LineValueSampler
+    variable = q_samp_y
+    start_point = '-40 0 0'
+    end_point = '40 0 0'
+    num_points = 8000
+    sort_by = x
+  []
+  [flux_z_profile_surface]
+    type = LineValueSampler
+    variable = q_samp_z
+    start_point = '-40 0 0'
+    end_point = '40 0 0'
+    num_points = 8000
+    sort_by = x
+  []
+  
+  
+  [temperature_profile_dist]
+    type = LineValueSampler
+    variable = temp_samp
+    start_point = '-40 0 -0.7'
+    end_point = '40 0 -0.7'
+    num_points = 8000
+    sort_by = x
+  []
+  [flux_x_profile_dist]
+    type = LineValueSampler
+    variable = q_samp_x
+    start_point = '-40 0 -0.7'
+    end_point = '40 0 -0.7'
+    num_points = 8000
+    sort_by = x
+  []
+  [flux_y_profile_dist]
+    type = LineValueSampler
+    variable = q_samp_y
+    start_point = '-40 0 -1.2'
+    end_point = '40 0 -0.7'
+    num_points = 8000
+    sort_by = x
+  []
+  [flux_z_profile_dist]
+    type = LineValueSampler
+    variable = q_samp_z
+    start_point = '-40 0 -0.7'
+    end_point = '40 0 -0.7'
+    num_points = 8000
+    sort_by = x
+  []
+[]
+
 
 [Functions]
   [heat_source_function]
@@ -454,7 +523,7 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 [Outputs]
   interval = 1
   #execute_on = 'initial timestep_end'
-  print_linear_residuals = true
+  print_linear_residuals = false
   csv = true
   exodus = true
   [pgraph]
