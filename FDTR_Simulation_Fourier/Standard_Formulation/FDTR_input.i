@@ -239,29 +239,12 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
     num_points = 100
     sort_by = x
   []
-  [flux_profile_surface]
-    type = LineValueSampler
-    variable = q_flux_samp
-    start_point = '-10 0 0'
-    end_point = '10 0 0'
-    num_points = 200
-    sort_by = x
-  []
-  
   
   [temperature_profile_dist]
     type = LineValueSampler
     variable = temp_samp
     start_point = '-10 0 -0.7'
     end_point = '10 0 -0.7'
-    num_points = 200
-    sort_by = x
-  []
-  [flux_profile_dist]
-    type = LineValueSampler
-    variable = q_flux_samp
-    start_point = '-10 0 0'
-    end_point = '10 0 0'
     num_points = 200
     sort_by = x
   []
@@ -384,7 +367,7 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
   #execute_on = 'initial timestep_end'
   print_linear_residuals = false
   csv = true
-  exodus = false
+  exodus = true
   [pgraph]
     type = PerfGraphOutput
     execute_on = 'final'  # Default is "final"
