@@ -32,12 +32,12 @@ start_val=0.0
 # Submit the initial parameter sweep
 
 # Original file name
-# og_filename="FDTR_input"
-# extension=".i"
+og_filename="FDTR_input"
+extension=".i"
 
 # Original file name (calibration)
-og_filename="FDTR_CALIBRATION"
-extension=".i"
+# og_filename="FDTR_CALIBRATION"
+# extension=".i"
 
 og_mesh_script="FDTR_mesh"
 og_mesh_ext=".py"
