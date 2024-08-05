@@ -230,26 +230,6 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
   []
 []
 
-[VectorPostprocessors]
-  [temperature_profile_surface]
-    type = LineValueSampler
-    variable = temp_samp
-    start_point = '-5 0 0'
-    end_point = '5 0 0'
-    num_points = 100
-    sort_by = x
-  []
-  
-  [temperature_profile_dist]
-    type = LineValueSampler
-    variable = temp_samp
-    start_point = '-10 0 -0.7'
-    end_point = '10 0 -0.7'
-    num_points = 200
-    sort_by = x
-  []
-[]
-
 [Functions]
   [heat_source_function]
     type = ADParsedFunction
