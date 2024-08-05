@@ -20,10 +20,10 @@ function check_squeue() {
 
 
 # Set the maximum number of times to submit the batch job
-n_iterations=1
+n_iterations=35
 
 # Set the number of periods each job/sweep should solve for
-n_periods_per_job=3.0
+n_periods_per_job=2.0
 
 # Initial timestep
 start_val=0.0
@@ -41,11 +41,11 @@ first_period=$n_periods_per_job
 
 # Define the range of values you want to loop over
 
-x0_vals_num=("-15")
+x0_vals_num=("-1")
 
 #freq_vals_num=("2e6" "3e6" "4e6" "5e6" "6e6" "7e6" "8e6" "9e6" "10e6")
 
-freq_vals_num=("5e5" "6e5" "7e5" "8e5" "9e5" "1e6" "2e6" "3e6" "4e6" "5e6" "6e6" "7e6" "8e6" "9e6" "1e7" "2e7" "3e7" "4e7" "5e7" "6e7" "7e7" "8e7" "9e7" "1e8" "2e8" "3e8" "4e8" "5e8")
+freq_vals_num=("1e6")
 
 theta_vals_num=("0")
 
@@ -73,11 +73,9 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		#echo "$new_mesh_name"
 		
 		#Make new 3D mesh
-		#python3 FDTR_mesh.py >> gmsh_output.txt &
-		#wait
+		python3 FDTR_mesh.py >> gmsh_output.txt &
+		wait
 		
-		# Submit Job
-		#sbatch --wait FDTR_Batch_gmsh.sh
 		
 		echo "Mesh Generated, x0 = ${x0_val_num}, theta = ${theta_val_num}"
 		
@@ -117,15 +115,15 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 	done
 done
 
-#submission_count=1
+submission_count=1
 
 # Change this value to continue from nth simulation
-submission_count=2
+# submission_count=2
 
-#o_start=$start_val
+o_start=$start_val
 
 # Change this value to the START period of the nth simulation (nth_simulation * period_per_sim) - period_per_sim
-o_start=0.5
+# o_start=0.5
 
 #Initial input file name
 init_filename="FDTR_input"
@@ -140,7 +138,7 @@ while [ $submission_count -lt $n_iterations ]; do
 		echo "No jobs in the queue. Submitting batch job script..."
 		
 		# Check for failed jobs. edit date/time/number of failed jobs as needed
-		failed_jobs=$(sacct -S 11/24/23 -X -u vtw1026 --format=nodelist,state,jobid | grep FAIL | wc -l)
+		failed_jobs=$(sacct -S 08/04/24 -X -u vtw1026 --format=nodelist,state,jobid | grep FAIL | wc -l)
 		
 		if [ $failed_jobs -gt 0 ]; then
 			echo "SOME JOBS FAILED. EXITING SCRIPT."
