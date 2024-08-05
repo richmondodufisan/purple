@@ -177,6 +177,10 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
     order = FIRST
     family = MONOMIAL
   []
+  [q_flux_samp]
+	order = FIRST
+    family = MONOMIAL
+  []
 []
 
 [AuxKernels]
@@ -206,6 +210,11 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
 	property = k_samp
 	block = sample_material
   []
+  [flux_calc]
+    type = ADFunctorElementalGradientAux
+    functor = temp_samp
+    variable = q_flux_samp
+  []
 []
 
 [Postprocessors]
@@ -218,6 +227,43 @@ t_val = ${fparse 2.2*period*tp*(end_period/2.0)}
     type = SideIntegralVariablePostprocessor
     boundary = 'sample_pump_area'
     variable = sample_avg_surf_temp
+  []
+[]
+
+[VectorPostprocessors]
+  [temperature_profile_surface]
+    type = LineValueSampler
+    variable = temp_samp
+    start_point = '-5 0 0'
+    end_point = '5 0 0'
+    num_points = 100
+    sort_by = x
+  []
+  [flux_profile_surface]
+    type = LineValueSampler
+    variable = q_flux_samp
+    start_point = '-10 0 0'
+    end_point = '10 0 0'
+    num_points = 200
+    sort_by = x
+  []
+  
+  
+  [temperature_profile_dist]
+    type = LineValueSampler
+    variable = temp_samp
+    start_point = '-10 0 -0.7'
+    end_point = '10 0 -0.7'
+    num_points = 200
+    sort_by = x
+  []
+  [flux_profile_dist]
+    type = LineValueSampler
+    variable = q_flux_samp
+    start_point = '-10 0 0'
+    end_point = '10 0 0'
+    num_points = 200
+    sort_by = x
   []
 []
 

@@ -24,7 +24,7 @@ function check_squeue() {
 n_iterations=1
 
 # Set the number of periods each job/sweep should solve for
-n_periods_per_job=4.0
+n_periods_per_job=2.0
 
 # Initial timestep
 start_val=0.0
@@ -46,9 +46,9 @@ first_period=$n_periods_per_job
 
 # Define the range of values you want to loop over
 
-x0_vals_num=("0")
+x0_vals_num=("-2")
 
-freq_vals_num=("1e6" "2e6" "4e6" "6e6" "8e6" "10e6")
+freq_vals_num=("1e6")
 
 theta_vals_num=("0")
 
@@ -76,11 +76,8 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		#echo "$new_mesh_name"
 		
 		# Make new 3D mesh
-		#python3 FDTR_mesh.py >> gmsh_output.txt &
-		#wait
-		
-		# Submit Job
-		#sbatch --wait FDTR_Batch_gmsh.sh
+		python3 FDTR_mesh.py >> gmsh_output.txt &
+		wait
 		
 		echo "Mesh Generated, x0 = ${x0_val_num}, theta = ${theta_val_num}"
 		

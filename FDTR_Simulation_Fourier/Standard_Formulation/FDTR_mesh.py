@@ -5,24 +5,24 @@ import sys
 gmsh.initialize()
 gmsh.model.add("FDTR_mesh")
 
-newMeshName = "FDTR_mesh_x0_0_theta_0.msh"
+newMeshName = "FDTR_mesh_x0_-1_theta_0.msh"
 
 theta = 0
-xcen = 0
+xcen = -1
 ycen = 0
 radius = 8
 trans_thick = 0.09
 
 dummy_factor = 3
-trans_thick_ref = 0.09
-sub_center_ref=0.09
+trans_thick_ref = 0.3
+sub_center_ref=0.3
 
 x_dir = 40
 y_dir = 20
 z_dir = 40
 gb_width = 0.1
 
-pump_refine = 0.4
+pump_refine = 0.9
 reg_element_refine = 12
 gb_refine = 1.5
 
@@ -45,7 +45,7 @@ tan_theta = -1.0*math.tan(theta_rad)
 cos_theta = math.cos(theta_rad_og)
 
 
-# Refine region by a multiple of the grain boundary size to the left and right
+# Refine region ny a multiple of the grain boundary size to the left and right
 width_refine = 10
 part_width = (gb_width/cos_theta)*width_refine
 
@@ -383,4 +383,4 @@ gmsh.model.mesh.generate(3)
 
 gmsh.write(newMeshName)
 
-# gmsh.fltk.run()
+#gmsh.fltk.run()
