@@ -19,7 +19,7 @@ extension=".i"
 # og_filename="FDTR_CALIBRATION"
 # extension=".i"
 
-og_mesh_script="FDTR_mesh"
+og_mesh_script="FDTR_mesh_no_gb"
 og_mesh_ext=".py"
 
 # Define the range of values you want to loop over

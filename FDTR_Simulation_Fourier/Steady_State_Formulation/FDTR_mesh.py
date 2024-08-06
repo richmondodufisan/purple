@@ -8,7 +8,7 @@ gmsh.model.add("FDTR_mesh")
 newMeshName = "FDTR_mesh_x0_-30_theta_0.msh"
 
 theta = 0
-xcen = -30
+xcen = 0
 ycen = 0
 radius = 8
 trans_thick = 0.09
@@ -22,7 +22,7 @@ y_dir = 80
 z_dir = 40
 gb_width = 0.1
 
-pump_refine = 0.4
+pump_refine = 0.3
 reg_element_refine =25
 gb_refine = 2
 
