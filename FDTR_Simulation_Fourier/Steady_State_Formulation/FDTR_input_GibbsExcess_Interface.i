@@ -26,6 +26,8 @@ c_au = 0.1287e3
 theta_deg = 75
 theta_rad = ${fparse (theta_deg/180)*pi}
 
+gb_face_val = ${fparse int(-tan(theta_rad))}
+
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator
@@ -43,14 +45,14 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   [left_sample_side]
     type = ParsedSubdomainMeshGenerator
 	input = transducer_block
-	combinatorial_geometry = '(x < ((-tan(${theta_rad})) * z)) & (z < 0.0)'
+	combinatorial_geometry = '(x < (${gb_face_val} * z)) & (z < 0.0)'
 	block_id = 2
   []
   
   [right_sample_side]
     type = ParsedSubdomainMeshGenerator
 	input = left_sample_side
-	combinatorial_geometry = '(x > ((-tan(${theta_rad})) * z)) & (z < 0.0)'
+	combinatorial_geometry = '(x > (${gb_face_val} * z)) & (z < 0.0)'
 	block_id = 3
   []
   
@@ -241,7 +243,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     type = SideSetHeatTransferKernel
     variable = temp_trans_real
     neighbor_var = temp_samp_left_real
-    boundary = 'boundary_conductance'
+    boundary = 'trans_left_sample_boundary'
 	conductance = ${au_si_conductance}
 	
 	Tbulk_mat = 0
@@ -255,7 +257,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     type = SideSetHeatTransferKernel
     variable = temp_trans_imag
     neighbor_var = temp_samp_left_imag
-    boundary = 'boundary_conductance'
+    boundary = 'trans_left_sample_boundary'
 	conductance = ${au_si_conductance_positive}
 	
 	Tbulk_mat = 0
@@ -269,7 +271,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     type = SideSetHeatTransferKernel
     variable = temp_trans_real
     neighbor_var = temp_samp_right_real
-    boundary = 'boundary_conductance'
+    boundary = 'trans_right_sample_boundary'
 	conductance = ${au_si_conductance}
 	
 	Tbulk_mat = 0
@@ -283,7 +285,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     type = SideSetHeatTransferKernel
     variable = temp_trans_imag
     neighbor_var = temp_samp_right_imag
-    boundary = 'boundary_conductance'
+    boundary = 'trans_right_sample_boundary'
 	conductance = ${au_si_conductance_positive}
 	
 	Tbulk_mat = 0
@@ -309,7 +311,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   
   [gb_imag]
     type = SideSetHeatTransferKernel
-    variable = temp_samp_right_imag
+    variable = temp_samp_left_imag
     neighbor_var = temp_samp_right_imag
     boundary = 'gb_interface'
 	conductance = ${si_si_conductance_positive}
@@ -413,7 +415,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     boundary = 'bottom_surface'
     value = 0
   []
-  [ambient_temperature_left_real]
+  [ambient_temperature_right_real]
     type = DirichletBC
     variable = temp_samp_right_real
     boundary = 'bottom_surface'
