@@ -16,43 +16,49 @@ c_si = 0.6891e3
 au_si_conductance = -3e-5
 au_si_conductance_positive = 3e-5
 
-si_si_conductance = -0.56e-6
-si_si_conductance_positive = 0.56e-6
+si_si_conductance = -5.6e-4
+si_si_conductance_positive = 5.6e-4
 
 kappa_bulk_au = 215e-6
 rho_au = 19.3e-15
 c_au = 0.1287e3
 
-theta_deg = 0
+theta_deg = 75
 theta_rad = ${fparse (theta_deg/180)*pi}
-
-theta_surf_rad = ${fparse ((90.0 - theta_deg)*pi)/(180)}
 
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator
     file = FDTR_mesh.msh
   []
-  [sample_block]
-    type = SubdomainBoundingBoxGenerator
-    input = sample_mesh
-    block_id = 1
-    top_right = '160 80 0'
-    bottom_left = '-160 -80 -40'
-  []
+  
   [transducer_block]
     type = SubdomainBoundingBoxGenerator
-    input = sample_block
-    block_id = 2	
+    input = sample_mesh
+    block_id = 1	
     top_right = '160 80 ${transducer_thickness}'
     bottom_left = '-160 -80 0'
   []
   
+  [left_sample_side]
+    type = ParsedSubdomainMeshGenerator
+	input = transducer_block
+	combinatorial_geometry = '(x < ((-tan(${theta_rad})) * z)) & (z < 0.0)'
+	block_id = 2
+  []
+  
+  [right_sample_side]
+    type = ParsedSubdomainMeshGenerator
+	input = left_sample_side
+	combinatorial_geometry = '(x > ((-tan(${theta_rad})) * z)) & (z < 0.0)'
+	block_id = 3
+  []
+  
   [rename]
     type = RenameBlockGenerator
-    old_block = '1 2'
-    new_block = 'sample_material transducer_material'
-    input = transducer_block
+    old_block = '1 2 3'
+    new_block = 'transducer_material sample_material_left sample_material_right'
+    input = right_sample_side
   []
   
   [applied_pump_area]
@@ -73,17 +79,33 @@ theta_surf_rad = ${fparse ((90.0 - theta_deg)*pi)/(180)}
 	new_sideset_name = sample_pump_area
   []
   
-  [conductance_area]	
+  [conductance_area_1]	
     type = SideSetsBetweenSubdomainsGenerator
     input = applied_pump_sample
     primary_block = transducer_material
-    paired_block = sample_material
-    new_boundary = 'boundary_conductance'
+    paired_block = sample_material_left
+    new_boundary = 'trans_left_sample_boundary'
+  []
+  
+  [conductance_area_2]	
+    type = SideSetsBetweenSubdomainsGenerator
+    input = conductance_area_1
+    primary_block = transducer_material
+    paired_block = sample_material_right
+    new_boundary = 'trans_right_sample_boundary'
+  []
+  
+  [gb_area]	
+    type = SideSetsBetweenSubdomainsGenerator
+    input = conductance_area_2
+    primary_block = sample_material_left
+    paired_block = sample_material_right
+    new_boundary = 'gb_conductance'
   []
     
   [bottom_area]
     type = ParsedGenerateSideset
-	input = conductance_area
+	input = gb_area
 	combinatorial_geometry = '((z > -40-1e-8) & (z < -40+1e-8))'
 	new_sideset_name = bottom_surface
   []
@@ -93,13 +115,6 @@ theta_surf_rad = ${fparse ((90.0 - theta_deg)*pi)/(180)}
 	input = bottom_area
 	combinatorial_geometry = '((x > -160-1e-8) & (x < -160+1e-8)) | ((x > 160-1e-8) & (x < 160+1e-8)) | ((y > -80-1e-8) & (y < -80+1e-8)) | ((y > 80-1e-8) & (y < 80+1e-8))'
 	new_sideset_name = side_surfaces
-  []
-  
-  [gb_side]
-    type = ParsedGenerateSideset
-	input = side_areas
-	combinatorial_geometry = '(x > ((-1/tan(theta_surf_rad))*z)+1e-8) & (x < ((-1/tan(theta_surf_rad))*z)+1e-8) & (z < 0.0)'
-	new_sideset_name = gb_interface
   []
 []
 
@@ -114,7 +129,7 @@ theta_surf_rad = ${fparse ((90.0 - theta_deg)*pi)/(180)}
     family = LAGRANGE
 	block = transducer_material
   []
-  [temp_samp_real]
+  [temp_samp_left_real]
     order = FIRST
     family = LAGRANGE
 	block = sample_material
