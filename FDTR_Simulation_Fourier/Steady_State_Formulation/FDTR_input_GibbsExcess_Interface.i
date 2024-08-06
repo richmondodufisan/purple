@@ -100,7 +100,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     input = conductance_area_2
     primary_block = sample_material_left
     paired_block = sample_material_right
-    new_boundary = 'gb_conductance'
+    new_boundary = 'gb_interface'
   []
     
   [bottom_area]
@@ -132,12 +132,22 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   [temp_samp_left_real]
     order = FIRST
     family = LAGRANGE
-	block = sample_material
+	block = sample_material_left
   []
-  [temp_samp_imag]
+  [temp_samp_left_imag]
     order = FIRST
     family = LAGRANGE
-	block = sample_material
+	block = sample_material_left
+  []
+  [temp_samp_right_real]
+    order = FIRST
+    family = LAGRANGE
+	block = sample_material_right
+  []
+  [temp_samp_right_imag]
+    order = FIRST
+    family = LAGRANGE
+	block = sample_material_right
   []
 []
 
@@ -170,39 +180,67 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   []
   
   
-  [heat_conduction_sample_real]
+  [heat_conduction_sample_left_real]
     type = HeatConductionSteadyReal
 	
-    variable = temp_samp_real
-	imaginary_temp = temp_samp_imag
+    variable = temp_samp_left_real
+	imaginary_temp = temp_samp_left_imag
 	
 	thermal_conductivity = k_samp
 	heat_capacity = c_samp
 	omega = omega
 	density = rho_samp
 	
-	block = sample_material
+	block = sample_material_left
   []
-  [heat_conduction_sample_imag]
+  [heat_conduction_sample_left_imag]
     type = HeatConductionSteadyImag
 	
-    variable = temp_samp_imag
-	real_temp = temp_samp_real
+    variable = temp_samp_left_imag
+	real_temp = temp_samp_left_real
 	
 	thermal_conductivity = k_samp
 	heat_capacity = c_samp
 	omega = omega
 	density = rho_samp
 	
-	block = sample_material
+	block = sample_material_left
+  []
+  
+  
+  [heat_conduction_sample_right_real]
+    type = HeatConductionSteadyReal
+	
+    variable = temp_samp_right_real
+	imaginary_temp = temp_samp_right_imag
+	
+	thermal_conductivity = k_samp
+	heat_capacity = c_samp
+	omega = omega
+	density = rho_samp
+	
+	block = sample_material_right
+  []
+  [heat_conduction_sample_right_imag]
+    type = HeatConductionSteadyImag
+	
+    variable = temp_samp_right_imag
+	real_temp = temp_samp_right_real
+	
+	thermal_conductivity = k_samp
+	heat_capacity = c_samp
+	omega = omega
+	density = rho_samp
+	
+	block = sample_material_right
   []
 []
 
 [InterfaceKernels]
-  [interface_real]
+  [interface_left_real]
     type = SideSetHeatTransferKernel
     variable = temp_trans_real
-    neighbor_var = temp_samp_real
+    neighbor_var = temp_samp_left_real
     boundary = 'boundary_conductance'
 	conductance = ${au_si_conductance}
 	
@@ -213,10 +251,38 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 	emissivity_eff_neighbor = 0
   []
   
-  [interface_imag]
+  [interface_left_imag]
     type = SideSetHeatTransferKernel
     variable = temp_trans_imag
-    neighbor_var = temp_samp_imag
+    neighbor_var = temp_samp_left_imag
+    boundary = 'boundary_conductance'
+	conductance = ${au_si_conductance_positive}
+	
+	Tbulk_mat = 0
+	h_primary = 0
+	h_neighbor = 0
+	emissivity_eff_primary = 0
+	emissivity_eff_neighbor = 0
+  []
+  
+  [interface_right_real]
+    type = SideSetHeatTransferKernel
+    variable = temp_trans_real
+    neighbor_var = temp_samp_right_real
+    boundary = 'boundary_conductance'
+	conductance = ${au_si_conductance}
+	
+	Tbulk_mat = 0
+	h_primary = 0
+	h_neighbor = 0
+	emissivity_eff_primary = 0
+	emissivity_eff_neighbor = 0
+  []
+  
+  [interface_right_imag]
+    type = SideSetHeatTransferKernel
+    variable = temp_trans_imag
+    neighbor_var = temp_samp_right_imag
     boundary = 'boundary_conductance'
 	conductance = ${au_si_conductance_positive}
 	
@@ -229,8 +295,8 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   
   [gb_real]
     type = SideSetHeatTransferKernel
-    variable = temp_trans_real
-    neighbor_var = temp_samp_real
+    variable = temp_samp_left_real
+    neighbor_var = temp_samp_right_real
     boundary = 'gb_interface'
 	conductance = ${si_si_conductance}
 	
@@ -243,8 +309,8 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   
   [gb_imag]
     type = SideSetHeatTransferKernel
-    variable = temp_trans_imag
-    neighbor_var = temp_samp_imag
+    variable = temp_samp_right_imag
+    neighbor_var = temp_samp_right_imag
     boundary = 'gb_interface'
 	conductance = ${si_si_conductance_positive}
 	
@@ -323,7 +389,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   []
   [basic_sample_materials]
     type = ADGenericConstantMaterial
-    block = sample_material
+    block = 'sample_material_left sample_material_right'
     prop_names = 'rho_samp c_samp k_samp'
     prop_values = '${rho_si} ${c_si} ${kappa_bulk_si}'
   []
@@ -331,7 +397,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     type = ADGenericFunctionMaterial
 	prop_names = omega
     prop_values = angular_frequency
-	block = 'transducer_material sample_material'
+	block = 'transducer_material sample_material_left sample_material_right'
   []
   [heat_source_material]
     type = ADGenericFunctionMaterial
@@ -341,15 +407,27 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 []
 
 [BCs]
-  [ambient_temperature_real]
+  [ambient_temperature_left_real]
     type = DirichletBC
-    variable = temp_samp_real
+    variable = temp_samp_left_real
     boundary = 'bottom_surface'
     value = 0
   []
-  [ambient_temperature_imag]
+  [ambient_temperature_left_real]
     type = DirichletBC
-    variable = temp_samp_imag
+    variable = temp_samp_right_real
+    boundary = 'bottom_surface'
+    value = 0
+  []
+  [ambient_temperature_left_imag]
+    type = DirichletBC
+    variable = temp_samp_left_imag
+    boundary = 'bottom_surface'
+    value = 0
+  []
+  [ambient_temperature_right_imag]
+    type = DirichletBC
+    variable = temp_samp_right_imag
     boundary = 'bottom_surface'
     value = 0
   []
