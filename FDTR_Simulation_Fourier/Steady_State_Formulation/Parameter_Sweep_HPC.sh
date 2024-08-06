@@ -39,23 +39,21 @@ freq_vals_num=("1e6"  "2e6" "4e6" "6e6" "8e6" "10e6")
 
 # Loop over values
 for x0_val_num in "${x0_vals_num[@]}"; do
-	for theta_val_num in "${theta_vals_num[@]}"; do
+
+	# Replace the x0_val value in the mesh script
+	sed -i "s/\(xcen\s*=\s*\)[0-9.eE+-]\+/\1$x0_val_num/g" "${og_mesh_script}${og_mesh_ext}"
 	
-		# Replace the x0_val value in the mesh script
-		sed -i "s/\(xcen\s*=\s*\)[0-9.eE+-]\+/\1$x0_val_num/g" "${og_mesh_script}${og_mesh_ext}"
-		
-		# Replace the theta_val value in the mesh script
-		sed -i "0,/theta\s*=\s*[0-9.eE+-]\+/{s//theta = $theta_val_num/}" "${og_mesh_script}${og_mesh_ext}"
-		
-		# Replace the mesh name in the mesh script
-		new_mesh_name="${og_mesh_script}_x0_${x0_val_num}_theta_${theta_val_num}.msh"
-		sed -i "0,/newMeshName = [^ ]*/s/newMeshName = [^ ]*/newMeshName = \"$new_mesh_name\"/" "${og_mesh_script}${og_mesh_ext}"	
-		
-		#echo "$new_mesh_name"
-		
-		# Make new 3D mesh
-		# python3 FDTR_mesh.py >> gmsh_output.txt &
-		# wait
+	# Replace the mesh name in the mesh script
+	new_mesh_name="${og_mesh_script}_x0_${x0_val_num}.msh"
+	sed -i "0,/newMeshName = [^ ]*/s/newMeshName = [^ ]*/newMeshName = \"$new_mesh_name\"/" "${og_mesh_script}${og_mesh_ext}"	
+	
+	#echo "$new_mesh_name"
+	
+	# Make new 3D mesh
+	python3 FDTR_mesh.py >> gmsh_output.txt &
+	wait
+
+	for theta_val_num in "${theta_vals_num[@]}"; do
 		
 		echo "Mesh Generated, x0 = ${x0_val_num}, theta = ${theta_val_num}"
 		
