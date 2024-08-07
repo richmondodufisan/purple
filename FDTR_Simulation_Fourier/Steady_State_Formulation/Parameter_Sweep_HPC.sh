@@ -6,11 +6,11 @@ module load singularity
 module load mpi/mpich-4.0.2-gcc-10.4.0
 
 # Original file name
-# og_filename="FDTR_input_GibbsExcess_StepFunction"
-# extension=".i"
-
-og_filename=FDTR_input_GibbsExcess_Interface
+og_filename="FDTR_input_GibbsExcess_StepFunction"
 extension=".i"
+
+# og_filename=FDTR_input_GibbsExcess_Interface
+# extension=".i"
 
 # og_filename=FDTR_input_Traditional
 # extension=".i"
@@ -34,7 +34,7 @@ x0_vals_num=("-30" "-25" "-20" "-17" "-15" "-14" "-13" "-11" "-12" "-10" "-9" "-
 
 freq_vals_num=("1e6"  "2e6" "4e6" "6e6" "8e6" "10e6")
 
-theta_vals_num=("15" "30" "45" "60" "75")
+theta_vals_num=("0" "15" "30" "45" "60" "75")
 
 
 # Loop over values
