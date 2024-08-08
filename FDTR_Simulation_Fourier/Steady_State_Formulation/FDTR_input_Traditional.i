@@ -9,7 +9,7 @@ pump_radius = 1.53
 pump_power = 0.01
 pump_absorbance = 1
 kappa_bulk_si = 130e-6
-kappa_gb_si = 56.52e-6
+kappa_gb_si = 5.652e-6
 rho_si = 2.329e-15
 c_si = 0.6891e3
 au_si_conductance = -3e-5
@@ -27,7 +27,7 @@ c_au = 0.1287e3
     type = SubdomainBoundingBoxGenerator
     input = sample_mesh
     block_id = 1
-    top_right = '160 80 -0.15'
+    top_right = '160 80 -0.06'
     bottom_left = '-160 -80 -40'
   []
   [grain_boundary_block]
@@ -35,7 +35,7 @@ c_au = 0.1287e3
     input = sample_block_bottom
     block_id = 2
     top_right = '160 80 -0.05'
-    bottom_left = '-160 -80 -0.15'
+    bottom_left = '-160 -80 -0.06'
   []
   [sample_block_top]
     type = SubdomainBoundingBoxGenerator
