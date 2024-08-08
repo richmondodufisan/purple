@@ -18,6 +18,12 @@ kappa_bulk_au = 215e-6
 rho_au = 19.3e-15
 c_au = 0.1287e3
 
+si_distance = 0.2
+gb_thickness = 0.01
+
+block_3_val = ${fparse -si_distance}
+block_2_val = ${fparse -si_distance-gb_thickness}
+
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator
@@ -27,22 +33,22 @@ c_au = 0.1287e3
     type = SubdomainBoundingBoxGenerator
     input = sample_mesh
     block_id = 1
-    top_right = '160 80 -0.06'
+    top_right = '160 80 ${block_2_val}'
     bottom_left = '-160 -80 -40'
   []
   [grain_boundary_block]
     type = SubdomainBoundingBoxGenerator
     input = sample_block_bottom
     block_id = 2
-    top_right = '160 80 -0.05'
-    bottom_left = '-160 -80 -0.06'
+    top_right = '160 80 ${block_3_val}'
+    bottom_left = '-160 -80 ${block_2_val}'
   []
   [sample_block_top]
     type = SubdomainBoundingBoxGenerator
     input = grain_boundary_block
     block_id = 3
     top_right = '160 80 0'
-    bottom_left = '-160 -80 -0.05'
+    bottom_left = '-160 -80 ${block_3_val}'
   []
   [transducer_block]
     type = SubdomainBoundingBoxGenerator
