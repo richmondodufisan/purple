@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from Layered_Heat_Conduction_Approximation import calc_thermal_response
+from Layered_Heat_Conduction import calc_thermal_response
 from Phase_Extraction_Cosine_Fit import calculate_phase_amplitude
 from scipy.optimize import curve_fit
 from scipy.integrate import trapz

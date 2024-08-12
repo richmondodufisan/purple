@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from Layered_Heat_Conduction_Approximation import calc_thermal_response
+from Layered_Heat_Conduction import calc_thermal_response
 from scipy.optimize import curve_fit
 from scipy.integrate import trapz
 import pdb
@@ -12,8 +12,8 @@ import math
 
 # Read the CSV files into pandas DataFrames
 calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
-FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_StepFunction_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
-theta_angle = "0" # for output file name change
+FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_Interface_out_theta_60.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+theta_angle = "60" # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
 calib_freq_vals = calibration_data['frequency'].unique().tolist()
@@ -277,7 +277,7 @@ plt.title("Thermal Conductivity Profile, θ = " + str(theta_angle))
 plt.grid(True)
 plt.xticks(fontsize=15)
 plt.yticks(fontsize=15)
-# plt.ylim(126.9, 130.15)
+plt.ylim(124, 130.15)
 plt.tight_layout()
 plt.savefig(f"Thermal_Conductivity_Profile_Theta_{theta_angle}.png", bbox_inches='tight')
 plt.show()

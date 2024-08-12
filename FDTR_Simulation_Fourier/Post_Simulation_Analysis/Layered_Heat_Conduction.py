@@ -36,8 +36,7 @@ import pdb
 
 # r_probe: radius of the probe laser
 
-# calib_constants: additional constants to calibrate model if comparing to FEM simulations.
-# Highly refined simulations do not need calibration 
+# calib_constants: additional constants to calibrate model if comparing to FEM simulations. 
 # The calibration is done on the pump and probe radii.
 # If using experimental data, set each value to 1 (i.e calib_constants = [1, 1])
 
@@ -72,10 +71,10 @@ def integrand(x, N_layers, layer_props, interface_props, r_pump, r_probe, calib_
     gamma = cmath.sqrt((k_r * (x**2) + rho * c * 1j * 2 * np.pi * freq)/k_z)
     
     # Equation 3.34  
-    A = np.cosh(gamma * h)
-    B = (-1.0/(k_z * gamma)) * np.sinh(gamma * h)
-    C = -k_z * gamma * np.sinh(gamma * h)
-    D = np.cosh(gamma * h)
+    A = 1.0
+    B = (-1.0/(k_z * gamma)) * np.tanh(gamma * h)
+    C = -k_z * gamma * np.tanh(gamma * h)
+    D = 1.0
     
     HeatLayer = np.array([[A, B], [C, D]])
 
@@ -94,7 +93,7 @@ def integrand(x, N_layers, layer_props, interface_props, r_pump, r_probe, calib_
   D_total = ConductionMatrix[1][1]
 
   # calibration constants to account for mesh sensitivity
-  # 1 W/m.K corresponds to ~0.0005 radians change in phase (for silicon)
+  # 1 W/m.K corresponds to ~0.0005 radians change in phase
   # therefore, we need to have accuracy to at least 4.d.p
   # more would be even better
 
