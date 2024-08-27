@@ -53,8 +53,8 @@ for stretch_val_num in "${stretch_vals_num[@]}"; do
 		sed -i "s/\(stretch_ratio\s*=\s*\)[0-9.eE+-]\+/\1$stretch_val_num/g" "$new_filename"
 		
 		# Run the new input file
-		# ../purple-opt -i ${new_filename} &
-		# wait
+		../purple-opt -i ${new_filename} &
+		wait
 			
 	done
 done

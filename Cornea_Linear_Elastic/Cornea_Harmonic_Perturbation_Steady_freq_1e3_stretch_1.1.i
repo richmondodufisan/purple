@@ -169,7 +169,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   []
   
   [strain_real]
-    type = ADComputeFiniteStrain
+    type = ADComputeIncrementalSmallStrain
 	displacements = 'disp_x_real disp_y_real'
 	base_name = real
 	decomposition_method = EigenSolution
@@ -189,7 +189,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   []
   
   [strain_imag]
-    type = ADComputeFiniteStrain
+    type = ADComputeIncrementalSmallStrain
 	displacements = 'disp_x_imag disp_y_imag'
 	base_name = imag
 	decomposition_method = EigenSolution
@@ -231,66 +231,6 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 	boundary = 'right'
 	v = disp_y_real
 	coef = ${fparse -freq_val*mechanical_impedance}
-  []
-  
-  [top_x_real]
-    type = ADDirichletBC
-    variable = disp_x_real
-    boundary = 'top'
-    value = 0
-	preset = false
-  []
-  [top_x_imag]
-    type = ADDirichletBC
-    variable = disp_x_imag
-    boundary = 'top'
-    value = 0
-	preset = false
-  []
-  
-  [bottom_x_real]
-    type = ADDirichletBC
-    variable = disp_x_real
-    boundary = 'bottom'
-    value = 0
-	preset = false
-  []
-  [bottom_x_imag]
-    type = ADDirichletBC
-    variable = disp_x_imag
-    boundary = 'bottom'
-    value = 0
-	preset = false
-  []
-  
-  [left_x_real]
-    type = ADDirichletBC
-    variable = disp_x_real
-    boundary = 'left'
-    value = 0
-	preset = false
-  []
-  [left_x_imag]
-    type = ADDirichletBC
-    variable = disp_x_imag
-    boundary = 'left'
-    value = 0
-	preset = false
-  []
-  
-  [right_x_real]
-    type = ADDirichletBC
-    variable = disp_x_real
-    boundary = 'right'
-    value = 0
-	preset = false
-  []
-  [right_x_imag]
-    type = ADDirichletBC
-    variable = disp_x_imag
-    boundary = 'right'
-    value = 0
-	preset = false
   []
 []
 
