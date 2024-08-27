@@ -20,7 +20,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   second_order = true
   [sample_mesh]
     type = FileMeshGenerator
-    file = Cornea_Stretch_out.e
+    file = "Cornea_Stretch_freq_10e3_stretch_1.1_out.e"
 	use_for_exodus_restart = true
   []
 []
@@ -172,7 +172,6 @@ number_of_points = ${fparse int(l_plate/0.00001)}
     type = ADComputeFiniteStrain
 	displacements = 'disp_x_real disp_y_real'
 	base_name = real
-	decomposition_method = EigenSolution
   []
   
   [stress_real]
@@ -192,7 +191,6 @@ number_of_points = ${fparse int(l_plate/0.00001)}
     type = ADComputeFiniteStrain
 	displacements = 'disp_x_imag disp_y_imag'
 	base_name = imag
-	decomposition_method = EigenSolution
   []
   
   [stress_imag]
@@ -231,6 +229,36 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 	boundary = 'right'
 	v = disp_y_real
 	coef = ${fparse -freq_val*mechanical_impedance}
+  []
+  
+  [top_x_real]
+    type = ADDirichletBC
+    variable = disp_x_real
+    boundary = 'top'
+    value = 0
+	preset = false
+  []
+  [top_x_imag]
+    type = ADDirichletBC
+    variable = disp_x_imag
+    boundary = 'top'
+    value = 0
+	preset = false
+  []
+  
+  [bottom_x_real]
+    type = ADDirichletBC
+    variable = disp_x_real
+    boundary = 'bottom'
+    value = 0
+	preset = false
+  []
+  [bottom_x_imag]
+    type = ADDirichletBC
+    variable = disp_x_imag
+    boundary = 'bottom'
+    value = 0
+	preset = false
   []
   
   [left_x_real]

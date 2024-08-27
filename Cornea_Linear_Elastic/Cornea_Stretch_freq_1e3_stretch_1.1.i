@@ -1,54 +1,40 @@
 #Global Parameters
-freq_val = 10e3
-youngs_modulus_val = 60e3
+youngs_modulus_val = 60000
 poissons_ratio_val = 0.4999
-shear_modulus_val = ${fparse (youngs_modulus_val/(2*(1+poissons_ratio_val)))}
-density = 1000
-shear_wave_speed = ${fparse sqrt(shear_modulus_val/density)}
-mechanical_impedance = ${fparse density*(shear_wave_speed/2)}
 
-h_plate = 0.001
-l_plate = ${fparse 0.2/(freq_val/1e3)}
-mid_height = ${fparse h_plate/2}
-number_of_points = ${fparse int(l_plate/0.00001)}
+stretch_ratio = 1.1
+l_plate = 0.2
+right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
+
+observation_point = ${fparse l_plate/10}
 
 [GlobalParams]
   volumetric_locking_correction = true
 []
 
 [Mesh]
-  second_order = true
   [sample_mesh]
     type = FileMeshGenerator
-    file = Cornea_Stretch_out.e
-	use_for_exodus_restart = true
+    file = "cornea_rectangle_freq_1e3.msh"
   []
 []
 
 [Variables]
   [disp_x_real]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
-	initial_from_file_var = disp_x_real
-    initial_from_file_timestep = LATEST
   []
   [disp_y_real]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
-	initial_from_file_var = disp_y_real
-    initial_from_file_timestep = LATEST
   []
   [disp_x_imag]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
-	initial_from_file_var = disp_x_imag
-    initial_from_file_timestep = LATEST
   []
   [disp_y_imag]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
-	initial_from_file_var = disp_y_imag
-    initial_from_file_timestep = LATEST
   []
 []
 
@@ -69,21 +55,6 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 	base_name = real
   []
   
-  [reaction_x_real]
-    type = ADReaction
-	variable = disp_x_real
-	rate = ${fparse -freq_val*freq_val*density}
-  []
-  
-  [reaction_y_real]
-    type = ADReaction
-	variable = disp_y_real
-	rate = ${fparse -freq_val*freq_val*density}
-  []
-  
-  
-  
-  
   [div_sig_x_imag]
     type = ADStressDivergenceTensors
 	component = 0
@@ -98,18 +69,6 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 	displacements = 'disp_x_imag disp_y_imag'
     variable = disp_y_imag
 	base_name = imag
-  []
-  
-  [reaction_x_imag]
-    type = ADReaction
-	variable = disp_x_imag
-	rate = ${fparse -freq_val*freq_val*density}
-  []
-  
-  [reaction_y_imag]
-    type = ADReaction
-	variable = disp_y_imag
-	rate = ${fparse -freq_val*freq_val*density}
   []
 []
 
@@ -136,27 +95,10 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 []
 
 [Postprocessors]
-  [displace_y_real]
+  [displace_x]
     type = PointValue
-    variable = disp_y_real
-    point = '0.002 0.001 0'
-  []
-  
-  [displace_y_imag]
-    type = PointValue
-    variable = disp_y_imag
-    point = '0.002 0.001 0'
-  []
-[]
-
-[VectorPostprocessors]
-  [wave_profile]
-    type = LineValueSampler
-    variable = disp_y
-    start_point = '0 ${mid_height} 0'
-    end_point = '${l_plate} ${mid_height} 0'
-    num_points = ${number_of_points}
-    sort_by = x
+    variable = disp_x
+    point = '${observation_point} 0.001 0'
   []
 []
 
@@ -172,7 +114,6 @@ number_of_points = ${fparse int(l_plate/0.00001)}
     type = ADComputeFiniteStrain
 	displacements = 'disp_x_real disp_y_real'
 	base_name = real
-	decomposition_method = EigenSolution
   []
   
   [stress_real]
@@ -192,7 +133,6 @@ number_of_points = ${fparse int(l_plate/0.00001)}
     type = ADComputeFiniteStrain
 	displacements = 'disp_x_imag disp_y_imag'
 	base_name = imag
-	decomposition_method = EigenSolution
   []
   
   [stress_imag]
@@ -202,37 +142,6 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 []
 
 [BCs]
-  [harmonic_perturbation_real]
-    type = ADDirichletBC
-    variable = disp_y_real
-    boundary = 'loading_point'
-    value = ${fparse (h_plate/10)}
-	preset = false
-  []
-  
-  [harmonic_perturbation_imag]
-    type = ADDirichletBC
-    variable = disp_y_imag
-    boundary = 'loading_point'
-    value = 0
-	preset = false
-  []
-  
-  [low_reflecting_boundary_y_real]
-    type = CoupledVarNeumannBC
-	variable = disp_y_real
-	boundary = 'right'
-	v = disp_y_imag
-	coef = ${fparse freq_val*mechanical_impedance}
-  []
-  [low_reflecting_boundary_y_imag]
-    type = CoupledVarNeumannBC
-	variable = disp_y_imag
-	boundary = 'right'
-	v = disp_y_real
-	coef = ${fparse -freq_val*mechanical_impedance}
-  []
-  
   [left_x_real]
     type = ADDirichletBC
     variable = disp_x_real
@@ -247,18 +156,77 @@ number_of_points = ${fparse int(l_plate/0.00001)}
     value = 0
 	preset = false
   []
+  [left_y_real]
+    type = ADDirichletBC
+    variable = disp_y_real
+    boundary = 'left'
+    value = 0
+	preset = false
+  []
+  [left_y_imag]
+    type = ADDirichletBC
+    variable = disp_y_imag
+    boundary = 'left'
+    value = 0
+	preset = false
+  []
+  
   
   [right_x_real]
     type = ADDirichletBC
     variable = disp_x_real
     boundary = 'right'
-    value = 0
+    value = ${right_disp_val}
 	preset = false
   []
   [right_x_imag]
     type = ADDirichletBC
     variable = disp_x_imag
     boundary = 'right'
+    value = 0
+	preset = false
+  []
+  [right_y_real]
+    type = ADDirichletBC
+    variable = disp_y_real
+    boundary = 'right'
+    value = 0
+	preset = false
+  []
+  [right_y_imag]
+    type = ADDirichletBC
+    variable = disp_y_imag
+    boundary = 'right'
+    value = 0
+	preset = false
+  []
+  
+  [top_y_real]
+    type = ADDirichletBC
+    variable = disp_y_real
+    boundary = 'top'
+    value = 0
+	preset = false
+  []
+  [top_y_imag]
+    type = ADDirichletBC
+    variable = disp_y_imag
+    boundary = 'top'
+    value = 0
+	preset = false
+  []
+  
+  [bottom_y_real]
+    type = ADDirichletBC
+    variable = disp_y_real
+    boundary = 'bottom'
+    value = 0
+	preset = false
+  []
+  [bottom_y_imag]
+    type = ADDirichletBC
+    variable = disp_y_imag
+    boundary = 'bottom'
     value = 0
 	preset = false
   []
@@ -279,7 +247,6 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   nl_max_its = 20
   
   automatic_scaling = true
-  line_search = none
 []
 
 [Outputs]

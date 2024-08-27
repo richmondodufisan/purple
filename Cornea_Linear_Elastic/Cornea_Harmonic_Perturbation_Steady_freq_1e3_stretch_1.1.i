@@ -1,5 +1,5 @@
 #Global Parameters
-freq_val = 10e3
+freq_val = 1e3
 youngs_modulus_val = 60e3
 poissons_ratio_val = 0.4999
 shear_modulus_val = ${fparse (youngs_modulus_val/(2*(1+poissons_ratio_val)))}
@@ -20,7 +20,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   second_order = true
   [sample_mesh]
     type = FileMeshGenerator
-    file = Cornea_Stretch_out.e
+    file = "Cornea_Stretch_freq_1e3_stretch_1.1_out.e"
 	use_for_exodus_restart = true
   []
 []
@@ -231,6 +231,36 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 	boundary = 'right'
 	v = disp_y_real
 	coef = ${fparse -freq_val*mechanical_impedance}
+  []
+  
+  [top_x_real]
+    type = ADDirichletBC
+    variable = disp_x_real
+    boundary = 'top'
+    value = 0
+	preset = false
+  []
+  [top_x_imag]
+    type = ADDirichletBC
+    variable = disp_x_imag
+    boundary = 'top'
+    value = 0
+	preset = false
+  []
+  
+  [bottom_x_real]
+    type = ADDirichletBC
+    variable = disp_x_real
+    boundary = 'bottom'
+    value = 0
+	preset = false
+  []
+  [bottom_x_imag]
+    type = ADDirichletBC
+    variable = disp_x_imag
+    boundary = 'bottom'
+    value = 0
+	preset = false
   []
   
   [left_x_real]
