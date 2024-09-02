@@ -18,7 +18,7 @@ observation_point = ${fparse l_plate/10}
   
   [sample_mesh]
     type = FileMeshGenerator
-    file = cornea_rectangle_freq_10e3.msh
+    file = cornea_rectangle.msh
   []
 []
 
