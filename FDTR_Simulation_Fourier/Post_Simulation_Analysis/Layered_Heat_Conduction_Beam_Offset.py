@@ -16,10 +16,8 @@ from scipy.special import i0,j0
 # The calc_thermal_response should be used to find the phase and amplitude given the appropriate material properties
 
 
-
 # To use in another file, include the line: 
-# "from Layered_Heat_Conduction import calc_thermal_response"
-
+# "from Layered_Heat_Conduction_Beam_Offset import calc_thermal_response"
 
 
 # Input arguments for calc_thermal_response:
@@ -39,6 +37,9 @@ from scipy.special import i0,j0
 # r_probe: radius of the probe laser
 
 # x0 (UNIQUE TO BEAM OFFSET): This is a modification of the model to account for beam offsets as detailed in Feser 2012
+# It was found that numerical integration of the approximation (ring profile) was faster than the analytical solution
+# Furthermore, the Hankel transform is defined differently in Feser 2012 (i.e * J(2*pi*k*r)) as opposed to (* J(k*r))
+# in Schmidt 2008
 
 # calib_constants: additional constants to calibrate model if comparing to FEM simulations. 
 # The calibration is done on the pump and probe radii.
@@ -47,6 +48,7 @@ from scipy.special import i0,j0
 # freq: frequency of the input signal (pump laser)
 
 # pump_power: the pump power, Q0
+
 
 # Define the integrand with respect to r (i.e S(k) = Hankel Transform of S(r))
 def integrand_r(r, x0, r_probe, k):
