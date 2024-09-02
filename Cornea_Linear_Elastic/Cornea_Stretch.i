@@ -2,18 +2,20 @@
 youngs_modulus_val = 60000
 poissons_ratio_val = 0.4999
 
-stretch_ratio = 1.1
+stretch_ratio = 1.005
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
 observation_point = ${fparse l_plate/10}
 
 [GlobalParams]
-  volumetric_locking_correction = true
+  stabilize_strain = true
   large_kinematics = true
 []
 
 [Mesh]
+  second_order = true
+  
   [sample_mesh]
     type = FileMeshGenerator
     file = cornea_rectangle_freq_10e3.msh
@@ -22,26 +24,26 @@ observation_point = ${fparse l_plate/10}
 
 [Variables]
   [disp_x_real]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
   [disp_y_real]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
   [disp_x_imag]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
   [disp_y_imag]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
 []
 
 [Kernels]
   [div_sig_x_real]
-    type = ADTotalLagrangianStressDivergence
+    type = TotalLagrangianStressDivergence
 	component = 0
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_x_real
@@ -49,7 +51,7 @@ observation_point = ${fparse l_plate/10}
   []
   
   [div_sig_y_real]
-    type = ADTotalLagrangianStressDivergence
+    type = TotalLagrangianStressDivergence
 	component = 1
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_y_real
@@ -57,7 +59,7 @@ observation_point = ${fparse l_plate/10}
   []
   
   [div_sig_x_imag]
-    type = ADTotalLagrangianStressDivergence
+    type = TotalLagrangianStressDivergence
 	component = 0
 	displacements = 'disp_x_imag disp_y_imag'
     variable = disp_x_imag
@@ -65,7 +67,7 @@ observation_point = ${fparse l_plate/10}
   []
   
   [div_sig_y_imag]
-    type = ADTotalLagrangianStressDivergence
+    type = TotalLagrangianStressDivergence
 	component = 1
 	displacements = 'disp_x_imag disp_y_imag'
     variable = disp_y_imag
@@ -105,39 +107,41 @@ observation_point = ${fparse l_plate/10}
 
 [Materials]
   [elasticity_tensor_real]
-    type = ADComputeIsotropicElasticityTensor
+    type = ComputeIsotropicElasticityTensor
     youngs_modulus = ${youngs_modulus_val}
     poissons_ratio = ${poissons_ratio_val}
 	base_name = real
   []
   
   [strain_real]
-    type = ADComputeLagrangianStrain
+    type = ComputeLagrangianStrain
 	displacements = 'disp_x_real disp_y_real'
 	base_name = real
   []
   
   [stress_real]
-    type = ADComputeLagrangianLinearElasticStress
+    type = ComputeLagrangianLinearElasticStress
+	elasticity_tensor = 'real_elasticity_tensor'
 	base_name = real
   []
   
   
   [elasticity_tensor_imag]
-    type = ADComputeIsotropicElasticityTensor
+    type = ComputeIsotropicElasticityTensor
     youngs_modulus = ${youngs_modulus_val}
     poissons_ratio = ${poissons_ratio_val}
 	base_name = imag
   []
   
   [strain_imag]
-    type = ADComputeLagrangianStrain
+    type = ComputeLagrangianStrain
 	displacements = 'disp_x_imag disp_y_imag'
 	base_name = imag
   []
   
   [stress_imag]
-    type = ADComputeLagrangianLinearElasticStress
+    type = ComputeLagrangianLinearElasticStress
+	elasticity_tensor = 'imag_elasticity_tensor'
 	base_name = imag
   []
 []
@@ -201,36 +205,6 @@ observation_point = ${fparse l_plate/10}
     value = 0
 	preset = false
   []
-  
-  [top_y_real]
-    type = ADDirichletBC
-    variable = disp_y_real
-    boundary = 'top'
-    value = 0
-	preset = false
-  []
-  [top_y_imag]
-    type = ADDirichletBC
-    variable = disp_y_imag
-    boundary = 'top'
-    value = 0
-	preset = false
-  []
-  
-  [bottom_y_real]
-    type = ADDirichletBC
-    variable = disp_y_real
-    boundary = 'bottom'
-    value = 0
-	preset = false
-  []
-  [bottom_y_imag]
-    type = ADDirichletBC
-    variable = disp_y_imag
-    boundary = 'bottom'
-    value = 0
-	preset = false
-  []
 []
 
 [Executioner]
@@ -251,14 +225,7 @@ observation_point = ${fparse l_plate/10}
 []
 
 [Outputs]
-  interval = 1
-  #execute_on = 'initial timestep_end'
-  print_linear_residuals = false
   csv = true
   exodus = true
-  [pgraph]
-    type = PerfGraphOutput
-    execute_on = 'final'  # Default is "final"
-    level = 1             # Default is 1
-  []
+  perf_graph = true
 []
