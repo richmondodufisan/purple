@@ -47,38 +47,21 @@ import pdb
 # pump_power: the pump power, Q0
 
 
-def polynomial_function(n, x, k):
-    # Initial condition for l_0
-    if n == 0:
-        return np.pi
 
-    # Recursively compute l_n for n >= 1
-    def l_n(n, x):
-        if n == 0:
-            return np.pi
-        else:
-            l_n_minus_1 = l_n(n - 1, x)
-            l_n_minus_1_prime = derivative_l_n(n - 1, x)
-            l_n_minus_1_double_prime = double_derivative_l_n(n - 1, x)
-            
-            return (-1/k) * ((np.pi**2 * x**3 - x) * l_n_minus_1 +
-                             (1/(4 * np.pi**2) - x**2) * l_n_minus_1_prime +
-                             (x / (4 * np.pi**2)) * l_n_minus_1_double_prime)
-    
-    def derivative_l_n(n, x, h=1e-5):
-        # Numerical differentiation to approximate the first derivative
-        return (l_n(n, x + h) - l_n(n, x - h)) / (2 * h)
+import numpy as np
+from scipy.integrate import quad
+from scipy.special import i0, j0
 
-    def double_derivative_l_n(n, x, h=1e-5):
-        # Numerical differentiation to approximate the second derivative
-        return (l_n(n, x + h) - 2 * l_n(n, x) + l_n(n, x - h)) / (h**2)
-    
-    return l_n(n, x)
-
+# Define the integrand with respect to r (i.e S(k))
+def integrand_r(r, x0, r_probe, k):
+    exponent_term = np.exp(-2 * (r**2 + x0**2) / r_probe**2)
+    bessel_i_term = i0(4 * x0 * r / r_probe**2)
+    bessel_j_term = j0(2 * np.pi * k * r)
+    return (4 / r_probe**2) * exponent_term * bessel_i_term * bessel_j_term * r
 
 
 # Integral in Equation 3.5
-def integrand(k, N_layers, layer_props, interface_props, r_pump, r_probe, x0, calib_consts, freq):
+def integrand_k(k, N_layers, layer_props, interface_props, r_pump, r_probe, x0, calib_consts, freq):
 
   # Checks to ensure data is properly submitted/formatted
   
@@ -141,39 +124,14 @@ def integrand(k, N_layers, layer_props, interface_props, r_pump, r_probe, x0, ca
   # G(k) * P(k)
   G_k_P_k = (-D_total/C_total) * np.exp((-k**2 * r_pump**2)/8)
   
-
-  #### Calculate S(k) as detailed in Feser2012
-  # Precompute common factors
-  factor1 = np.sqrt(2) * x0 / r_probe
-  factor2 = np.pi * r_probe * k / np.sqrt(2)
-  
-  # Compute the exponential factor
-  exp_factor = np.exp(-(factor1**2 + factor2**2))
-  
-  # Initialize the sum
-  summation = 0
-  
-  # As stated by Feser, 40 iterations of the l_n polynomial are sufficient for
-  # smaller beam offsets, specifically offsets where
-  # x0 < 4*r_pump
-
-  max_terms = 10
-
-  for n in range(max_terms):
-      # Compute the n-th term of the series
-      term = (1 / (math.factorial(n)**2)) * (factor1**2)**n * polynomial_function(n, r_probe * k / 2, k)
-      summation += term
-  
-  # Compute S(k)
-  S_k = 2 * exp_factor * summation
-
+  r_bound = 50*r_probe
+  S_k, _ = quad(integrand_r, 0, r_bound, args=(x0, r_probe, k))
 
   return  S_k * G_k_P_k
-  
-  
+
 
 def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, x0, calib_consts, freq, pump_power):
-  result, error = quad_vec(integrand, 0, 10000001, args=(N_layers, layer_props, interface_props, r_pump, r_probe, x0, calib_consts, freq))
+  result, error = quad_vec(integrand_k, 0, 10000001, args=(N_layers, layer_props, interface_props, r_pump, r_probe, x0, calib_consts, freq))
 
   # Hankel space variable, Equation 3.5
   H = (pump_power/(2 * np.pi)) * result
