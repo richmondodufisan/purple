@@ -172,7 +172,6 @@ number_of_points = ${fparse int(l_plate/0.00001)}
     type = ADComputeIncrementalSmallStrain
 	displacements = 'disp_x_real disp_y_real'
 	base_name = real
-	decomposition_method = EigenSolution
   []
   
   [stress_real]
@@ -192,7 +191,6 @@ number_of_points = ${fparse int(l_plate/0.00001)}
     type = ADComputeIncrementalSmallStrain
 	displacements = 'disp_x_imag disp_y_imag'
 	base_name = imag
-	decomposition_method = EigenSolution
   []
   
   [stress_imag]

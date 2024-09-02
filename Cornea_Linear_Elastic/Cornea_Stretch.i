@@ -2,7 +2,7 @@
 youngs_modulus_val = 60000
 poissons_ratio_val = 0.4999
 
-stretch_ratio = 1.5
+stretch_ratio = 1.1
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
@@ -10,6 +10,7 @@ observation_point = ${fparse l_plate/10}
 
 [GlobalParams]
   volumetric_locking_correction = true
+  large_kinematics = true
 []
 
 [Mesh]
@@ -40,7 +41,7 @@ observation_point = ${fparse l_plate/10}
 
 [Kernels]
   [div_sig_x_real]
-    type = ADStressDivergenceTensors
+    type = ADTotalLagrangianStressDivergence
 	component = 0
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_x_real
@@ -48,7 +49,7 @@ observation_point = ${fparse l_plate/10}
   []
   
   [div_sig_y_real]
-    type = ADStressDivergenceTensors
+    type = ADTotalLagrangianStressDivergence
 	component = 1
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_y_real
@@ -56,7 +57,7 @@ observation_point = ${fparse l_plate/10}
   []
   
   [div_sig_x_imag]
-    type = ADStressDivergenceTensors
+    type = ADTotalLagrangianStressDivergence
 	component = 0
 	displacements = 'disp_x_imag disp_y_imag'
     variable = disp_x_imag
@@ -64,7 +65,7 @@ observation_point = ${fparse l_plate/10}
   []
   
   [div_sig_y_imag]
-    type = ADStressDivergenceTensors
+    type = ADTotalLagrangianStressDivergence
 	component = 1
 	displacements = 'disp_x_imag disp_y_imag'
     variable = disp_y_imag
@@ -111,13 +112,13 @@ observation_point = ${fparse l_plate/10}
   []
   
   [strain_real]
-    type = ADComputeFiniteStrain
+    type = ADComputeLagrangianStrain
 	displacements = 'disp_x_real disp_y_real'
 	base_name = real
   []
   
   [stress_real]
-    type = ADComputeFiniteStrainElasticStress
+    type = ADComputeLagrangianLinearElasticStress
 	base_name = real
   []
   
@@ -130,13 +131,13 @@ observation_point = ${fparse l_plate/10}
   []
   
   [strain_imag]
-    type = ADComputeFiniteStrain
+    type = ADComputeLagrangianStrain
 	displacements = 'disp_x_imag disp_y_imag'
 	base_name = imag
   []
   
   [stress_imag]
-    type = ADComputeFiniteStrainElasticStress
+    type = ADComputeLagrangianLinearElasticStress
 	base_name = imag
   []
 []
