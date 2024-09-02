@@ -7,6 +7,8 @@ from scipy.integrate import quad_vec
 import math
 import cmath
 import pdb
+from scipy.integrate import dblquad
+from scipy.special import i0,j0 
 
 # This is a helper file for calculating phase and temperature increase in FDTR experiments
 # It is assumed that thermal transport is within the diffusive regime, hence Fourier's equation applies
@@ -46,17 +48,11 @@ import pdb
 
 # pump_power: the pump power, Q0
 
-
-
-import numpy as np
-from scipy.integrate import quad
-from scipy.special import i0, j0
-
-# Define the integrand with respect to r (i.e S(k))
+# Define the integrand with respect to r (i.e S(k) = Hankel Transform of S(r))
 def integrand_r(r, x0, r_probe, k):
     exponent_term = np.exp(-2 * (r**2 + x0**2) / r_probe**2)
     bessel_i_term = i0(4 * x0 * r / r_probe**2)
-    bessel_j_term = j0(2 * np.pi * k * r)
+    bessel_j_term = j0(k * r)
     return (4 / r_probe**2) * exponent_term * bessel_i_term * bessel_j_term * r
 
 
@@ -124,10 +120,11 @@ def integrand_k(k, N_layers, layer_props, interface_props, r_pump, r_probe, x0, 
   # G(k) * P(k)
   G_k_P_k = (-D_total/C_total) * np.exp((-k**2 * r_pump**2)/8)
   
+  # r_bound = 50*r_probe
   r_bound = 50*r_probe
   S_k, _ = quad(integrand_r, 0, r_bound, args=(x0, r_probe, k))
 
-  return  S_k * G_k_P_k
+  return  S_k * G_k_P_k * k
 
 
 def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, x0, calib_consts, freq, pump_power):
