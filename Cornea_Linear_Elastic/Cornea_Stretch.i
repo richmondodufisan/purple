@@ -2,7 +2,7 @@
 youngs_modulus_val = 60000
 poissons_ratio_val = 0.4999
 
-stretch_ratio = 1.005
+stretch_ratio = 1.001
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
