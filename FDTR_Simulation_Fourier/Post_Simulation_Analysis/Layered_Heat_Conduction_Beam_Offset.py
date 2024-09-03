@@ -51,6 +51,9 @@ from scipy.special import i0,j0
 
 
 # Define the integrand with respect to r (i.e S(k) = Hankel Transform of S(r))
+# Slightly adjusted version of equation 12 in Feser 2012 to provide
+# a normalized ring-shaped profile, to keep consistent with 
+# Schmidt 2008
 def integrand_r(r, x0, r_probe, k):
     exponent_term = np.exp(-2 * (r**2 + x0**2) / r_probe**2)
     bessel_i_term = i0(4 * x0 * r / r_probe**2)
@@ -108,10 +111,9 @@ def integrand_k(k, N_layers, layer_props, interface_props, r_pump, r_probe, x0, 
   r_pump = r_pump * np.sqrt(2)
   r_probe = r_probe * np.sqrt(2)
 
-  # calibration constants to account for mesh sensitivity
-  # 1 W/m.K corresponds to ~0.0005 radians change in phase
-  # therefore, we need to have accuracy to at least 4.d.p
-  # more would be even better
+  # calibration constants to account for mesh sensitivity  
+  # Only use calibration in extreme cases where a fine mesh is not an option
+  # For most applications, ignore this
 
   beta1 = calib_consts[0]
   r_pump = r_pump*beta1
@@ -122,17 +124,20 @@ def integrand_k(k, N_layers, layer_props, interface_props, r_pump, r_probe, x0, 
   # G(k) * P(k)
   G_k_P_k = (-D_total/C_total) * np.exp((-k**2 * r_pump**2)/8)
   
-  # r_bound = 50*r_probe
   r_bound = 50*r_probe
   S_k, _ = quad(integrand_r, 0, r_bound, args=(x0, r_probe, k))
-
+  
+  # G(k) is solution to 3D heat equation in frequency domain + hankel space
+  # P(k) is applied harmonic heat source
+  # S(k) is normalized probe
+  
   return  S_k * G_k_P_k * k
 
 
 def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, x0, calib_consts, freq, pump_power):
   result, error = quad_vec(integrand_k, 0, 10000001, args=(N_layers, layer_props, interface_props, r_pump, r_probe, x0, calib_consts, freq))
 
-  # Hankel space variable, Equation 3.5
+  # Thermal response in frequency domain, Equation 3.5
   H = (pump_power/(2 * np.pi)) * result
 
   phase = math.atan(H.imag/H.real)

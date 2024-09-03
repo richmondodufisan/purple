@@ -96,10 +96,9 @@ def integrand(k, N_layers, layer_props, interface_props, r_pump, r_probe, calib_
   r_pump = r_pump * np.sqrt(2)
   r_probe = r_probe * np.sqrt(2)
 
-  # calibration constants to account for mesh sensitivity
-  # 1 W/m.K corresponds to ~0.0005 radians change in phase
-  # therefore, we need to have accuracy to at least 4.d.p
-  # more would be even better
+  # calibration constants to account for mesh sensitivity  
+  # Only use calibration in extreme cases where a fine mesh is not an option
+  # For most applications, ignore this
 
   beta1 = calib_consts[0]
   r_pump = r_pump*beta1
@@ -115,7 +114,7 @@ def integrand(k, N_layers, layer_props, interface_props, r_pump, r_probe, calib_
 def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power):
   result, error = quad_vec(integrand, 0, 10000001, args=(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq))
 
-  # Hankel space variable, Equation 3.5
+  # Thermal response in frequency domain, Equation 3.5
   H = (pump_power/(2 * np.pi)) * result
 
   phase = math.atan(H.imag/H.real)
