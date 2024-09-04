@@ -10,6 +10,7 @@ from Layered_Heat_Conduction import calc_thermal_response
 
 # This code is used to generate thermal maps from phase data
 # It is assumed that the phase data is saved as .txt files of the format Phase_1MHz.txt, Phase_2MHz.txt, Phase_0p5MHz.txt, etc
+# In each file the rows and columns should correspond to their spatial phase data
 # It is also assumed that the phase values are in degrees
 # In this section, you define the length and breadth of the map, and the number of steps in each direction
 
