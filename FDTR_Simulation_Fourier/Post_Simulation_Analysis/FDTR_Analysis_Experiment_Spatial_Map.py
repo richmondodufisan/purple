@@ -2,6 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 from scipy.optimize import curve_fit
 from Layered_Heat_Conduction import calc_thermal_response
 
@@ -19,7 +20,7 @@ steps_x = 33
 steps_y = 6
 
 # Directory where phase data files are stored
-data_directory = "./Map_Test/"  # User should update this to the actual directory
+data_directory = "./Map_Test"  # User should update this to the actual directory
 
 # Expected phase data files
 phase_range = ["0p5MHz", "1MHz", "2MHz", "4MHz"]
@@ -203,33 +204,58 @@ for i in range(steps_y):
 
 ############################################################# GENERATING HEAT MAPS #########################################################################################
 
-# Generate heatmaps for each fitting property
-plt.figure(figsize=(12, 6))
-
 # CHANGE IF CHANGING FITTING PROPERTIES
 # i.e add or remove another map
 
-# Plot kappa (fitting_properties[0]) map
-plt.subplot(1, 2, 1)
-plt.imshow(fitting_map[:, :, 0], cmap='hot', extent=[0, length_x, 0, length_y])
-plt.colorbar(label='Thermal Conductivity (Si)')
+# Get actual data ranges for fitting properties
+kappa_min, kappa_max = fitting_map[:, :, 0].min(), fitting_map[:, :, 0].max()  # Thermal conductivity range
+conductance_min, conductance_max = fitting_map[:, :, 1].min() / 1e6, fitting_map[:, :, 1].max() / 1e6  # Interface conductance range in MW/(m².K)
+
+# Alternatively, set data ranges manually:
+# kappa_min, kappa_max = [10, 200]  # Thermal conductivity range
+# conductance_min, conductance_max = [50, 300] # Interface conductance range in MW/(m².K)
+
+
+
+# Generate first figure for thermal conductivity map
+plt.figure(figsize=(6, 6))  # Create a new figure for the thermal conductivity map
+img1 = plt.imshow(fitting_map[:, :, 0], cmap='hot', extent=[0, length_x, 0, length_y], vmin=kappa_min, vmax=kappa_max)
+cbar1 = plt.colorbar(img1)
+cbar1.set_label('Thermal Conductivity, W/(m.K)')
+
+# Manually set colorbar ticks with intermediate values
+ticks_kappa = np.linspace(kappa_min, kappa_max, 5)  # Generate 5 evenly spaced ticks
+cbar1.set_ticks(ticks_kappa)
+cbar1.ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))  # Adjust the format if needed
 plt.title('Thermal Conductivity Map (Si)')
 plt.xlabel('X position')
 plt.ylabel('Y position')
 
-# Plot conductance (fitting_properties[1]) map
-plt.subplot(1, 2, 2)
-plt.imshow(fitting_map[:, :, 1], cmap='hot', extent=[0, length_x, 0, length_y])
-plt.colorbar(label='Interface (1-2) Conductance')
+# Save the thermal conductivity map as a separate PNG file
+save_path_kappa = f'{data_directory}_kappa.png'
+plt.savefig(save_path_kappa)
+plt.show()  
+
+
+
+
+# Generate second figure for interface conductance map
+plt.figure(figsize=(6, 6))  # Create a new figure for the interface conductance map
+img2 = plt.imshow(fitting_map[:, :, 1] / 1e6, cmap='hot', extent=[0, length_x, 0, length_y], vmin=conductance_min, vmax=conductance_max)
+cbar2 = plt.colorbar(img2)
+cbar2.set_label('Interface Conductance, MW/(m^2.K)')
+
+# Manually set colorbar ticks with intermediate values
+ticks_conductance = np.linspace(conductance_min, conductance_max, 5)  # Generate 5 evenly spaced ticks
+cbar2.set_ticks(ticks_conductance)
+cbar2.ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))  # Adjust the format if needed
 plt.title('Interface (1-2) Conductance Map')
 plt.xlabel('X position')
 plt.ylabel('Y position')
 
-plt.tight_layout()
-
-save_path = f'{data_directory}.png'
-plt.savefig(save_path)
-
+# Save the interface conductance map as a separate PNG file
+save_path_conductance = f'{data_directory}_conductance.png'
+plt.savefig(save_path_conductance)
 plt.show()
 
 ############################################################# END GENERATING HEAT MAPS #########################################################################################
