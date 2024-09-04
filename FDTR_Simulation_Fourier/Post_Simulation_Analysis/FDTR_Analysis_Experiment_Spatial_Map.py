@@ -93,6 +93,7 @@ def get_material_properties(i, j, regions):
 def fit_function_FDTR(freqs, fitting_properties, material_properties):
     phases = []
 
+    # CHANGE IF CHANGING FITTING PROPERTIES
     kappa_2, conductance_12 = fitting_properties
     kappa_1, rho_1, c_1, rho_2, c_2 = material_properties
 

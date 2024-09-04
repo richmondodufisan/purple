@@ -3,9 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from Layered_Heat_Conduction import calc_thermal_response
-from Phase_Extraction_Cosine_Fit import calculate_phase_amplitude
 from scipy.optimize import curve_fit
-from scipy.integrate import trapz
 import math
 
 import pdb
@@ -17,20 +15,44 @@ import pdb
 # For some samples, higher frequencies enter the non-Fourier regime, and need to be removed before fitting. The "cutoff"
 # variable within the "process_file" function is responsible for adjusting the number of points to cut off.
 
+# Please see the documentation in Layered_Heat_Conduction to understand how material properties are passed to calc_thermal_response'
+
+
+
 ##################################################### FUNCTION DEFINITIONS ###################################################
+
+# In the fit_function_FDTR function, we pass the fitting properties as an array
+# These are the material properties that are fit.
+# If you need to fit more at the same time, you need to change:
+
+# Bounds & Initial Guesses for the fitting (under READ DATA AND PERFORM FITTING section)
+# fit_function_FDTR (right here, under FUNCTION DEFINITIONS)
+# extraction of fitted results (under READ DATA AND PERFORM FITTING section)
+# plotting results (under READ DATA AND PERFORM FITTING section), adjust the title to show additional fitted properties
+
+
+# I have also added the comment "CHANGE IF CHANGING FITTING PROPERTIES" to each of those locations to make them searchable
+
+
+
+
+
 
 # Two-Layer FDTR Function
 
-# def fit_function_FDTR(freqs, k_Si, conductance):
+# def fit_function_FDTR(freqs, fitting_properties):
     # phases = []
+    
+    # # CHANGE IF CHANGING FITTING PROPERTIES
+    # kappa_2, conductance_12 = fitting_properties  # Adjust the fitting parameters as needed
 
     # for freq in freqs:
         # # Define other parameters required by calc_thermal_response function
         # N_layers = 2
-        # layer2 = [100e-6, k_Si, k_Si, 2630, 741.79]
+        # layer2 = [100e-6, kappa_2, kappa_2, 2630, 741.79]
         # layer1 = [133e-9, 194, 194, 19300, 126.4]
         # layer_props = np.array([layer2, layer1])
-        # interface_props = [conductance]
+        # interface_props = [conductance_12]
         # r_probe = 1.249e-6
         # r_pump = 2.216e-6
         # pump_power = 1.5
@@ -46,17 +68,20 @@ import pdb
 
 # Three-Layer FDTR Function
 
-def fit_function_FDTR(freqs, k_Si, conductance):
+def fit_function_FDTR(freqs, fitting_properties):
     phases = []
+    
+    # CHANGE IF CHANGING FITTING PROPERTIES
+    kappa_2, conductance_12 = fitting_properties  # Adjust the fitting parameters as needed
 
     for freq in freqs:
         # Define other parameters required by calc_thermal_response function
         N_layers = 3
-        layer3 = [100e-6, k_Si, k_Si, 2329, 689.1]              #Si
+        layer3 = [100e-6, kappa_2, kappa_2, 2329, 689.1]              #Si
         layer2 = [1000e-9, 2.711, 2.711, 2630, 741.79]           #SiO2
         layer1 = [133e-9, 194, 194, 19300, 126.4]               #Au
         layer_props = np.array([layer3, layer2, layer1])
-        interface_props = [conductance, 37.6983e6]
+        interface_props = [conductance_12, 37.6983e6]
         r_probe = 1.249e-6
         r_pump = 2.216e-6
         pump_power = 1.5
@@ -68,28 +93,35 @@ def fit_function_FDTR(freqs, k_Si, conductance):
         phases.append(phase)
         
     return np.array(phases)
-    
-    
-def process_file(file_path):
+
+
+
+# Process a single CSV file and perform fitting
+def process_file(file_path, initial_guesses, bounds_lower, bounds_upper):
+
     # Read the CSV file into a pandas DataFrame
     FDTR_data = pd.read_csv(file_path, skiprows=1, names=['frequency', 'phase'])
     FDTR_data['phase'] = FDTR_data['phase'] * (math.pi / 180)  # Convert to radians
     
     
+    
+    # Optional: Cutoff points from the start and end of the data
+    
+    cutoff_end = 13  # Number of points to cutoff from the end
+    FDTR_data = FDTR_data[:-cutoff_end]
+    
     # cutoff_start = 14 # number of points to cutoff from the start
     # FDTR_data = FDTR_data[cutoff_start:]
-    
-    
-    cutoff_end = 13 # number of points to cutoff from the end
-    FDTR_data = FDTR_data[:-cutoff_end]
 
-    # Perform the curve fitting
+
+
+    # Perform the curve fitting using the flexible fitting properties
     popt, pcov = curve_fit(
-        fit_function_FDTR,
+        lambda freqs, *fitting_properties: fit_function_FDTR(freqs, fitting_properties),
         FDTR_data['frequency'],   # Frequency data
         FDTR_data['phase'],  # Phase data
-        p0=(3, 40e6), # Initial guesses
-        bounds=([0, 10e6], [300, 500e6]),  # Set bounds for kappa and conductance
+        p0=initial_guesses,  # Initial guesses for the fitting properties
+        bounds=(bounds_lower, bounds_upper),  # Bounds for the fitting properties
         method='trf',  # Use Trust Region Reflective algorithm
         maxfev=10000,  # Maximum number of function evaluations
         ftol=1e-12,   # Set the tolerance on the relative error in the function values
@@ -98,7 +130,7 @@ def process_file(file_path):
     )
     
     return FDTR_data, popt
-    
+
 ##################################################### END FUNCTION DEFINITIONS ###################################################
 
 
@@ -112,6 +144,13 @@ def process_file(file_path):
 folder_path = './Richmond_1000nm_SiO2_on_Si'  
 num_files = 6  # Specify the number of files
 
+# Define initial guesses and bounds for the fitting properties
+# CHANGE IF CHANGING FITTING PROPERTIES
+
+initial_guesses = [3, 40e6]  # Initial guesses for k_Si and conductance (you can add more fitting properties)
+bounds_lower = [0, 10e6]     # Lower bounds for the fitting properties
+bounds_upper = [300, 500e6]  # Upper bounds for the fitting properties
+
 # Initialize subplots
 fig, axes = plt.subplots(2, 3, figsize=(18, 12))
 axes = axes.flatten()
@@ -119,11 +158,16 @@ axes = axes.flatten()
 # Loop through each file
 for i in range(num_files):
     file_path = os.path.join(folder_path, f'Results_SiSi_interface_{i + 1}.csv')
-    FDTR_data, popt = process_file(file_path)
+    
+    # Process the file and perform the fitting
+    FDTR_data, popt = process_file(file_path, initial_guesses, bounds_lower, bounds_upper)
+    
+    # Extract the fitted parameters (adjust based on the number of fitting properties)
+    # CHANGE IF CHANGING FITTING PROPERTIES
     kappa_opt, conductance_opt = popt
     
-    # Generate fitted data
-    FDTR_phase_fitted = fit_function_FDTR(FDTR_data['frequency'], kappa_opt, conductance_opt)
+    # Generate fitted data using the optimized parameters
+    FDTR_phase_fitted = fit_function_FDTR(FDTR_data['frequency'], popt)
     
     # Calculate the mean square error
     mse = np.mean((FDTR_data['phase'] - FDTR_phase_fitted) ** 2)
@@ -135,13 +179,18 @@ for i in range(num_files):
     axes[i].set_xlabel('Frequency (MHz)', fontsize=15)
     axes[i].set_ylabel('Phase (Radians)', fontsize=15)
     axes[i].legend()
+    
+    # CHANGE IF CHANGING FITTING PROPERTIES
     axes[i].set_title(f'κ: {kappa_opt:.2f} W/(m.K), G: {(conductance_opt/1e6):.2f} MW/(m^2.K) \nMSE: {mse:.2e}', fontsize=15)
     axes[i].tick_params(axis='both', which='major', labelsize=15)
 
+# Adjust the layout of the subplots
 plt.subplots_adjust(wspace=0.3, hspace=0.5)
 
+# Save the figure
 save_path = f'{folder_path}.png'
 plt.savefig(save_path)
 
 plt.show()
+
 ##################################################### END READ DATA AND PERFORM FITTING ###################################################
