@@ -26,7 +26,7 @@ import pdb
 
 # layer_props: This should be a NumPy array of arrays. The arrays should be organized in descending order,
 # i.e, from the bottom to the top (e.g [layer3, layer2, layer1]). Each layer array should contain the following material
-# properties: [h (layer thickness), kappa_z (cross plane thermal conductivity), kappa_r (in plane/radial thermal conductivity),
+# properties IN ORDER: [h (layer thickness), kappa_z (cross plane thermal conductivity), kappa_r (in plane/radial thermal conductivity),
 # rho (density), c (heat capacity)]
 
 # interface_props: this is an array of the interface conductances between layers. There should be one less
