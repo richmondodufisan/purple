@@ -5,9 +5,9 @@ import sys
 gmsh.initialize()
 gmsh.model.add("FDTR_mesh")
 
-newMeshName = "FDTR_mesh_no_gb_x0_0.msh"
+newMeshName = "FDTR_mesh_no_gb_x0_15.msh"
 
-xcen = 0
+xcen = 15
 ycen = 0
 radius = 8
 trans_thick = 0.09

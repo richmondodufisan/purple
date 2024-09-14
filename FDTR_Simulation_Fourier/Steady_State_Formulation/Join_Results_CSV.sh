@@ -1,6 +1,6 @@
 #!/bin/bash
 
-theta_angle=0
+theta_angle=85
 
 # Input file type
 og_filename=FDTR_input_GibbsExcess_StepFunction
