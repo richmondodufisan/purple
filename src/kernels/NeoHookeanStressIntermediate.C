@@ -9,6 +9,8 @@ NeoHookeanStressIntermediate::validParams()
 {
   InputParameters params = ADMaterial::validParams();
   params.addClassDescription("Intermediate file for calculating Neo Hookean Stress since the Base PK1 class doesn't do derivatives");
+  
+  params.addParam<std::string>("base_name", "", "Base name for material properties");
 
   return params;
 }

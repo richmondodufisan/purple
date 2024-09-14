@@ -24,11 +24,11 @@ protected:
   const std::string _base_name;
 
   /// Real valued constants from users
-  const ADReal _user_mu_0;
+  const Real _user_mu_0;
   
-  const ADMaterialProperty<RankTwoTensor> & _deformation_gradient;
+  const MaterialProperty<RankTwoTensor> & _deformation_gradient;
 
-  ADMaterialProperty<Real> & _strain_energy;
+  MaterialProperty<Real> & _strain_energy;
   MaterialProperty<RankTwoTensor> & _dWdF;
   MaterialProperty<RankFourTensor> & _d2WdF2;
 };

@@ -11,6 +11,7 @@ ComputeStrainEnergyNeoHookean::validParams()
   params.addClassDescription("Collect material properties required and calculate the strain energy for an incompressible Neo-Hookean solid");
 
   params.addRequiredParam<Real>("mu_0", "the initial shear modulus");
+  params.addParam<std::string>("base_name", "", "Base name for material properties");
 
   return params;
 }
@@ -25,15 +26,16 @@ ComputeStrainEnergyNeoHookean::ComputeStrainEnergyNeoHookean(const InputParamete
 	_user_mu_0(getParam<Real>("mu_0")),
 	
 	/// Get deformation gradient, declared by strain object	
-	_deformation_gradient(getADMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient")),
+	_deformation_gradient(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient")),
 
 	/// Declare material properties
-	_strain_energy(declareADProperty<Real>(_base_name + "strain_energy")),
+	_strain_energy(declareProperty<Real>(_base_name + "strain_energy")),
 	_dWdF(declarePropertyDerivative<RankTwoTensor>(_base_name + "strain_energy", _base_name + "deformation_gradient")),	// this is the stress
 	_d2WdF2(declarePropertyDerivative<RankFourTensor>(_base_name + "strain_energy", _base_name + "deformation_gradient", _base_name + "deformation_gradient")) //this is the tangent operator
 
 
 {
+	std::cout << "Base name: " << _base_name << std::endl;
 }
 
 
