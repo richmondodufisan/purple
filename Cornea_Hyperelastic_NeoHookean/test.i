@@ -60,6 +60,7 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
   [strain_energy]
     type = ComputeStrainEnergyNeoHookean
     mu_0 = ${shear_modulus_val}
+	output_properties = 'all'
   []
   
   [intermediate]
@@ -69,6 +70,7 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
   [strain]
     type = ComputeLagrangianStrain
 	displacements = 'disp_x disp_y'
+	output_properties = 'all'
   []
   
   [stress]

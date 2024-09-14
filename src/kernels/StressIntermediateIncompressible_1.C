@@ -46,7 +46,7 @@ StressIntermediateIncompressible_1::computeQpProperties()
 {
 	auto F = _deformation_gradient[_qp];
 	
-	_dWdF_pF_out[_qp] = _dWdF[_qp] + (_pressure[_qp] * F.inverse());
+	_dWdF_pF_out[_qp] = _dWdF[_qp] + (_pressure[_qp] * (F.transpose()).inverse());
 }
 
 

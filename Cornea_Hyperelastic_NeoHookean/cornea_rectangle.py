@@ -5,15 +5,20 @@ import sys
 gmsh.initialize()
 gmsh.model.add("cornea_rectangle")
 
-newMeshName = "cornea_rectangle_freq_10e3.msh"
+newMeshName = "cornea_rectangle.msh"
 
-freq = 10e3
+# quad elements
+gmsh.option.setNumber("Mesh.Algorithm", 8);
 
-xlen = 0.2/(freq/1e3)
+# freq = 10e3
+
+# xlen = 0.2/(freq/1e3)
+
+xlen = 0.02
 ylen = 0.001
 
 # mesh_refine = xlen/800
-mesh_refine = 0.00025/2
+mesh_refine = 0.00025/4
 
 # Adding points 
 p1 = gmsh.model.occ.addPoint(0, 0, 0, mesh_refine)
@@ -43,6 +48,7 @@ gmsh.model.addPhysicalGroup(1, [c3], name = "right")
 gmsh.model.addPhysicalGroup(0, [p4], name = "loading_point")
 gmsh.model.addPhysicalGroup(0, [p5], name = "data_point")
 
+gmsh.option.setNumber("Mesh.RecombineAll", 1)
 gmsh.model.occ.synchronize()
 
 # Create 2D mesh

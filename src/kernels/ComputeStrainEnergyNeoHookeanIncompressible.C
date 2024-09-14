@@ -42,15 +42,19 @@ ComputeStrainEnergyNeoHookeanIncompressible::ComputeStrainEnergyNeoHookeanIncomp
 void
 ComputeStrainEnergyNeoHookeanIncompressible::computeQpProperties()
 {
-	auto mu_0 = _user_mu_0;
+	double mu_0 = _user_mu_0;
 	
-	auto F = _deformation_gradient[_qp];
+	RankTwoTensor F = _deformation_gradient[_qp];
+	
+	double J = F.det();
+	
+	RankTwoTensor F_iso = std::pow(J, -1.0 / 3.0) * F;
 	
 	// Right Cauchy-Green deformation tensor
-	auto C = F.transpose() * F;
+	RankTwoTensor C_iso = F_iso.transpose() * F_iso;
 	
 	// First invariant, equivalent to lambda_1^2 + lambda_2^2 + lambda_3^2
-	auto I_1 = C.trace();
+	double I_1 = C_iso.trace();
 	
 	
 	_strain_energy[_qp] = (mu_0/2.0) * (I_1 - 3);

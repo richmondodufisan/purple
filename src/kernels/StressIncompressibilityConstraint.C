@@ -33,7 +33,7 @@ StressIncompressibilityConstraint::StressIncompressibilityConstraint(const Input
 
     _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
 
-    _deformation_gradient(getADMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient"))
+    _deformation_gradient(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient"))
 {
 }
 
