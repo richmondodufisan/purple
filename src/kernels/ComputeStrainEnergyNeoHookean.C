@@ -20,7 +20,9 @@ ComputeStrainEnergyNeoHookean::ComputeStrainEnergyNeoHookean(const InputParamete
   : DerivativeMaterialInterface<Material>(parameters),
 
 	/// Base name to prefix material properties
-	_base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
+	_base_name(isParamValid("base_name") && !getParam<std::string>("base_name").empty() 
+                ? getParam<std::string>("base_name") + "_" 
+                : ""),
 
     /// Get Parameter from user, name in input file is in quotes
 	_user_mu_0(getParam<Real>("mu_0")),

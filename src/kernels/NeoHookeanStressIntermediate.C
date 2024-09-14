@@ -19,7 +19,9 @@ NeoHookeanStressIntermediate::NeoHookeanStressIntermediate(const InputParameters
   : DerivativeMaterialInterface<Material>(parameters),
 
 	/// Base name to prefix material properties
-	_base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
+	_base_name(isParamValid("base_name") && !getParam<std::string>("base_name").empty() 
+                ? getParam<std::string>("base_name") + "_" 
+                : ""),
 
 	/// get material properties
 	_dWdF(getMaterialPropertyDerivative<RankTwoTensor>(_base_name + "strain_energy", _base_name + "deformation_gradient")),	// this is the stress

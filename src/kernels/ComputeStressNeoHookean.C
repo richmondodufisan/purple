@@ -9,8 +9,6 @@ ComputeStressNeoHookean::validParams()
 {
   InputParameters params = ComputeLagrangianStressPK1::validParams();
   params.addClassDescription("Calculate PK1 Stress for Neo Hookean Model");
-  
-  params.addParam<std::string>("base_name", "", "Base name for material properties");
 
   return params;
 }
