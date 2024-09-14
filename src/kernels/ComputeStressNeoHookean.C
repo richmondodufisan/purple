@@ -7,7 +7,7 @@ registerMooseObject("purpleApp", ComputeStressNeoHookean);
 InputParameters
 ComputeStressNeoHookean::validParams()
 {
-  InputParameters params = ADMaterial::validParams();
+  InputParameters params = ComputeLagrangianStressPK1::validParams();
   params.addClassDescription("Calculate PK1 Stress for Neo Hookean Model");
 
   return params;
