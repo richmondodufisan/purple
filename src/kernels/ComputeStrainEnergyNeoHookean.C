@@ -35,7 +35,6 @@ ComputeStrainEnergyNeoHookean::ComputeStrainEnergyNeoHookean(const InputParamete
 
 
 {
-	std::cout << "Base name: " << _base_name << std::endl;
 }
 
 
