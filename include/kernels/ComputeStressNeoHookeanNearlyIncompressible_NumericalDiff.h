@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ComputeLagrangianStressPK1.h"
+#include "ComputeLagrangianStressPK2.h"
 #include "RankTwoTensor.h"
 #include "RankFourTensor.h"
 #include "RankTwoTensor.h"
@@ -9,21 +9,21 @@
 #include <unsupported/Eigen/CXX11/Tensor>
 #include "ADMaterial.h"
 
-class ComputeStressNeoHookean_NumericalDiff : public ComputeLagrangianStressPK1
+class ComputeStressNeoHookeanNearlyIncompressible_NumericalDiff : public ComputeLagrangianStressPK2
 {
 public:
   static InputParameters validParams();
 
-  ComputeStressNeoHookean_NumericalDiff(const InputParameters & parameters);
+  ComputeStressNeoHookeanNearlyIncompressible_NumericalDiff(const InputParameters & parameters);
 
 protected:
 
-  virtual void computeQpPK1Stress() override;
+  virtual void computeQpPK2Stress() override;
   
   // Base name of the material system
   const std::string _base_name;
   
   // for getting them
-  const MaterialProperty<RankTwoTensor> & _PK1_in;
-  const MaterialProperty<RankFourTensor> & _dPdF_in;
+  const MaterialProperty<RankTwoTensor> & _PK2_in;
+  const MaterialProperty<RankFourTensor> & _dPdE_in;
 };
