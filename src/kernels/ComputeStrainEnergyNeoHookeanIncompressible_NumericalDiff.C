@@ -93,7 +93,7 @@ Real ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::computeStrainEne
 RankTwoTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::compute_dWdF(const Real &mu_0, const RankTwoTensor &F) 
 {
 	// Initialize tolerance
-	Real epsilon = 1e-7;
+	Real epsilon = 1e-6;
 	
 	// Initialize derivative
 	RankTwoTensor dWdF;
@@ -163,7 +163,7 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::compute
 RankFourTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::compute_dPK1dF(const Real &W, const Real &mu_0, const RankTwoTensor &F, const RankTwoTensor &F_inv, const Real &p) 
 {
 	// Initialize tolerance
-	 Real epsilon = 1e-7;
+	 Real epsilon = 1e-6;
 	
     // Initialize derivative
     RankFourTensor dPK1dF;

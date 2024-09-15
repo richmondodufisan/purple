@@ -10,7 +10,7 @@ dt_val = ${fparse right_disp_val/100}
 #observation_point = ${fparse l_plate/10}
 
 [GlobalParams]
-  #stabilize_strain = true
+  stabilize_strain = true
   large_kinematics = true
 []
 
@@ -33,7 +33,7 @@ dt_val = ${fparse right_disp_val/100}
     family = LAGRANGE
   []
   [pressure]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
   []
 []
@@ -109,11 +109,19 @@ dt_val = ${fparse right_disp_val/100}
     function = 't'
 	preset = false
   []
+  [right_y]
+    type = DirichletBC
+    variable = disp_y
+    boundary = 'right'
+    value = 0
+	preset = false
+  []
 []
 
 [Executioner]
   type = Transient
   solve_type = 'NEWTON'
+  line_search = 'none'
   
   petsc_options_iname = '-pc_type -pc_factor_shift_type'
   petsc_options_value = 'lu NONZERO'
