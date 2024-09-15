@@ -186,9 +186,10 @@ RankFourTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::comput
 
 					// Perturb the (i, j) component by epsilon
 					F_perturbed(k, l) += epsilon;
+					RankTwoTensor F_perturbed_inv = F_perturbed.inverse();
 
 					// Evaluate the PK1 at the perturbed tensor
-					RankTwoTensor PK1_perturbed = computePiolaKStress1(W, mu_0, F, F_inv, p);
+					RankTwoTensor PK1_perturbed = computePiolaKStress1(W, mu_0, F_perturbed, F_perturbed_inv, p);
 
                     // Compute the finite difference derivative and store it in dAdB
                     dPK1dF(i, j, k, l) = (PK1_perturbed(i, j) - PK1_original(i, j)) / epsilon;
