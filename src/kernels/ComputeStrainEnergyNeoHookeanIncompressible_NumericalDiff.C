@@ -28,12 +28,13 @@ ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::ComputeStrainEnergyNe
     /// Get from user, name in input file is in quotes
 	_user_mu_0(getParam<Real>("mu_0")),
 	_deformation_gradient(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient")),
+	_deformation_gradient_inv(getMaterialPropertyByName<RankTwoTensor>(_base_name + "inverse_deformation_gradient")),
 	_pressure(coupledValue("pressure")),
 
 	/// Declare material properties
 	_strain_energy(declareProperty<Real>(_base_name + "strain_energy")),
 	_PK1(declareProperty<RankTwoTensor>(_base_name + "PK1")),
-	_dPK1_dW(declareProperty<RankFourTensor>(_base_name + "dPK1_dW"))
+	_dPK1_dF(declareProperty<RankFourTensor>(_base_name + "dPK1_dF"))
 
 
 {
@@ -45,9 +46,9 @@ ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::computeQpProperties()
 {
 	_strain_energy[_qp] = computeStrainEnergy(_user_mu_0, _deformation_gradient[_qp]);
 	
-	_PK1[_qp] = computePiolaKStress1(_strain_energy[_qp], _user_mu_0, _deformation_gradient[_qp], _pressure[_qp]);
+	_PK1[_qp] = computePiolaKStress1(_strain_energy[_qp], _user_mu_0, _deformation_gradient[_qp], _deformation_gradient_inv[_qp], _pressure[_qp]);
 	
-	_dPK1_dW[_qp] = compute_dPK1dF(_strain_energy[_qp], _user_mu_0, _deformation_gradient[_qp], _pressure[_qp]); 
+	_dPK1_dF[_qp] = compute_dPK1dF(_strain_energy[_qp], _user_mu_0, _deformation_gradient[_qp], _deformation_gradient_inv[_qp], _pressure[_qp]); 
 }
 
 
@@ -101,8 +102,8 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::compute
     Real W = computeStrainEnergy(mu_0, F);
 
     // Loop over all components of the tensor to compute the derivative
-    for (int i = 0; i < 2; i++) {
-        for (int j = 0; j < 2; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             // Create a copy of the tensor to perturb
             RankTwoTensor F_perturbed = F;
 
@@ -134,11 +135,15 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::compute
 
 
 // Calculate the Stress
-RankTwoTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::computePiolaKStress1(const Real &W, const Real &mu_0, const RankTwoTensor &F, const Real &p)
+RankTwoTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::computePiolaKStress1(const Real &W, const Real &mu_0, const RankTwoTensor &F, const RankTwoTensor &F_inv, const Real &p)
 {
 	RankTwoTensor dWdF = compute_dWdF(mu_0, F);
 	
-	RankTwoTensor thepk1_stress = dWdF - (p*(F.transpose()).inverse());
+	// RankTwoTensor thepk1_stress = dWdF - (p*F_inv.transpose());
+	
+	// RankTwoTensor thepk1_stress = dWdF;
+	
+	RankTwoTensor thepk1_stress = dWdF - (p*F_inv);
 	
 	return thepk1_stress;
 }
@@ -157,7 +162,7 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::compute
 
 
 
-RankFourTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::compute_dPK1dF(const Real &W, const Real &mu_0, const RankTwoTensor &F, const Real &p) 
+RankFourTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::compute_dPK1dF(const Real &W, const Real &mu_0, const RankTwoTensor &F, const RankTwoTensor &F_inv, const Real &p) 
 {
 	// Initialize tolerance
 	 Real epsilon = 1e-7;
@@ -167,16 +172,16 @@ RankFourTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::comput
 	
 	
 	// Compute the original PK1
-    RankTwoTensor PK1_original = computePiolaKStress1(W, mu_0, F, p);
+    RankTwoTensor PK1_original = computePiolaKStress1(W, mu_0, F, F_inv, p);
 
     // Loop over all components of tensor A
-    for (int i = 0; i < 2; i++) {
-        for (int j = 0; j < 2; j++) {           
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {           
 
 
             // Loop over all components of tensor B (perturb tensor)
-            for (int k = 0; k < 2; k++) {
-                for (int l = 0; l < 2; l++) {
+            for (int k = 0; k < 3; k++) {
+                for (int l = 0; l < 3; l++) {
 					
                     // Create a copy of B to perturb
 					RankTwoTensor F_perturbed = F;
@@ -185,7 +190,7 @@ RankFourTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::comput
 					F_perturbed(k, l) += epsilon;
 
 					// Evaluate the PK1 at the perturbed tensor
-					RankTwoTensor PK1_perturbed = computePiolaKStress1(W, mu_0, F, p);
+					RankTwoTensor PK1_perturbed = computePiolaKStress1(W, mu_0, F, F_inv, p);
 
                     // Compute the finite difference derivative and store it in dAdB
                     dPK1dF(i, j, k, l) = (PK1_perturbed(i, j) - PK1_original(i, j)) / epsilon;
