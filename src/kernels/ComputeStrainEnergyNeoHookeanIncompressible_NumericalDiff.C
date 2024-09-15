@@ -11,7 +11,7 @@ ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::validParams()
   params.addClassDescription("Collect material properties required and calculate the strain energy, stress, and tangent for an incompressible Neo-Hookean solid");
 
   params.addRequiredParam<Real>("mu_0", "the initial shear modulus");
-  params.addRequiredCoupledVar("pressure", "the pressure lagrangian multiplier");
+  params.addRequiredCoupledVar("pressure_var", "the pressure lagrangian multiplier");
   params.addParam<std::string>("base_name", "", "Base name for material properties");
 
   return params;
@@ -29,7 +29,7 @@ ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::ComputeStrainEnergyNe
 	_user_mu_0(getParam<Real>("mu_0")),
 	_deformation_gradient(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient")),
 	_deformation_gradient_inv(getMaterialPropertyByName<RankTwoTensor>(_base_name + "inverse_deformation_gradient")),
-	_pressure(coupledValue("pressure")),
+	_pressure(coupledValue("pressure_var")),
 
 	/// Declare material properties
 	_strain_energy(declareProperty<Real>(_base_name + "strain_energy")),
@@ -135,19 +135,17 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::compute
 
 
 // Calculate the Stress
+// Calculate the Stress
 RankTwoTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff::computePiolaKStress1(const Real &W, const Real &mu_0, const RankTwoTensor &F, const RankTwoTensor &F_inv, const Real &p)
 {
 	RankTwoTensor dWdF = compute_dWdF(mu_0, F);
 	
 	// RankTwoTensor thepk1_stress = dWdF - (p*F_inv.transpose());
 	
-	// RankTwoTensor thepk1_stress = dWdF;
-	
 	RankTwoTensor thepk1_stress = dWdF - (p*F_inv);
 	
 	return thepk1_stress;
 }
-
 
 
 

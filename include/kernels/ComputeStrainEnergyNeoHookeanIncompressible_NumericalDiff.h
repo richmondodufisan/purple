@@ -32,7 +32,7 @@ protected:
   // Attributes
   const std::string _base_name;
   const Real _user_mu_0;
-  const VariableValue _pressure;
+  const VariableValue & _pressure;
   const MaterialProperty<RankTwoTensor> & _deformation_gradient;
   const MaterialProperty<RankTwoTensor> & _deformation_gradient_inv;
 
