@@ -33,7 +33,7 @@ dt_val = ${fparse right_disp_val/100}
     family = LAGRANGE
   []
   [pressure]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
 []
@@ -75,13 +75,13 @@ dt_val = ${fparse right_disp_val/100}
   []
 
   [strain_energy]
-    type = ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff
+    type = ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2
     mu_0 = ${shear_modulus_val}
 	pressure_var = pressure
   []
 
   [stress]
-    type = ComputeStressNeoHookean_NumericalDiff
+    type = ComputeStressNeoHookeanNearlyIncompressible_NumericalDiff
   []
 []
 

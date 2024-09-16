@@ -40,11 +40,29 @@ StressIncompressibilityConstraint::StressIncompressibilityConstraint(const Input
 ADReal
 StressIncompressibilityConstraint::computeQpResidual()
 {
-  auto F = _deformation_gradient[_qp];
+  RankTwoTensor F = _deformation_gradient[_qp];
+  setNearZeroToZero(F, 1e-9);
   
   auto J = F.det();
   
-  auto residual = (J - 1) * _test[_i][_qp];
+  auto residual = (1 - J) * _test[_i][_qp];
   
   return  residual;
+}
+
+
+
+
+void StressIncompressibilityConstraint::setNearZeroToZero(RankTwoTensor &tensor, const Real tolerance)
+{
+    for (unsigned int i = 0; i < 3; ++i)
+    {
+        for (unsigned int j = 0; j < 3; ++j)
+        {
+            if (std::fabs(tensor(i, j)) < tolerance)
+            {
+                tensor(i, j) = 0.0;
+            }
+        }
+    }
 }

@@ -9,21 +9,21 @@
 #include <unsupported/Eigen/CXX11/Tensor>
 #include "ADMaterial.h"
 
-class ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff : public DerivativeMaterialInterface<ADMaterial>
+class ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2 : public DerivativeMaterialInterface<ADMaterial>
 {
 public:
   static InputParameters validParams();
 
-  ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff(const InputParameters & parameters);
+  ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2(const InputParameters & parameters);
 
 protected:
 
   // Methods
   virtual void computeQpProperties() override;
-  Real computeStrainEnergy(const Real &mu_0,const RankTwoTensor &F);
-  RankTwoTensor compute_dWdF(const Real &mu_0, const RankTwoTensor &F);
-  RankTwoTensor computePiolaKStress1(const Real &mu_0, const RankTwoTensor &F, const Real &p);
-  RankFourTensor compute_dPK1dF(const Real &mu_0, const RankTwoTensor &F, const Real &p);
+  Real computeStrainEnergy(const Real &mu_0, const RankTwoTensor &C);
+  RankTwoTensor compute_dWdC(const Real &mu_0, const RankTwoTensor &C);
+  RankTwoTensor computePiolaKStress2(const Real &mu_0, const RankTwoTensor &E, const Real &p);
+  RankFourTensor compute_dPK2dE(const Real &mu_0, const RankTwoTensor &E, const Real &p);
   
   void setNearZeroToZero(RankTwoTensor &tensor, const Real tolerance);
 
@@ -38,6 +38,6 @@ protected:
   const MaterialProperty<RankTwoTensor> & _deformation_gradient;
 
   MaterialProperty<Real> & _strain_energy;
-  MaterialProperty<RankTwoTensor> & _PK1;
-  MaterialProperty<RankFourTensor> & _dPK1_dF;
+  MaterialProperty<RankTwoTensor> & _PK2;
+  MaterialProperty<RankFourTensor> & _dPK2_dE;
 };

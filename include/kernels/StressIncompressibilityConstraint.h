@@ -17,9 +17,13 @@ class StressIncompressibilityConstraint : public DerivativeMaterialInterface<ADK
 
   protected:
     virtual ADReal computeQpResidual() override;
+	void setNearZeroToZero(RankTwoTensor &tensor, const Real tolerance);
 
     /// Base name of the material system that this kernel applies to
     const std::string _base_name;
 
 	const MaterialProperty<RankTwoTensor> & _deformation_gradient;
 };
+
+
+

@@ -1,23 +1,23 @@
-#include "ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff.h"
+#include "ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2.h"
 #include <Eigen/Dense>
 #include <cmath>
 
-registerMooseObject("purpleApp", ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff);
+registerMooseObject("purpleApp", ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2);
 
 InputParameters
-ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::validParams()
+ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2::validParams()
 {
   InputParameters params = ADMaterial::validParams();
   params.addClassDescription("Collect material properties required and calculate the strain energy, stress, and tangent for an incompressible Neo-Hookean solid");
 
   params.addRequiredParam<Real>("mu_0", "the initial shear modulus");
-  params.addRequiredParam<Real>("poissons_ratio", "the poissons ratio of the nearly incompressible material");
+  params.addRequiredCoupledVar("pressure_var", "the pressure lagrangian multiplier");
   params.addParam<std::string>("base_name", "", "Base name for material properties");
 
   return params;
 }
 
-ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff(const InputParameters & parameters)
+ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2::ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2(const InputParameters & parameters)
   : DerivativeMaterialInterface<Material>(parameters),
 
 	/// Base name to prefix material properties
@@ -27,8 +27,8 @@ ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::ComputeStrainEn
 
     /// Get from user, name in input file is in quotes
 	_user_mu_0(getParam<Real>("mu_0")),
-	_user_nu(getParam<Real>("poissons_ratio")),
 	_deformation_gradient(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient")),
+	_pressure(coupledValue("pressure_var")),
 
 	/// Declare material properties
 	_strain_energy(declareProperty<Real>(_base_name + "strain_energy")),
@@ -41,8 +41,17 @@ ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::ComputeStrainEn
 
 
 void
-ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::computeQpProperties()
+ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2::computeQpProperties()
 {
+	
+	// pressure
+	Real p = _pressure[_qp];
+	if (std::fabs(p) < 1e-9)
+	{
+		p = 0;
+	}
+	
+	
 	// Deformation gradient
 	RankTwoTensor F = _deformation_gradient[_qp];
 	setNearZeroToZero(F, 1e-9);
@@ -59,11 +68,13 @@ ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::computeQpProper
 	setNearZeroToZero(E, 1e-9);
 	
 	
+	
 	_strain_energy[_qp] = computeStrainEnergy(_user_mu_0, C);
 	
-	_PK2[_qp] = computePiolaKStress2(_user_mu_0, E, _user_nu);
+	_PK2[_qp] = computePiolaKStress2(_user_mu_0, E, p);
 	
-	_dPK2_dE[_qp] = compute_dPK2dE(_user_mu_0, E, _user_nu);
+	_dPK2_dE[_qp] = compute_dPK2dE(_user_mu_0, E, p);
+
 }
 
 
@@ -77,7 +88,7 @@ ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::computeQpProper
 
 
 
-Real ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::computeStrainEnergy(const Real &mu_0, const RankTwoTensor &C)
+Real ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2::computeStrainEnergy(const Real &mu_0, const RankTwoTensor &C)
 {
 	Real J = std::pow(C.det(), 1.0 / 2.0);
 	
@@ -102,7 +113,7 @@ Real ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::computeStr
 
 // Compute the numerical derivative of a scalar function w.r.t a tensor_ij
 
-RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::compute_dWdC(const Real &mu_0, const RankTwoTensor &C) 
+RankTwoTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2::compute_dWdC(const Real &mu_0, const RankTwoTensor &C) 
 {
 	// Initialize tolerance
 	Real epsilon = 1e-6;
@@ -146,8 +157,9 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::c
 
 
 
+
 // Calculate the Stress
-RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::computePiolaKStress2(const Real &mu_0, const RankTwoTensor &E, const Real &nu)
+RankTwoTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2::computePiolaKStress2(const Real &mu_0, const RankTwoTensor &E, const Real &p)
 {
 	RankTwoTensor I;
 	I.setToIdentity();
@@ -158,17 +170,7 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::c
 	
 	RankTwoTensor dWdC = compute_dWdC(mu_0, C);
 	
-	// Calculate bulk modulus
-	Real K = ((2 * mu_0) * (1 + nu)) / (3 * (1 - 2*nu));
-	
-	// pressure = Quadratic dW_vol/dJ
-	// Real p = -K * (J - 1);
-	
-	// pressure = Harman-Neff dW_vol/dJ
-	Real p = (-0.1 * K) * (std::pow(J, 4.0) - std::pow(J, -6.0));
-	
 	RankTwoTensor thepk2_stress = (-p * J * C.inverse()) + (2 * dWdC);
-	// RankTwoTensor thepk2_stress = (2 * dWdC);
 	
 	return thepk2_stress;
 }
@@ -184,9 +186,7 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::c
 
 
 
-
-
-RankFourTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::compute_dPK2dE(const Real &mu_0, const RankTwoTensor &E, const Real &nu)
+RankFourTensor ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2::compute_dPK2dE(const Real &mu_0, const RankTwoTensor &E, const Real &p)
 {
 	// Initialize tolerance
 	 Real epsilon = 1e-6;
@@ -196,7 +196,7 @@ RankFourTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::
 	
 	
 	// Compute the original PK2
-    RankTwoTensor PK2_original = computePiolaKStress2(mu_0, E, nu);
+    RankTwoTensor PK2_original = computePiolaKStress2(mu_0, E, p);
 
     // Loop over all components of tensor A
     for (int i = 0; i < 3; i++) {
@@ -214,7 +214,7 @@ RankFourTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::
 					E_perturbed(k, l) += epsilon;
 
 					// Evaluate the PK2 at the perturbed tensor
-					RankTwoTensor PK2_perturbed = computePiolaKStress2(mu_0, E_perturbed, nu);
+					RankTwoTensor PK2_perturbed = computePiolaKStress2(mu_0, E_perturbed, p);
 
                     // Compute the finite difference derivative and store it in dAdB
                     dPK2dE(i, j, k, l) = (PK2_perturbed(i, j) - PK2_original(i, j)) / epsilon;
@@ -233,9 +233,7 @@ RankFourTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::
 
 
 
-
-
-void ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::setNearZeroToZero(RankTwoTensor &tensor, const Real tolerance)
+void ComputeStrainEnergyNeoHookeanIncompressible_NumericalDiff_PK2::setNearZeroToZero(RankTwoTensor &tensor, const Real tolerance)
 {
     for (unsigned int i = 0; i < 3; ++i)
     {
