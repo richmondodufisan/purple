@@ -47,6 +47,7 @@ gmsh.model.addPhysicalGroup(1, [c1], name = "left")
 gmsh.model.addPhysicalGroup(1, [c3], name = "right")
 gmsh.model.addPhysicalGroup(0, [p4], name = "loading_point")
 gmsh.model.addPhysicalGroup(0, [p5], name = "data_point")
+gmsh.model.addPhysicalGroup(0, [p1], name = "pressure_bc_point")
 
 gmsh.option.setNumber("Mesh.RecombineAll", 1)
 gmsh.model.occ.synchronize()
