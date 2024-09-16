@@ -122,7 +122,12 @@ dt_val = ${fparse right_disp_val/100}
 [Postprocessors]
   [displace_x]
     type = PointValue
-    variable = disp_x
+    variable = disp_x_real
+    point = '${l_plate} 0.001 0'
+  []
+  [react_x]
+    type = PointValue
+    variable = force_x_real
     point = '${l_plate} 0.001 0'
   []
 []
