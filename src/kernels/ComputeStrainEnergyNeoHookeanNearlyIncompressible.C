@@ -45,18 +45,18 @@ ComputeStrainEnergyNeoHookeanNearlyIncompressible::computeQpProperties()
 {
 	// Deformation gradient
 	RankTwoTensor F = _deformation_gradient[_qp];
-	setNearZeroToZero(F, 1e-9);
+	setNearZeroToZero(F, 1e-12);
 	
 	// Right Cauchy-Green deformation tensor
 	RankTwoTensor C = F.transpose() * F;
-	setNearZeroToZero(C, 1e-9);
+	setNearZeroToZero(C, 1e-12);
 	
 	RankTwoTensor I;
 	I.setToIdentity();
 	
 	// Green Lagrange Strain Tensor
 	RankTwoTensor E = 0.5 * (C - I);
-	setNearZeroToZero(E, 1e-9);
+	setNearZeroToZero(E, 1e-12);
 	
 	
 	_strain_energy[_qp] = computeStrainEnergy(_user_mu_0, C);
@@ -104,7 +104,7 @@ Real ComputeStrainEnergyNeoHookeanNearlyIncompressible::computeStrainEnergy(cons
 
 RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible::compute_dWdC(const Real &mu_0, const RankTwoTensor &C) 
 {
-	// Initialize tolerance
+	// Initialize perturbation
 	Real epsilon = 1e-6;
 	
 	// Initialize derivative
@@ -188,7 +188,7 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible::computePiolaKSt
 
 RankFourTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible::compute_dPK2dE(const Real &mu_0, const RankTwoTensor &E, const Real &nu)
 {
-	// Initialize tolerance
+	// Initialize perturbation
 	 Real epsilon = 1e-6;
 	
     // Initialize derivative

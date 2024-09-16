@@ -10,12 +10,9 @@ newMeshName = "cornea_rectangle.msh"
 # quad elements
 gmsh.option.setNumber("Mesh.Algorithm", 8);
 
-# freq = 10e3
-
-# xlen = 0.2/(freq/1e3)
-
-xlen = 0.02
 ylen = 0.001
+
+xlen = 30 * ylen
 
 # mesh_refine = xlen/800
 mesh_refine = 0.00025/4

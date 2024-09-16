@@ -2,7 +2,7 @@
 shear_modulus_val = 100000
 poissons_ratio_val = 0.49
 
-stretch_ratio = 1.5
+stretch_ratio = 1.1
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
@@ -25,207 +25,107 @@ dt_val = ${fparse right_disp_val/100}
 []
 
 [Variables]
-  [disp_x_real]
+  [disp_x]
     order = SECOND
     family = LAGRANGE
   []
-  [disp_y_real]
-    order = SECOND
-    family = LAGRANGE
-  []
-  [disp_x_imag]
-    order = SECOND
-    family = LAGRANGE
-  []
-  [disp_y_imag]
+  [disp_y]
     order = SECOND
     family = LAGRANGE
   []
 []
 
 [Kernels]
-  [div_sig_x_real]
+  [div_sig_x]
     type = TotalLagrangianStressDivergence
 	component = 0
-	displacements = 'disp_x_real disp_y_real'
-    variable = disp_x_real
+	displacements = 'disp_x disp_y'
+    variable = disp_x
 	base_name = real
-	save_in = force_x_real
+	save_in = force_x
   []
   
-  [div_sig_y_real]
+  [div_sig_y]
     type = TotalLagrangianStressDivergence
 	component = 1
-	displacements = 'disp_x_real disp_y_real'
-    variable = disp_y_real
+	displacements = 'disp_x disp_y'
+    variable = disp_y
 	base_name = real
-	save_in = force_y_real
-  []
-  
-  [div_sig_x_imag]
-    type = TotalLagrangianStressDivergence
-	component = 0
-	displacements = 'disp_x_imag disp_y_imag'
-    variable = disp_x_imag
-	base_name = imag
-	save_in = force_x_imag
-  []
-  
-  [div_sig_y_imag]
-    type = TotalLagrangianStressDivergence
-	component = 1
-	displacements = 'disp_x_imag disp_y_imag'
-    variable = disp_y_imag
-	base_name = imag
-	save_in = force_y_imag
+	save_in = force_y
   []
 []
 
 [AuxVariables]
-  [disp_x]
-  []
-  [disp_y]
-  []
-  [force_x_real]
+  [force_x]
     order = SECOND
     family = LAGRANGE
   []
-  [force_y_real]
+  [force_y]
     order = SECOND
     family = LAGRANGE
-  []
-  [force_x_imag]
-    order = SECOND
-    family = LAGRANGE
-  []
-  [force_y_imag]
-    order = SECOND
-    family = LAGRANGE
-  []
-[]
-
-[AuxKernels]
-  [x_displacement]
-    type = ParsedAux
-    variable = disp_x
-    coupled_variables = 'disp_x_real disp_x_imag'
-	expression = 'sqrt(disp_x_real^2 + disp_x_imag^2)'
-  []
-  [y_displacement]
-    type = ParsedAux
-    variable = disp_y
-    coupled_variables = 'disp_y_real disp_y_imag'
-	expression = 'sqrt(disp_y_real^2 + disp_y_imag^2)'
   []
 []
 
 [Postprocessors]
   [displace_x]
     type = PointValue
-    variable = disp_x_real
+    variable = disp_x
     point = '${l_plate} 0.001 0'
   []
   [react_x]
     type = PointValue
-    variable = force_x_real
+    variable = force_x
     point = '${l_plate} 0.001 0'
   []
 []
 
 [Materials]
-  [strain_energy_real]
+  [strain_energy]
     type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
     mu_0 = ${shear_modulus_val}
 	poissons_ratio = ${poissons_ratio_val}
 	base_name = real
   []
   
-  [strain_real]
+  [strain]
     type = ComputeLagrangianStrain
-	displacements = 'disp_x_real disp_y_real'
+	displacements = 'disp_x disp_y'
 	base_name = real
   []
   
-  [stress_real]
+  [stress]
     type = ComputeStressNeoHookean
 	base_name = real
-  []
-  
-  
-  [strain_energy_imag]
-    type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
-    mu_0 = ${shear_modulus_val}
-	poissons_ratio = ${poissons_ratio_val}
-	base_name = imag
-  []
-  
-  [strain_imag]
-    type = ComputeLagrangianStrain
-	displacements = 'disp_x_real disp_y_real'
-	base_name = imag
-  []
-  
-  [stress_imag]
-    type = ComputeStressNeoHookean
-	base_name = imag
   []
 []
 
 [BCs]
-  [left_x_real]
+  [left_x]
     type = ADDirichletBC
-    variable = disp_x_real
+    variable = disp_x
     boundary = 'left'
     value = 0
 	preset = false
   []
-  [left_x_imag]
+  [left_y]
     type = ADDirichletBC
-    variable = disp_x_imag
-    boundary = 'left'
-    value = 0
-	preset = false
-  []
-  [left_y_real]
-    type = ADDirichletBC
-    variable = disp_y_real
-    boundary = 'left'
-    value = 0
-	preset = false
-  []
-  [left_y_imag]
-    type = ADDirichletBC
-    variable = disp_y_imag
+    variable = disp_y
     boundary = 'left'
     value = 0
 	preset = false
   []
   
   
-  [right_x_real]
+  [right_x]
     type = ADFunctionDirichletBC
-    variable = disp_x_real
+    variable = disp_x
     boundary = 'right'
     function = 't'
 	preset = false
   []
-  [right_x_imag]
+  [right_y]
     type = ADDirichletBC
-    variable = disp_x_imag
-    boundary = 'right'
-    value = 0
-	preset = false
-  []
-  [right_y_real]
-    type = ADDirichletBC
-    variable = disp_y_real
-    boundary = 'right'
-    value = 0
-	preset = false
-  []
-  [right_y_imag]
-    type = ADDirichletBC
-    variable = disp_y_imag
+    variable = disp_y
     boundary = 'right'
     value = 0
 	preset = false
