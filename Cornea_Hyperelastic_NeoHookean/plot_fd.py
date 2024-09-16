@@ -12,8 +12,8 @@ force = data.iloc[:, 2]         # 3rd column
 # Plot the data
 plt.figure(figsize=(8, 6))
 plt.plot(displacement, force, marker='o', linestyle='-')
-plt.title('Force vs Displacement')
-plt.xlabel('Displacement')
-plt.ylabel('Force')
+plt.title('Stress xx vs Strain xx')
+plt.xlabel('Strain xx')
+plt.ylabel('Stress xx')
 plt.grid(True)
 plt.show()

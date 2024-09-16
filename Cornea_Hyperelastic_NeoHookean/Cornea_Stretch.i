@@ -41,8 +41,6 @@ dt_val = ${fparse right_disp_val/100}
 	component = 0
 	displacements = 'disp_x disp_y'
     variable = disp_x
-	base_name = real
-	save_in = force_x
   []
   
   [div_sig_y]
@@ -50,31 +48,70 @@ dt_val = ${fparse right_disp_val/100}
 	component = 1
 	displacements = 'disp_x disp_y'
     variable = disp_y
-	base_name = real
-	save_in = force_y
   []
 []
 
 [AuxVariables]
-  [force_x]
-    order = SECOND
-    family = LAGRANGE
+  [strain_xx]
+    order = CONSTANT
+    family = MONOMIAL
   []
-  [force_y]
-    order = SECOND
-    family = LAGRANGE
+  [strain_yy]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+
+  [stress_xx]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [stress_yy]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+[]
+
+[AuxKernels]
+  [stress_xx]
+    type = RankTwoAux
+    rank_two_tensor = cauchy_stress
+    variable = stress_xx
+    index_i = 0
+    index_j = 0
+  []
+  [stress_yy]
+    type = RankTwoAux
+    rank_two_tensor = cauchy_stress
+    variable = stress_yy
+    index_i = 1
+    index_j = 1
+  []
+
+  [strain_xx]
+    type = RankTwoAux
+    rank_two_tensor = total_strain
+    variable = strain_xx
+    index_i = 0
+    index_j = 0
+  []
+  [strain_yy]
+    type = RankTwoAux
+    rank_two_tensor = total_strain
+    variable = strain_yy
+    index_i = 1
+    index_j = 1
   []
 []
 
 [Postprocessors]
   [displace_x]
     type = PointValue
-    variable = disp_x
+    variable = strain_xx
     point = '${l_plate} 0.001 0'
   []
   [react_x]
     type = PointValue
-    variable = force_x
+    variable = stress_xx
     point = '${l_plate} 0.001 0'
   []
 []
@@ -84,18 +121,15 @@ dt_val = ${fparse right_disp_val/100}
     type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
     mu_0 = ${shear_modulus_val}
 	poissons_ratio = ${poissons_ratio_val}
-	base_name = real
   []
   
   [strain]
     type = ComputeLagrangianStrain
 	displacements = 'disp_x disp_y'
-	base_name = real
   []
   
   [stress]
     type = ComputeStressNeoHookean
-	base_name = real
   []
 []
 
@@ -140,9 +174,9 @@ dt_val = ${fparse right_disp_val/100}
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
 
-  nl_rel_tol = 1e-8
-  nl_abs_tol = 1e-8
-  l_tol = 1e-5
+  nl_rel_tol = 1e-12
+  nl_abs_tol = 1e-12
+  l_tol = 1e-8
   l_max_its = 300
   nl_max_its = 20
   

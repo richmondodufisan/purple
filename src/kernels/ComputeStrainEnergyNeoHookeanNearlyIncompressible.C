@@ -43,20 +43,20 @@ ComputeStrainEnergyNeoHookeanNearlyIncompressible::ComputeStrainEnergyNeoHookean
 void
 ComputeStrainEnergyNeoHookeanNearlyIncompressible::computeQpProperties()
 {
-	// Deformation gradient
+	// // Deformation gradient
 	RankTwoTensor F = _deformation_gradient[_qp];
-	setNearZeroToZero(F, 1e-12);
+	// setNearZeroToZero(F, 1e-15);
 	
-	// Right Cauchy-Green deformation tensor
+	// // Right Cauchy-Green deformation tensor
 	RankTwoTensor C = F.transpose() * F;
-	setNearZeroToZero(C, 1e-12);
+	// setNearZeroToZero(C, 1e-15);
 	
 	RankTwoTensor I;
 	I.setToIdentity();
 	
-	// Green Lagrange Strain Tensor
+	// // Green Lagrange Strain Tensor
 	RankTwoTensor E = 0.5 * (C - I);
-	setNearZeroToZero(E, 1e-12);
+	// setNearZeroToZero(E, 1e-15);
 	
 	
 	_strain_energy[_qp] = computeStrainEnergy(_user_mu_0, C);
