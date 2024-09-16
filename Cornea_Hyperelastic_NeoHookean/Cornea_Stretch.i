@@ -1,11 +1,14 @@
 #Global Parameters
 shear_modulus_val = 100000
+poissons_ratio_val = 0.49
 
-stretch_ratio = 1.001
+stretch_ratio = 1.5
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
-observation_point = ${fparse l_plate/10}
+dt_val = ${fparse right_disp_val/100}
+
+#observation_point = ${fparse l_plate/10}
 
 [GlobalParams]
   stabilize_strain = true
@@ -47,6 +50,7 @@ observation_point = ${fparse l_plate/10}
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_x_real
 	base_name = real
+	save_in = force_x_real
   []
   
   [div_sig_y_real]
@@ -55,6 +59,7 @@ observation_point = ${fparse l_plate/10}
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_y_real
 	base_name = real
+	save_in = force_y_real
   []
   
   [div_sig_x_imag]
@@ -63,6 +68,7 @@ observation_point = ${fparse l_plate/10}
 	displacements = 'disp_x_imag disp_y_imag'
     variable = disp_x_imag
 	base_name = imag
+	save_in = force_x_imag
   []
   
   [div_sig_y_imag]
@@ -71,6 +77,7 @@ observation_point = ${fparse l_plate/10}
 	displacements = 'disp_x_imag disp_y_imag'
     variable = disp_y_imag
 	base_name = imag
+	save_in = force_y_imag
   []
 []
 
@@ -78,6 +85,22 @@ observation_point = ${fparse l_plate/10}
   [disp_x]
   []
   [disp_y]
+  []
+  [force_x_real]
+    order = SECOND
+    family = LAGRANGE
+  []
+  [force_y_real]
+    order = SECOND
+    family = LAGRANGE
+  []
+  [force_x_imag]
+    order = SECOND
+    family = LAGRANGE
+  []
+  [force_y_imag]
+    order = SECOND
+    family = LAGRANGE
   []
 []
 
@@ -100,19 +123,15 @@ observation_point = ${fparse l_plate/10}
   [displace_x]
     type = PointValue
     variable = disp_x
-    point = '${observation_point} 0.001 0'
+    point = '${l_plate} 0.001 0'
   []
 []
 
 [Materials]
   [strain_energy_real]
-    type = ComputeStrainEnergyNeoHookean
+    type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
     mu_0 = ${shear_modulus_val}
-	base_name = real
-  []
-  
-  [intermediate_real]
-    type = NeoHookeanStressIntermediate
+	poissons_ratio = ${poissons_ratio_val}
 	base_name = real
   []
   
@@ -129,13 +148,9 @@ observation_point = ${fparse l_plate/10}
   
   
   [strain_energy_imag]
-    type = ComputeStrainEnergyNeoHookean
+    type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
     mu_0 = ${shear_modulus_val}
-	base_name = imag
-  []
-  
-  [intermediate_imag]
-    type = NeoHookeanStressIntermediate
+	poissons_ratio = ${poissons_ratio_val}
 	base_name = imag
   []
   
@@ -183,10 +198,10 @@ observation_point = ${fparse l_plate/10}
   
   
   [right_x_real]
-    type = ADDirichletBC
+    type = ADFunctionDirichletBC
     variable = disp_x_real
     boundary = 'right'
-    value = ${right_disp_val}
+    function = 't'
 	preset = false
   []
   [right_x_imag]
@@ -213,12 +228,12 @@ observation_point = ${fparse l_plate/10}
 []
 
 [Executioner]
-  type = Steady
+  type = Transient
   solve_type = 'NEWTON'
+  line_search = 'none'
   
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
-
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8
@@ -227,6 +242,19 @@ observation_point = ${fparse l_plate/10}
   nl_max_its = 20
   
   automatic_scaling = true
+  
+  start_time = 0.0
+  end_time = ${right_disp_val}
+   
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    optimal_iterations = 15
+    iteration_window = 3
+    linear_iteration_ratio = 100
+    growth_factor=1.5
+    cutback_factor=0.5
+    dt = ${dt_val}
+  []
 []
 
 [Outputs]
