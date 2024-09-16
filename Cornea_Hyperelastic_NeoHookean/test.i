@@ -1,9 +1,12 @@
 #Global Parameters
 shear_modulus_val = 100000
+poissons_ratio_val = 0.49
 
-stretch_ratio = 1.3
+stretch_ratio = 2.0
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
+
+dt_val = ${fparse right_disp_val/100}
 
 #observation_point = ${fparse l_plate/10}
 
@@ -57,20 +60,18 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 []
 
 [Materials]
-  [strain_energy]
-    type = ComputeStrainEnergyNeoHookean
-    mu_0 = ${shear_modulus_val}
-  []
-  
-  [intermediate]
-    type = NeoHookeanStressIntermediate
-  []
-  
+
   [strain]
     type = ComputeLagrangianStrain
 	displacements = 'disp_x disp_y'
   []
-  
+
+  [strain_energy]
+    type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
+    mu_0 = ${shear_modulus_val}
+	poissons_ratio = ${poissons_ratio_val}
+  []
+
   [stress]
     type = ComputeStressNeoHookean
   []
@@ -78,14 +79,14 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
 [BCs]
   [left_x]
-    type = ADDirichletBC
+    type = DirichletBC
     variable = disp_x
     boundary = 'left'
     value = 0
 	preset = false
   []
   [left_y]
-    type = ADDirichletBC
+    type = DirichletBC
     variable = disp_y
     boundary = 'left'
     value = 0
@@ -94,14 +95,14 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
   
   
   [right_x]
-    type = ADDirichletBC
+    type = FunctionDirichletBC
     variable = disp_x
     boundary = 'right'
-    value = ${right_disp_val}
+    function = 't'
 	preset = false
   []
   [right_y]
-    type = ADDirichletBC
+    type = DirichletBC
     variable = disp_y
     boundary = 'right'
     value = 0
@@ -110,12 +111,12 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 []
 
 [Executioner]
-  type = Steady
+  type = Transient
   solve_type = 'NEWTON'
+  line_search = 'none'
   
-  petsc_options_iname = '-pc_type -pc_factor_shift_type'
-  petsc_options_value = 'lu NONZERO'
-
+  petsc_options_iname = '-pc_type'
+  petsc_options_value = 'lu'
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8
@@ -124,6 +125,19 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
   nl_max_its = 20
   
   automatic_scaling = true
+  
+  start_time = 0.0
+  end_time = ${right_disp_val}
+   
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    optimal_iterations = 15
+    iteration_window = 3
+    linear_iteration_ratio = 100
+    growth_factor=1.5
+    cutback_factor=0.5
+    dt = ${dt_val}
+  []
 []
 
 [Outputs]

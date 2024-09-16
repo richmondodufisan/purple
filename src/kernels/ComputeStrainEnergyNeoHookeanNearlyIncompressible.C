@@ -1,11 +1,11 @@
-#include "ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff.h"
+#include "ComputeStrainEnergyNeoHookeanNearlyIncompressible.h"
 #include <Eigen/Dense>
 #include <cmath>
 
-registerMooseObject("purpleApp", ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff);
+registerMooseObject("purpleApp", ComputeStrainEnergyNeoHookeanNearlyIncompressible);
 
 InputParameters
-ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::validParams()
+ComputeStrainEnergyNeoHookeanNearlyIncompressible::validParams()
 {
   InputParameters params = ADMaterial::validParams();
   params.addClassDescription("Collect material properties required and calculate the strain energy, stress, and tangent for an incompressible Neo-Hookean solid");
@@ -17,7 +17,7 @@ ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::validParams()
   return params;
 }
 
-ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff(const InputParameters & parameters)
+ComputeStrainEnergyNeoHookeanNearlyIncompressible::ComputeStrainEnergyNeoHookeanNearlyIncompressible(const InputParameters & parameters)
   : DerivativeMaterialInterface<Material>(parameters),
 
 	/// Base name to prefix material properties
@@ -41,7 +41,7 @@ ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::ComputeStrainEn
 
 
 void
-ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::computeQpProperties()
+ComputeStrainEnergyNeoHookeanNearlyIncompressible::computeQpProperties()
 {
 	// Deformation gradient
 	RankTwoTensor F = _deformation_gradient[_qp];
@@ -77,7 +77,7 @@ ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::computeQpProper
 
 
 
-Real ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::computeStrainEnergy(const Real &mu_0, const RankTwoTensor &C)
+Real ComputeStrainEnergyNeoHookeanNearlyIncompressible::computeStrainEnergy(const Real &mu_0, const RankTwoTensor &C)
 {
 	Real J = std::pow(C.det(), 1.0 / 2.0);
 	
@@ -102,7 +102,7 @@ Real ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::computeStr
 
 // Compute the numerical derivative of a scalar function w.r.t a tensor_ij
 
-RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::compute_dWdC(const Real &mu_0, const RankTwoTensor &C) 
+RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible::compute_dWdC(const Real &mu_0, const RankTwoTensor &C) 
 {
 	// Initialize tolerance
 	Real epsilon = 1e-6;
@@ -147,7 +147,7 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::c
 
 
 // Calculate the Stress
-RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::computePiolaKStress2(const Real &mu_0, const RankTwoTensor &E, const Real &nu)
+RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible::computePiolaKStress2(const Real &mu_0, const RankTwoTensor &E, const Real &nu)
 {
 	RankTwoTensor I;
 	I.setToIdentity();
@@ -186,7 +186,7 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::c
 
 
 
-RankFourTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::compute_dPK2dE(const Real &mu_0, const RankTwoTensor &E, const Real &nu)
+RankFourTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible::compute_dPK2dE(const Real &mu_0, const RankTwoTensor &E, const Real &nu)
 {
 	// Initialize tolerance
 	 Real epsilon = 1e-6;
@@ -235,7 +235,7 @@ RankFourTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::
 
 
 
-void ComputeStrainEnergyNeoHookeanNearlyIncompressible_NumericalDiff::setNearZeroToZero(RankTwoTensor &tensor, const Real tolerance)
+void ComputeStrainEnergyNeoHookeanNearlyIncompressible::setNearZeroToZero(RankTwoTensor &tensor, const Real tolerance)
 {
     for (unsigned int i = 0; i < 3; ++i)
     {

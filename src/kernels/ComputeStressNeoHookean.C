@@ -7,20 +7,20 @@ registerMooseObject("purpleApp", ComputeStressNeoHookean);
 InputParameters
 ComputeStressNeoHookean::validParams()
 {
-  InputParameters params = ComputeLagrangianStressPK1::validParams();
-  params.addClassDescription("Calculate PK1 Stress for Neo Hookean Model");
+  InputParameters params = ComputeLagrangianStressPK2::validParams();
+  params.addClassDescription("send PK2 Stress for Neo Hookean Model to system");
 
   return params;
 }
 
 ComputeStressNeoHookean::ComputeStressNeoHookean(const InputParameters & parameters)
-  : ComputeLagrangianStressPK1(parameters),
+  : ComputeLagrangianStressPK2(parameters),
 
 	/// Base name to prefix material properties
 	_base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
 	
-	_dWdF_in(getMaterialPropertyByName<RankTwoTensor>(_base_name + "dWdF")),	// this is the stress
-	_d2WdF2_in(getMaterialPropertyByName<RankFourTensor>(_base_name + "d2WdF2")) //this is the tangent operator
+	_PK2_in(getMaterialPropertyByName<RankTwoTensor>(_base_name + "PK2")),	// this is the stress
+	_dPdE_in(getMaterialPropertyByName<RankFourTensor>(_base_name + "dPK2_dE")) //this is the tangent operator
 
 
 {
@@ -28,11 +28,13 @@ ComputeStressNeoHookean::ComputeStressNeoHookean(const InputParameters & paramet
 
 
 void
-ComputeStressNeoHookean::computeQpPK1Stress()
+ComputeStressNeoHookean::computeQpPK2Stress()
 {
-	_pk1_stress[_qp] = _dWdF_in[_qp];
+	// _S and _C are the names of the stress and tangent in the class it inherits from
 	
-	_pk1_jacobian[_qp] = _d2WdF2_in[_qp];
+	_S[_qp] = _PK2_in[_qp];
+	
+	_C[_qp] = _dPdE_in[_qp];
 	
 }
 
