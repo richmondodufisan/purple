@@ -11,12 +11,14 @@ density = 1000
 shear_wave_speed = ${fparse sqrt(shear_modulus_val/density)}
 mechanical_impedance = ${fparse density*(shear_wave_speed/2)}
 
+
 h_plate = 0.001
 l_plate = ${fparse 30 * h_plate}
 mid_height = ${fparse h_plate/2}
 number_of_points = ${fparse l_plate/0.000025}
 
-duration = 10
+excitation_val = ${fparse (h_plate/10)}
+dt_val = ${fparse excitation_val/100}
 
 [GlobalParams]
   stabilize_strain = true
@@ -204,12 +206,11 @@ duration = 10
 
 [BCs]
   [harmonic_perturbation_real]
-    type = SinDirichletBC
+    type = FunctionDirichletBC
     variable = disp_y_real
     boundary = 'loading_point'
-	initial = 0.0
-    final = ${fparse (h_plate/10)}
-	duration = ${duration}
+	function = 't'
+	preset = false
   []
   
   [harmonic_perturbation_imag]
@@ -259,13 +260,16 @@ duration = 10
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
 
-  nl_rel_tol = 1e-10
-  nl_abs_tol = 1e-10
+  nl_rel_tol = 1e-12
+  nl_abs_tol = 1e-12
   l_tol = 1e-8
   l_max_its = 300
   nl_max_its = 20
   
   automatic_scaling = true
+  
+  start_time = 0.0
+  end_time = ${excitation_val}
    
   [TimeStepper]
     type = IterationAdaptiveDT
@@ -274,7 +278,7 @@ duration = 10
     linear_iteration_ratio = 100
     growth_factor=1.5
     cutback_factor=0.5
-    dt = ${fparse 1/duration}
+    dt = ${dt_val}
   []
 []
 
