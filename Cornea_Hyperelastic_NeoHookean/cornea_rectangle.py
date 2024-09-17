@@ -23,6 +23,7 @@ p2 = gmsh.model.occ.addPoint(xlen, 0, 0, mesh_refine)
 p3 = gmsh.model.occ.addPoint(xlen, ylen, 0, mesh_refine)
 p4 = gmsh.model.occ.addPoint(0, ylen, 0, mesh_refine)
 p5 = gmsh.model.occ.addPoint((xlen/10), ylen, 0, mesh_refine)
+p6 = gmsh.model.occ.addPoint(xlen/2, ylen, 0, mesh_refine)
 
 # Adding lines 
 c1 = gmsh.model.occ.addLine(p4, p1)

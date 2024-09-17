@@ -1,13 +1,13 @@
 #Global Parameters
 freq_val = 10e3
-omega = ${fparse -2 * pi * freq_val}
+#omega = ${fparse -2 * pi * freq_val}
+n_periods = 5
+total_time = ${fparse (1/freq_val) * n_periods}
+dt_val = ${fparse total_time/1000}
 
 shear_modulus_val = 100000
 poissons_ratio_val = 0.49
 density = 1000
-
-#shear_wave_speed = ${fparse sqrt(shear_modulus_val/density)}
-#mechanical_impedance = ${fparse density*(shear_wave_speed/2)}
 
 h_plate = 0.001
 l_plate = ${fparse 0.2/(freq_val/1e3)}
@@ -17,6 +17,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 [GlobalParams]
   stabilize_strain = true
   large_kinematics = true
+  displacements = 'disp_x disp_y'
 []
 
 [Mesh]
@@ -32,42 +33,41 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   [disp_x]
     order = SECOND
     family = LAGRANGE
-	#initial_from_file_var = disp_x
-    #initial_from_file_timestep = LATEST
+	initial_from_file_var = disp_x
+    initial_from_file_timestep = LATEST
   []
   [disp_y]
     order = SECOND
     family = LAGRANGE
-	#initial_from_file_var = disp_y
-    #initial_from_file_timestep = LATEST
+	initial_from_file_var = disp_y
+    initial_from_file_timestep = LATEST
   []
 []
 
 [Kernels]
-  [div_sig_x_real]
-    type = TotalLagrangianStressDivergence
-	component = 0
-	displacements = 'disp_x disp_y'
+  [stress_x]
+	type = DynamicStressDivergenceTensors
     variable = disp_x
+    component = 0
+	zeta = 0
   []
-  
-  [div_sig_y_real]
-    type = TotalLagrangianStressDivergence
-	component = 1
-	displacements = 'disp_x disp_y'
+  [stress_y]
+	type = DynamicStressDivergenceTensors
     variable = disp_y
+    component = 1
+	zeta = 0
   []
-  
-  [reaction_x]
-    type = ADReaction
-	variable = disp_x
-	rate = ${fparse -omega*omega*density}
+  [inertia_x]
+    type = InertialForce
+    variable = disp_x
+	density = density
+	eta = 0
   []
-  
-  [reaction_y]
-    type = ADReaction
-	variable = disp_y
-	rate = ${fparse -omega*omega*density}
+  [inertia_y]
+    type = InertialForce
+    variable = disp_y
+	density = density
+	eta = 0
   []
 []
 
@@ -90,6 +90,16 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   []
 []
 
+[Functions]
+  [perturbation_function]
+    type = ADParsedFunction
+    expression = 'A * cos(2 * pi * freq * t)'
+    symbol_names = 'A freq'
+    symbol_values = '${fparse (h_plate/10)} ${freq_val}'
+  []
+[]
+
+
 [Materials]
   [strain_energy_real]
     type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
@@ -105,14 +115,24 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   [stress_real]
     type = ComputeStressNeoHookean
   []
+  
+  [density]
+    type = GenericConstantMaterial
+    prop_names = 'density'
+    prop_values = '${density}'
+  []
+  
+  [old_system_conversion]
+    type = CauchyStressWrapper
+  []
 []
 
 [BCs]
   [harmonic_perturbation]
-    type = ADDirichletBC
+    type = ADFunctionDirichletBC
     variable = disp_y
-    boundary = 'data_point'
-    value = ${fparse (h_plate/10)}
+    boundary = 'loading_point'
+    function = perturbation_function
 	preset = false
   []
   
@@ -124,22 +144,32 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   []
 []
 
+
+
 [Executioner]
-  type = Steady
-  solve_type = 'NEWTON'
+  type = Transient
+  solve_type = NEWTON
   
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
-
-
+  
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8
-  l_tol = 1e-5
-  l_max_its = 300
-  nl_max_its = 20
+  
+  timestep_tolerance = 1e-6
+  
+  start_time = 0.0
+  end_time = ${total_time}
+  dt = ${dt_val}
   
   automatic_scaling = true
   line_search = none
+  
+  [TimeIntegrator]
+    type = NewmarkBeta
+    beta = 0.25
+    gamma = 0.5
+  []
 []
 
 [Outputs]

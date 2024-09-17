@@ -1,21 +1,24 @@
 #Global Parameters
 freq_val = 10e3
+omega = ${fparse 2 * pi * freq_val}
+
 
 shear_modulus_val = 100000
-poissons_ratio_val = 0.49
-density = 1000
+poissons_ratio_val = 0.4999
+youngs_modulus_val = ${fparse 2 * shear_modulus_val * (1 + poissons_ratio_val)}
 
+
+density = 1000
 shear_wave_speed = ${fparse sqrt(shear_modulus_val/density)}
 mechanical_impedance = ${fparse density*(shear_wave_speed/2)}
 
 h_plate = 0.001
-l_plate = ${fparse 0.2/(freq_val/1e3)}
+l_plate = 0.02
 mid_height = ${fparse h_plate/2}
-number_of_points = ${fparse int(l_plate/0.00001)}
+number_of_points = ${fparse l_plate/0.000025}
 
 [GlobalParams]
-  stabilize_strain = true
-  large_kinematics = true
+  volumetric_locking_correction = true
 []
 
 [Mesh]
@@ -31,14 +34,14 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   [disp_x_real]
     order = SECOND
     family = LAGRANGE
-	#initial_from_file_var = disp_x
-    #initial_from_file_timestep = LATEST
+	initial_from_file_var = disp_x
+    initial_from_file_timestep = LATEST
   []
   [disp_y_real]
     order = SECOND
     family = LAGRANGE
-	#initial_from_file_var = disp_y
-    #initial_from_file_timestep = LATEST
+	initial_from_file_var = disp_y
+    initial_from_file_timestep = LATEST
   []
   [disp_x_imag]
     order = SECOND
@@ -52,7 +55,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 
 [Kernels]
   [div_sig_x_real]
-    type = TotalLagrangianStressDivergence
+    type = ADStressDivergenceTensors
 	component = 0
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_x_real
@@ -60,7 +63,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   []
   
   [div_sig_y_real]
-    type = TotalLagrangianStressDivergence
+    type = ADStressDivergenceTensors
 	component = 1
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_y_real
@@ -70,13 +73,13 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   [reaction_x_real]
     type = ADReaction
 	variable = disp_x_real
-	rate = ${fparse -freq_val*freq_val*density}
+	rate = ${fparse -omega*omega*density}
   []
   
   [reaction_y_real]
     type = ADReaction
 	variable = disp_y_real
-	rate = ${fparse -freq_val*freq_val*density}
+	rate = ${fparse -omega*omega*density}
   []
   
   
@@ -101,13 +104,13 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   [reaction_x_imag]
     type = ADReaction
 	variable = disp_x_imag
-	rate = ${fparse -freq_val*freq_val*density}
+	rate = ${fparse -omega*omega*density}
   []
   
   [reaction_y_imag]
     type = ADReaction
 	variable = disp_y_imag
-	rate = ${fparse -freq_val*freq_val*density}
+	rate = ${fparse -omega*omega*density}
   []
 []
 
@@ -159,7 +162,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 []
 
 [Materials]
-  [strain_energy_real]
+  [elasticity_tensor_real]
     type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
     mu_0 = ${shear_modulus_val}
 	poissons_ratio = ${poissons_ratio_val}
@@ -178,7 +181,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   []
   
   
-  [strain_energy_imag]
+  [elasticity_tensor_imag]
     type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
     mu_0 = ${shear_modulus_val}
 	poissons_ratio = ${poissons_ratio_val}
@@ -186,8 +189,8 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   []
   
   [strain_imag]
-    type = ComputeLagrangianStrain
-	displacements = 'disp_x_real disp_y_real'
+    type = ADComputeFiniteStrain
+	displacements = 'disp_x_imag disp_y_imag'
 	base_name = imag
   []
   
@@ -199,7 +202,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 
 [BCs]
   [harmonic_perturbation_real]
-    type = ADDirichletBC
+    type = DirichletBC
     variable = disp_y_real
     boundary = 'loading_point'
     value = ${fparse (h_plate/10)}
@@ -207,11 +210,26 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   []
   
   [harmonic_perturbation_imag]
-    type = ADDirichletBC
+    type = DirichletBC
     variable = disp_y_imag
     boundary = 'loading_point'
     value = 0
 	preset = false
+  []
+  
+  [low_reflecting_boundary_x_real]
+    type = CoupledVarNeumannBC
+	variable = disp_x_real
+	boundary = 'right'
+	v = disp_x_imag
+	coef = ${fparse omega*mechanical_impedance}
+  []
+  [low_reflecting_boundary_x_imag]
+    type = CoupledVarNeumannBC
+	variable = disp_x_imag
+	boundary = 'right'
+	v = disp_x_real
+	coef = ${fparse -omega*mechanical_impedance}
   []
   
   [low_reflecting_boundary_y_real]
@@ -219,14 +237,14 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 	variable = disp_y_real
 	boundary = 'right'
 	v = disp_y_imag
-	coef = ${fparse freq_val*mechanical_impedance}
+	coef = ${fparse omega*mechanical_impedance}
   []
   [low_reflecting_boundary_y_imag]
     type = CoupledVarNeumannBC
 	variable = disp_y_imag
 	boundary = 'right'
 	v = disp_y_real
-	coef = ${fparse -freq_val*mechanical_impedance}
+	coef = ${fparse -omega*mechanical_impedance}
   []
 []
 

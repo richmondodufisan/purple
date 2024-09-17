@@ -1,21 +1,21 @@
 #Global Parameters
 freq_val = 10e3
-
 shear_modulus_val = 100000
-poissons_ratio_val = 0.49
-density = 1000
+poissons_ratio_val = 0.4999
+youngs_modulus_val = ${fparse 2 * shear_modulus_val * (1 + poissons_ratio_val)}
 
+
+density = 1000
 shear_wave_speed = ${fparse sqrt(shear_modulus_val/density)}
 mechanical_impedance = ${fparse density*(shear_wave_speed/2)}
 
 h_plate = 0.001
-l_plate = ${fparse 0.2/(freq_val/1e3)}
+l_plate = 0.02
 mid_height = ${fparse h_plate/2}
-number_of_points = ${fparse int(l_plate/0.00001)}
+number_of_points = ${fparse l_plate/0.000025}
 
 [GlobalParams]
-  stabilize_strain = true
-  large_kinematics = true
+  volumetric_locking_correction = true
 []
 
 [Mesh]
@@ -23,7 +23,6 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   [sample_mesh]
     type = FileMeshGenerator
     file = Cornea_Stretch_out.e
-	use_for_exodus_restart = true
   []
 []
 
@@ -31,14 +30,10 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   [disp_x_real]
     order = SECOND
     family = LAGRANGE
-	#initial_from_file_var = disp_x
-    #initial_from_file_timestep = LATEST
   []
   [disp_y_real]
     order = SECOND
     family = LAGRANGE
-	#initial_from_file_var = disp_y
-    #initial_from_file_timestep = LATEST
   []
   [disp_x_imag]
     order = SECOND
@@ -52,7 +47,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 
 [Kernels]
   [div_sig_x_real]
-    type = TotalLagrangianStressDivergence
+    type = ADStressDivergenceTensors
 	component = 0
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_x_real
@@ -60,7 +55,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   []
   
   [div_sig_y_real]
-    type = TotalLagrangianStressDivergence
+    type = ADStressDivergenceTensors
 	component = 1
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_y_real
@@ -83,7 +78,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   
   
   [div_sig_x_imag]
-    type = TotalLagrangianStressDivergence
+    type = ADStressDivergenceTensors
 	component = 0
 	displacements = 'disp_x_imag disp_y_imag'
     variable = disp_x_imag
@@ -91,7 +86,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   []
   
   [div_sig_y_imag]
-    type = TotalLagrangianStressDivergence
+    type = ADStressDivergenceTensors
 	component = 1
 	displacements = 'disp_x_imag disp_y_imag'
     variable = disp_y_imag
@@ -159,47 +154,47 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 []
 
 [Materials]
-  [strain_energy_real]
-    type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
-    mu_0 = ${shear_modulus_val}
-	poissons_ratio = ${poissons_ratio_val}
+  [elasticity_tensor_real]
+    type = ADComputeIsotropicElasticityTensor
+    youngs_modulus = ${youngs_modulus_val}
+    poissons_ratio = ${poissons_ratio_val}
 	base_name = real
   []
   
   [strain_real]
-    type = ComputeLagrangianStrain
+    type = ADComputeIncrementalSmallStrain
 	displacements = 'disp_x_real disp_y_real'
 	base_name = real
   []
   
   [stress_real]
-    type = ComputeStressNeoHookean
+    type = ADComputeFiniteStrainElasticStress
 	base_name = real
   []
   
   
-  [strain_energy_imag]
-    type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
-    mu_0 = ${shear_modulus_val}
-	poissons_ratio = ${poissons_ratio_val}
+  [elasticity_tensor_imag]
+    type = ADComputeIsotropicElasticityTensor
+    youngs_modulus = ${youngs_modulus_val}
+    poissons_ratio = ${poissons_ratio_val}
 	base_name = imag
   []
   
   [strain_imag]
-    type = ComputeLagrangianStrain
-	displacements = 'disp_x_real disp_y_real'
+    type = ADComputeFiniteStrain
+	displacements = 'disp_x_imag disp_y_imag'
 	base_name = imag
   []
   
   [stress_imag]
-    type = ComputeStressNeoHookean
+    type = ADComputeFiniteStrainElasticStress
 	base_name = imag
   []
 []
 
 [BCs]
   [harmonic_perturbation_real]
-    type = ADDirichletBC
+    type = DirichletBC
     variable = disp_y_real
     boundary = 'loading_point'
     value = ${fparse (h_plate/10)}
@@ -207,11 +202,26 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   []
   
   [harmonic_perturbation_imag]
-    type = ADDirichletBC
+    type = DirichletBC
     variable = disp_y_imag
     boundary = 'loading_point'
     value = 0
 	preset = false
+  []
+  
+  [low_reflecting_boundary_x_real]
+    type = CoupledVarNeumannBC
+	variable = disp_x_real
+	boundary = 'right'
+	v = disp_x_imag
+	coef = ${fparse freq_val*mechanical_impedance}
+  []
+  [low_reflecting_boundary_x_imag]
+    type = CoupledVarNeumannBC
+	variable = disp_x_imag
+	boundary = 'right'
+	v = disp_x_real
+	coef = ${fparse -freq_val*mechanical_impedance}
   []
   
   [low_reflecting_boundary_y_real]
