@@ -1,17 +1,22 @@
 #Global Parameters
 freq_val = 10e3
+omega = ${fparse 2 * pi * freq_val}
+
 
 shear_modulus_val = 100000
 poissons_ratio_val = 0.49
-density = 1000
 
+
+density = 1000
 shear_wave_speed = ${fparse sqrt(shear_modulus_val/density)}
 mechanical_impedance = ${fparse density*(shear_wave_speed/2)}
 
 h_plate = 0.001
-l_plate = ${fparse 0.2/(freq_val/1e3)}
+l_plate = ${fparse 30 * h_plate}
 mid_height = ${fparse h_plate/2}
-number_of_points = ${fparse int(l_plate/0.00001)}
+number_of_points = ${fparse l_plate/0.000025}
+
+duration = 10
 
 [GlobalParams]
   stabilize_strain = true
@@ -31,14 +36,9 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   [disp_x_real]
     order = SECOND
     family = LAGRANGE
-	#initial_from_file_var = disp_x
-    #initial_from_file_timestep = LATEST
   []
   [disp_y_real]
     order = SECOND
-    family = LAGRANGE
-	#initial_from_file_var = disp_y
-    #initial_from_file_timestep = LATEST
   []
   [disp_x_imag]
     order = SECOND
@@ -70,13 +70,13 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   [reaction_x_real]
     type = ADReaction
 	variable = disp_x_real
-	rate = ${fparse -freq_val*freq_val*density}
+	rate = ${fparse -omega*omega*density}
   []
   
   [reaction_y_real]
     type = ADReaction
 	variable = disp_y_real
-	rate = ${fparse -freq_val*freq_val*density}
+	rate = ${fparse -omega*omega*density}
   []
   
   
@@ -101,20 +101,24 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   [reaction_x_imag]
     type = ADReaction
 	variable = disp_x_imag
-	rate = ${fparse -freq_val*freq_val*density}
+	rate = ${fparse -omega*omega*density}
   []
   
   [reaction_y_imag]
     type = ADReaction
 	variable = disp_y_imag
-	rate = ${fparse -freq_val*freq_val*density}
+	rate = ${fparse -omega*omega*density}
   []
 []
 
 [AuxVariables]
   [disp_x]
+    initial_from_file_var = disp_x
+    initial_from_file_timestep = LATEST
   []
   [disp_y]
+    initial_from_file_var = disp_y
+    initial_from_file_timestep = LATEST
   []
 []
 
@@ -155,6 +159,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
     end_point = '${l_plate} ${mid_height} 0'
     num_points = ${number_of_points}
     sort_by = x
+	execute_on = 'final'
   []
 []
 
@@ -187,7 +192,7 @@ number_of_points = ${fparse int(l_plate/0.00001)}
   
   [strain_imag]
     type = ComputeLagrangianStrain
-	displacements = 'disp_x_real disp_y_real'
+	displacements = 'disp_x_imag disp_y_imag'
 	base_name = imag
   []
   
@@ -199,19 +204,35 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 
 [BCs]
   [harmonic_perturbation_real]
-    type = ADDirichletBC
+    type = SinDirichletBC
     variable = disp_y_real
     boundary = 'loading_point'
-    value = ${fparse (h_plate/10)}
-	preset = false
+	initial = 0.0
+    final = ${fparse (h_plate/10)}
+	duration = ${duration}
   []
   
   [harmonic_perturbation_imag]
-    type = ADDirichletBC
+    type = DirichletBC
     variable = disp_y_imag
     boundary = 'loading_point'
     value = 0
 	preset = false
+  []
+  
+  [low_reflecting_boundary_x_real]
+    type = CoupledVarNeumannBC
+	variable = disp_x_real
+	boundary = 'right'
+	v = disp_x_imag
+	coef = ${fparse omega*mechanical_impedance}
+  []
+  [low_reflecting_boundary_x_imag]
+    type = CoupledVarNeumannBC
+	variable = disp_x_imag
+	boundary = 'right'
+	v = disp_x_real
+	coef = ${fparse -omega*mechanical_impedance}
   []
   
   [low_reflecting_boundary_y_real]
@@ -219,33 +240,42 @@ number_of_points = ${fparse int(l_plate/0.00001)}
 	variable = disp_y_real
 	boundary = 'right'
 	v = disp_y_imag
-	coef = ${fparse freq_val*mechanical_impedance}
+	coef = ${fparse omega*mechanical_impedance}
   []
   [low_reflecting_boundary_y_imag]
     type = CoupledVarNeumannBC
 	variable = disp_y_imag
 	boundary = 'right'
 	v = disp_y_real
-	coef = ${fparse -freq_val*mechanical_impedance}
+	coef = ${fparse -omega*mechanical_impedance}
   []
 []
 
 [Executioner]
-  type = Steady
+  type = Transient
   solve_type = 'NEWTON'
+  line_search = 'none'
   
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
 
-
-  nl_rel_tol = 1e-8
-  nl_abs_tol = 1e-8
-  l_tol = 1e-5
+  nl_rel_tol = 1e-10
+  nl_abs_tol = 1e-10
+  l_tol = 1e-8
   l_max_its = 300
   nl_max_its = 20
   
   automatic_scaling = true
-  line_search = none
+   
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    optimal_iterations = 15
+    iteration_window = 3
+    linear_iteration_ratio = 100
+    growth_factor=1.5
+    cutback_factor=0.5
+    dt = ${fparse 1/duration}
+  []
 []
 
 [Outputs]
