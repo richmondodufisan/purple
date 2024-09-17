@@ -4,8 +4,7 @@ omega = ${fparse 2 * pi * freq_val}
 
 
 shear_modulus_val = 100000
-poissons_ratio_val = 0.4999
-youngs_modulus_val = ${fparse 2 * shear_modulus_val * (1 + poissons_ratio_val)}
+poissons_ratio_val = 0.49
 
 
 density = 1000
@@ -18,7 +17,8 @@ mid_height = ${fparse h_plate/2}
 number_of_points = ${fparse l_plate/0.000025}
 
 [GlobalParams]
-  volumetric_locking_correction = true
+  stabilize_strain = true
+  large_kinematics = true
 []
 
 [Mesh]
@@ -34,14 +34,9 @@ number_of_points = ${fparse l_plate/0.000025}
   [disp_x_real]
     order = SECOND
     family = LAGRANGE
-	initial_from_file_var = disp_x
-    initial_from_file_timestep = LATEST
   []
   [disp_y_real]
     order = SECOND
-    family = LAGRANGE
-	initial_from_file_var = disp_y
-    initial_from_file_timestep = LATEST
   []
   [disp_x_imag]
     order = SECOND
@@ -55,7 +50,7 @@ number_of_points = ${fparse l_plate/0.000025}
 
 [Kernels]
   [div_sig_x_real]
-    type = ADStressDivergenceTensors
+    type = TotalLagrangianStressDivergence
 	component = 0
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_x_real
@@ -63,7 +58,7 @@ number_of_points = ${fparse l_plate/0.000025}
   []
   
   [div_sig_y_real]
-    type = ADStressDivergenceTensors
+    type = TotalLagrangianStressDivergence
 	component = 1
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_y_real
@@ -116,8 +111,12 @@ number_of_points = ${fparse l_plate/0.000025}
 
 [AuxVariables]
   [disp_x]
+    initial_from_file_var = disp_x
+    initial_from_file_timestep = LATEST
   []
   [disp_y]
+    initial_from_file_var = disp_y
+    initial_from_file_timestep = LATEST
   []
 []
 
@@ -162,7 +161,7 @@ number_of_points = ${fparse l_plate/0.000025}
 []
 
 [Materials]
-  [elasticity_tensor_real]
+  [strain_energy_real]
     type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
     mu_0 = ${shear_modulus_val}
 	poissons_ratio = ${poissons_ratio_val}
@@ -181,7 +180,7 @@ number_of_points = ${fparse l_plate/0.000025}
   []
   
   
-  [elasticity_tensor_imag]
+  [strain_energy_imag]
     type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
     mu_0 = ${shear_modulus_val}
 	poissons_ratio = ${poissons_ratio_val}
@@ -189,7 +188,7 @@ number_of_points = ${fparse l_plate/0.000025}
   []
   
   [strain_imag]
-    type = ADComputeFiniteStrain
+    type = ComputeLagrangianStrain
 	displacements = 'disp_x_imag disp_y_imag'
 	base_name = imag
   []
