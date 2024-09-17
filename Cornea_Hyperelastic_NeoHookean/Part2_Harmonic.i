@@ -9,7 +9,8 @@ poissons_ratio_val = 0.49
 
 density = 1000
 shear_wave_speed = ${fparse sqrt(shear_modulus_val/density)}
-mechanical_impedance = ${fparse density*(shear_wave_speed/2)}
+#mechanical_impedance = ${fparse density*(shear_wave_speed/2)}
+mechanical_impedance = ${fparse density*(shear_wave_speed)}
 
 
 h_plate = 0.001
@@ -29,7 +30,7 @@ dt_val = ${fparse excitation_val/100}
   second_order = true
   [sample_mesh]
     type = FileMeshGenerator
-    file = Cornea_Stretch_out.e
+    file = Part1_Stretch_out.e
 	use_for_exodus_restart = true
   []
 []
@@ -161,7 +162,7 @@ dt_val = ${fparse excitation_val/100}
     end_point = '${l_plate} ${mid_height} 0'
     num_points = ${number_of_points}
     sort_by = x
-	execute_on = 'final'
+	execute_on = final
   []
 []
 

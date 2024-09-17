@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Step 1, Stretch
-step1_filename="Cornea_Stretch"
+step1_filename="Part1_Stretch"
 extension1=".i"
 
 # Step 2, Harmonic Perturbation
-step2_filename="Cornea_Harmonic_Perturbation_Steady"
+step2_filename="Part2_Harmonic"
 extension2=".i"
 
 # Mesh Script
