@@ -8,9 +8,14 @@ poissons_ratio_val = 0.49
 
 
 density = 1000
-shear_wave_speed = ${fparse sqrt(shear_modulus_val/density)}
-#mechanical_impedance = ${fparse density*(shear_wave_speed/2)}
-mechanical_impedance = ${fparse density*(shear_wave_speed)}
+c_shear = ${fparse sqrt(shear_modulus_val/density)}
+
+
+bulk_modulus = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
+c_pressure = ${fparse sqrt((bulk_modulus + ((4.0/3.0)*shear_modulus_val))/density)}
+
+
+mechanical_impedance = ${fparse density*((c_shear + c_pressure)/2.0)}
 
 
 h_plate = 0.001
@@ -162,7 +167,6 @@ dt_val = ${fparse excitation_val/100}
     end_point = '${l_plate} ${mid_height} 0'
     num_points = ${number_of_points}
     sort_by = x
-	execute_on = final
   []
 []
 

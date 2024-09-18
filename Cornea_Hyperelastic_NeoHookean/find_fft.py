@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.fftpack import fft, fftfreq
 
 # Load the CSV file
-file_path = 'Cornea_Harmonic_Perturbation_Steady_out_wave_profile_0003.csv'  # Replace with your actual file path
+file_path = 'Part2_Harmonic_out_wave_profile_0002.csv'  # Replace with your actual file path
 data = pd.read_csv(file_path)
 
 # Extract columns: 4th column for y displacement, 13th column for x position
