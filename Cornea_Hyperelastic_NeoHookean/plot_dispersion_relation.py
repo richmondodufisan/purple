@@ -6,11 +6,11 @@ from scipy.signal import find_peaks
 import os
 
 # Define your excitation frequencies and stretch ratios
-excitation_frequencies = ['10e3']  # Excitation frequencies as strings, so they match the file name exactly
+excitation_frequencies = ['1e3', '10e3']  # Excitation frequencies as strings, so they match the file name exactly
 stretches = [1.1]  # Example stretch ratios
 
 # Set your file template
-file_template = 'Part2_Harmonic_freq_{freq}_stretch_{stretch}_out_wave_profile_0004.csv'
+file_template = 'Part2_Harmonic_freq_{freq}_stretch_{stretch}_out_wave_profile_0005.csv'
 
 
 
