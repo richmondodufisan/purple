@@ -2,9 +2,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft, fftfreq
+from scipy.signal import find_peaks
 
 # Load the CSV file
-file_path = 'Part2_Harmonic_out_wave_profile_0002.csv'  # Replace with your actual file path
+file_path = 'Part2_Harmonic_freq_10e3_stretch_1.1_out_wave_profile_0004.csv'  # Replace with your actual file path
 data = pd.read_csv(file_path)
 
 # Extract columns: 4th column for y displacement, 13th column for x position
@@ -26,13 +27,25 @@ N = len(y_displacement)
 y_displacement_fft = fft(y_displacement)
 frequencies = fftfreq(N, x_position[1] - x_position[0])  # Assuming uniform spacing in x_position
 
+# Take only the positive half of the frequencies and corresponding FFT results
+frequencies_positive = frequencies[:N//2]
+fft_magnitude = np.abs(y_displacement_fft[:N//2])
+
+# Find the peaks in the FFT magnitude
+peaks, _ = find_peaks(fft_magnitude, height=0.00005)  # You can adjust the 'height' to filter out small peaks
+
+# Print the frequencies corresponding to the peaks
+print("Peaks found at frequencies (in units of 1/x_position):")
+for peak in peaks:
+    print(f"Frequency: {frequencies_positive[peak]:.4f}, Magnitude: {fft_magnitude[peak]:.4f}")
+
 # Plot the Fourier Transform (Magnitude of the Fourier coefficients)
 plt.figure(figsize=(10, 6))
-plt.plot(frequencies[:N//2], np.abs(y_displacement_fft[:N//2]), label='FFT of Y Displacement')
+plt.plot(frequencies_positive, fft_magnitude, label='FFT of Y Displacement')
+plt.plot(frequencies_positive[peaks], fft_magnitude[peaks], 'rx', label='Peaks')  # Mark the peaks with red 'x'
 plt.xlabel('Frequency')
 plt.ylabel('Magnitude')
-plt.title('Frequency Spectrum of Y Displacement')
+plt.title('Frequency Spectrum of Y Displacement with Peaks')
 plt.grid(True)
 plt.legend()
 plt.show()
-

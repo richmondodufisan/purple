@@ -57,9 +57,6 @@ for stretch_val_num in "${stretch_vals_num[@]}"; do
 	done
 done
 
-
-part2_complete=0
-
 while [ $part2_complete -eq 0 ]; do
 
 	for stretch_val_num in "${stretch_vals_num[@]}"; do
@@ -88,7 +85,5 @@ while [ $part2_complete -eq 0 ]; do
 			mpiexec -n 4 ../purple-opt -i ${new_filename_2}
 		done
 	done
-	
-	part2_complete=1
 
 done
