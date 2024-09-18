@@ -18,7 +18,7 @@ freq_vals_num=("1e3" "10e3")
 stretch_vals_num=("1.1" "1.2")  # Added a second stretch value for testing
 
 # Make new 3D mesh
-python3 cornea_rectangle.py
+python3 cornea_rectangle.py &
 wait
 
 for stretch_val_num in "${stretch_vals_num[@]}"; do
