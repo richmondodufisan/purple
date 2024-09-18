@@ -15,7 +15,7 @@ og_mesh_ext=".py"
 
 # Define the range of values you want to loop over
 freq_vals_num=("1e3" "10e3")
-stretch_vals_num=("1.1" "1.2")  # Added a second stretch value for testing
+stretch_vals_num=("1.1")  # Added a second stretch value for testing
 
 # Make new 3D mesh
 python3 cornea_rectangle.py &
@@ -31,7 +31,7 @@ for stretch_val_num in "${stretch_vals_num[@]}"; do
 		# Replace the stretch ratio in the MOOSE script
 		sed -i "s/\(stretch_ratio\s*=\s*\)[0-9.eE+-]\+/\1$stretch_val_num/g" "$new_filename"
 		
-		# ../purple-opt -i ${new_filename}
+		../purple-opt -i ${new_filename}
 done
 
 
