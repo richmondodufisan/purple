@@ -163,8 +163,8 @@ dt_val = ${fparse excitation_val/100}
   [wave_profile]
     type = LineValueSampler
     variable = disp_y
-    start_point = '0 ${mid_height} 0'
-    end_point = '${l_plate} ${mid_height} 0'
+    start_point = '0.002 ${mid_height} 0'
+    end_point = '${fparse l_plate - 0.002} ${mid_height} 0'
     num_points = ${number_of_points}
     sort_by = x
   []
