@@ -48,10 +48,8 @@ wait
 rm *.txt
 
 for stretch_val_num in "${stretch_vals_num[@]}"; do
-	for freq_val_num in "${freq_vals_num[@]}"; do	
-
 		# Create a new filename 
-		new_filename="${step1_filename}_freq_${freq_val_num}_stretch_${stretch_val_num}.i"
+		new_filename="${step1_filename}_stretch_${stretch_val_num}.i"
 
 		# Copy the original input file to the new filename
 		cp "$step1_filename$extension1" "$new_filename"
@@ -61,7 +59,6 @@ for stretch_val_num in "${stretch_vals_num[@]}"; do
 		
 		# Save the new MOOSE script to the list of files
 		echo $new_filename >> NeoHookeanDispersion_Stretch.txt
-	done
 done
 
 # Update the batch job file with the calculated number of simulations
@@ -87,7 +84,7 @@ while [ $part2_complete -eq 0 ]; do
 
 				# Create a new filename 
 				new_filename_2="${step2_filename}_freq_${freq_val_num}_stretch_${stretch_val_num}.i"
-				mesh_filename_2="${step1_filename}_freq_${freq_val_num}_stretch_${stretch_val_num}_out.e"
+				mesh_filename_2="${step1_filename}_stretch_${stretch_val_num}_out.e"
 				
 				# Copy the original input file to the new filename
 				cp "$step2_filename$extension2" "$new_filename_2"
