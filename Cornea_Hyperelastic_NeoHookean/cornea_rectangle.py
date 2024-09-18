@@ -14,7 +14,6 @@ ylen = 0.001
 
 xlen = 30 * ylen
 
-# mesh_refine = xlen/800
 mesh_refine = 0.00025/4
 
 # Adding points 
