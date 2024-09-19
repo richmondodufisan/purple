@@ -2,7 +2,7 @@
 shear_modulus_val = 100000
 poissons_ratio_val = 0.49
 
-stretch_ratio = 5.0
+stretch_ratio = 10.0
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
@@ -173,9 +173,9 @@ dt_val = ${fparse right_disp_val/100}
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
 
-  nl_rel_tol = 1e-8
-  nl_abs_tol = 1e-8
-  l_tol = 1e-5
+  nl_rel_tol = 1e-12
+  nl_abs_tol = 1e-12
+  l_tol = 1e-8
   l_max_its = 300
   nl_max_its = 20
   
@@ -185,12 +185,7 @@ dt_val = ${fparse right_disp_val/100}
   end_time = ${right_disp_val}
    
   [TimeStepper]
-    type = IterationAdaptiveDT
-    optimal_iterations = 15
-    iteration_window = 3
-    linear_iteration_ratio = 100
-    growth_factor=1.5
-    cutback_factor=0.5
+    type = ConstantDT
     dt = ${dt_val}
   []
 []

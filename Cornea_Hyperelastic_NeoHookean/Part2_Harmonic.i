@@ -272,9 +272,9 @@ dt_val = ${fparse excitation_val/100}
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
 
-  nl_rel_tol = 1e-8
-  nl_abs_tol = 1e-8
-  l_tol = 1e-5
+  nl_rel_tol = 1e-12
+  nl_abs_tol = 1e-12
+  l_tol = 1e-8
   l_max_its = 300
   nl_max_its = 20
   
