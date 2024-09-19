@@ -7,19 +7,15 @@ import os
 import glob
 
 # Define your excitation frequencies and stretch ratios
-
-# Excitation frequencies as strings, so they match the file name exactly
-# excitation_frequencies = ['1e3', '1.5e3', '2e3', '2.5e3', '3e3', '3.5e3', '4e3', '4.5e3', '5e3', '5.5e3', '6e3', '6.5e3', '7e3', '7.5e3', '8e3', '8.5e3', '9e3', '9.5e3', '10e3', '10.5e3', '11e3', '11.5e3', '12e3', '12.5e3', '13e3']
-excitation_frequencies = ['1e3', '1.5e3', '2e3', '2.5e3', '3e3']
-
-
+excitation_frequencies = ['1e3', '1.5e3', '2e3', '2.5e3', '3e3', '3.5e3', '4e3', '4.5e3', '5e3', '5.5e3', '6e3', '6.5e3', '7e3', '7.5e3', '8e3', '8.5e3', '9e3', '9.5e3', '10e3', '10.5e3', '11e3', '11.5e3', '12e3', '12.5e3', '13e3']
+ # Excitation frequencies as strings, so they match the file name exactly
 stretches = ['1']  # Stretch ratios also as strings
 
 # Define how many top peaks you want to plot and save
 n_peaks = 1 
 
 # Set your file template
-file_template = 'Part2_Harmonic_freq_{freq}_stretch_{stretch}_out_wave_profile_y_*.csv'
+file_template = 'Part2_Harmonic_freq_{freq}_stretch_{stretch}_out_wave_profile_*.csv'
 
 # Prepare a list to collect dispersion data
 dispersion_data = []
@@ -86,8 +82,8 @@ def find_latest_file(excitation_frequency, stretch):
     # Extract the wave profile number from the filenames
     def extract_wave_profile(file_name):
         base_name = os.path.basename(file_name)
-        # Extract the four-digit number from the pattern: wave_profile_y_XXXX.csv
-        number_str = base_name.split('_wave_profile_y_')[-1].split('.')[0]
+        # Extract the four-digit number from the pattern: wave_profile_XXXX.csv
+        number_str = base_name.split('_wave_profile_')[-1].split('.')[0]
         return int(number_str)  # Convert to int for numerical comparison, but keep leading zeros in filenames
 
     # Find the file with the largest wave profile number
