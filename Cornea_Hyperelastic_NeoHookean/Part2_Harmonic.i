@@ -27,7 +27,6 @@ excitation_val = ${fparse (h_plate/10)}
 dt_val = ${fparse excitation_val/100}
 
 [GlobalParams]
-  stabilize_strain = true
   large_kinematics = true
 []
 

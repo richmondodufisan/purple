@@ -11,7 +11,6 @@ dt_val = ${fparse right_disp_val/100}
 #observation_point = ${fparse l_plate/10}
 
 [GlobalParams]
-  stabilize_strain = true
   large_kinematics = true
 []
 
