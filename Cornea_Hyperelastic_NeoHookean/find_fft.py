@@ -5,7 +5,7 @@ from scipy.fftpack import fft, fftfreq
 from scipy.signal import find_peaks
 
 # Load the CSV file
-file_path = 'Part2_Harmonic_freq_1.5e3_stretch_1_out_wave_profile_0015.csv'  # Replace with your actual file path
+file_path = 'Part2_Harmonic_freq_1e3_stretch_1_out_wave_profile_0006.csv'  # Replace with your actual file path
 data = pd.read_csv(file_path)
 
 # Extract columns: 4th column for y displacement, 13th column for x position
