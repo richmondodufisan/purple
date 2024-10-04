@@ -105,7 +105,7 @@ Real ComputeStrainEnergyNeoHookeanNearlyIncompressible::computeStrainEnergy(cons
 RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible::compute_dWdC(const Real &mu_0, const RankTwoTensor &C) 
 {
 	// Initialize perturbation
-	Real epsilon = 1e-6;
+	Real epsilon = 1e-5;
 	
 	// Initialize derivative
 	RankTwoTensor dWdC;
@@ -189,7 +189,7 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible::computePiolaKSt
 RankFourTensor ComputeStrainEnergyNeoHookeanNearlyIncompressible::compute_dPK2dE(const Real &mu_0, const RankTwoTensor &E, const Real &nu)
 {
 	// Initialize perturbation
-	 Real epsilon = 1e-6;
+	 Real epsilon = 1e-5;
 	
     // Initialize derivative
     RankFourTensor dPK2dE;
