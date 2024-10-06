@@ -1,6 +1,4 @@
 #Global Parameters
-x0_val = 0
-y0_val = 0
 freq_val = 1e6
 
 transducer_thickness = 0.09
@@ -196,10 +194,6 @@ c_au = 0.1287e3
   []
   [avg_surf_temp_imag]
   []
-  [temp_samp]
-  []
-  [temp_trans]
-  []
 []
 
 [AuxKernels]
@@ -207,35 +201,20 @@ c_au = 0.1287e3
     type = ParsedAux
     variable = avg_surf_temp_real
     coupled_variables = 'temp_trans_real'
-	constant_names = 'x0 y0 Rprobe pi'
-	constant_expressions = '${x0_val} ${y0_val} ${probe_radius} 3.14159265359'
+	constant_names = 'Rprobe pi'
+	constant_expressions = '${probe_radius} 3.14159265359'
 	use_xyzt = true
-	expression = '((temp_trans_real)/(pi*(Rprobe^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rprobe^2))'
+	expression = '((temp_trans_real)/(pi*(Rprobe^2)))*exp((-(x^2))/(Rprobe^2))'
 	block = transducer_material
   []
   [average_surface_temperature_imag]
     type = ParsedAux
     variable = avg_surf_temp_imag
     coupled_variables = 'temp_trans_imag'
-	constant_names = 'x0 y0 Rprobe pi'
-	constant_expressions = '${x0_val} ${y0_val} ${probe_radius} 3.14159265359'
+	constant_names = 'Rprobe pi'
+	constant_expressions = '${probe_radius} 3.14159265359'
 	use_xyzt = true
-	expression = '((temp_trans_imag)/(pi*(Rprobe^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rprobe^2))'
-	block = transducer_material
-  []
-  [temp_samp_val]
-    type = ParsedAux
-    variable = temp_samp
-    coupled_variables = 'temp_samp_real temp_samp_imag'
-	expression = 'sqrt((temp_samp_imag^2) + (temp_samp_real^2))'
-	block = sample_material
-  []
-  
-  [temp_trans_val]
-    type = ParsedAux
-    variable = temp_trans
-    coupled_variables = 'temp_trans_real temp_trans_imag'
-	expression = 'sqrt((temp_trans_imag^2) + (temp_trans_real^2))'
+	expression = '((temp_trans_imag)/(pi*(Rprobe^2)))*exp((-(x^2))/(Rprobe^2))'
 	block = transducer_material
   []
 []
@@ -256,9 +235,9 @@ c_au = 0.1287e3
 [Functions]
   [heat_source_function]
     type = ADParsedFunction
-    expression = '-((Q0*absorbance)/(pi*(Rpump^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rpump^2))'
-    symbol_names = 'x0 y0 Rpump Q0 absorbance'
-    symbol_values = '${x0_val} ${y0_val} ${pump_radius} ${pump_power} ${pump_absorbance}'
+    expression = '-((Q0*absorbance)/(pi*(Rpump^2)))*exp(-(x^2)/(Rpump^2))'
+    symbol_names = 'Rpump Q0 absorbance'
+    symbol_values = '${pump_radius} ${pump_power} ${pump_absorbance}'
   []
   [angular_frequency]
 	type = ADParsedFunction
@@ -319,20 +298,6 @@ c_au = 0.1287e3
     type = NeumannBC
 	variable = temp_trans_imag
 	boundary = 'top_pump_area'
-	value = 0
-  []
-  
-  [axisymmetry_samp]
-    type = NeumannBC
-	variable = temp_samp
-	boundary = 'center_side'
-	value = 0
-  []
-  
-  [axisymmetry_trans]
-    type = NeumannBC
-	variable = temp_trans
-	boundary = 'center_side'
 	value = 0
   []
 []
