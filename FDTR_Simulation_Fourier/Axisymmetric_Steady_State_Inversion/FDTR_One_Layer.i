@@ -13,6 +13,10 @@ kappa_bulk_au = 215e-6
 rho_au = 19.3e-15
 c_au = 0.1287e3
 
+[Problem]
+  coord_type = RZ
+[]
+
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator

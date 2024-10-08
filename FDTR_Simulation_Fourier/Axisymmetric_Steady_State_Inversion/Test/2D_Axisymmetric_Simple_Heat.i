@@ -12,6 +12,10 @@ kappa_bulk_au = 215e-6
 rho_au = 19.3e-15
 c_au = 0.1287e3
 
+[Problem]
+  coord_type = RZ
+[]
+
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator
@@ -21,8 +25,6 @@ c_au = 0.1287e3
     type = ParsedGenerateSideset
 	input = sample_mesh
 	combinatorial_geometry = '(z > ${transducer_thickness}-1e-8) & (z < ${transducer_thickness}+1e-8)'
-	constant_names = 'x0 y0'
-	constant_expressions = '${x0_val} ${y0_val}'
 	new_sideset_name = top_pump_area
   []
   [bottom_area]
