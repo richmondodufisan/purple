@@ -114,7 +114,7 @@ print("-------------------------------------------------------------------------
 
 ################################## CALCULATE PHASE AND AMPLITUDE FOR A SINGLE FILE #####################################
 # Read the CSV files into pandas DataFrames
-calibration_data = pd.read_csv('FDTR_Single_Layer_axisymmetric_out.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+calibration_data = pd.read_csv('FDTR_One_Layer_axisymmetric_out.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
 calib_freq_vals = calibration_data['frequency'].unique().tolist()

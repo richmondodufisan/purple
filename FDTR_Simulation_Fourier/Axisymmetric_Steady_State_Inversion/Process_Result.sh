@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Input file type
-og_filename=FDTR_Single_Layer
-# og_filename=SingleLayer_Test
+og_filename=FDTR_Two_Layer
 
 x0_vals_num=("0")
 freq_vals_num=("1e6")

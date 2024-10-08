@@ -28,14 +28,14 @@ c_au = 0.1287e3
     type = SubdomainBoundingBoxGenerator
     input = sample_mesh
     block_id = 1
-    top_right = '80 0 0'
+    top_right = '40 0 0'
     bottom_left = '0 0 -40'
   []
   [transducer_block]
     type = SubdomainBoundingBoxGenerator
     input = sample_block
     block_id = 2	
-    top_right = '80 0 ${transducer_thickness}'
+    top_right = '40 0 ${transducer_thickness}'
     bottom_left = '0 0 0'
   []
   
