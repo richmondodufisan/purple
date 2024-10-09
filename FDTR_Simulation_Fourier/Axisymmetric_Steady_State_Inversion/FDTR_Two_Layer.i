@@ -5,14 +5,14 @@ transducer_thickness = 0.09
 k_trans_z = 215e-6
 k_trans_r = 215e-6
 rho_trans = 19.3e-15
-c_trans = 0.1287e3
+c_trans = 128.7
 
 
 sample_thickness = 40
 k_samp_z = 130e-6
 k_samp_r = 130e-6
 rho_samp = 2.329e-15
-c_samp = 0.6891e3
+c_samp = 689.1
 
 
 conductance_12 = 3e-5
