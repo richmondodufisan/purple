@@ -90,6 +90,6 @@ def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_prob
     amplitude = math.sqrt(H_real**2 + H_imag**2)
     
     # Clean files
-    os.system(f"rm FDTR_Two_Layer_temp*")
+    # os.system(f"rm FDTR_Two_Layer_temp*")
     
     return phase, amplitude

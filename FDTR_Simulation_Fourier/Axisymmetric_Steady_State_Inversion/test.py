@@ -11,7 +11,7 @@ conductance = 3e7 # in W/(m2.K)
 # Define other parameters required by calc_thermal_response function
 N_layers = 2
 layer2 = [40e-6, kappa, kappa, 2329, 689.1]
-layer1 = [9e-8, 215, 215, 19300, 128.7]
+layer1 = [133e-9, 215, 215, 19300, 128.7]
 layer_props = np.array([layer2, layer1])
 interface_props = [conductance]
 r_probe = 1.34e-6
