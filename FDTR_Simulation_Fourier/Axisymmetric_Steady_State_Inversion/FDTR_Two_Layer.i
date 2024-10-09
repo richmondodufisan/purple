@@ -2,18 +2,28 @@
 freq_val = 1e6
 
 transducer_thickness = 0.09
+k_trans_z = 215e-6
+k_trans_r = 215e-6
+rho_trans = 19.3e-15
+c_trans = 0.1287e3
+
+
+sample_thickness = 40
+k_samp_z = 130e-6
+k_samp_r = 130e-6
+rho_samp = 2.329e-15
+c_samp = 0.6891e3
+
+
+conductance_12 = 3e-5
+
+
 probe_radius = 1.34
 pump_radius = 1.53
 pump_power = 0.01
+
+
 pump_absorbance = 1
-kappa_bulk_si = 130e-6
-rho_si = 2.329e-15
-c_si = 0.6891e3
-au_si_conductance = -3e-5
-au_si_conductance_positive = 3e-5
-kappa_bulk_au = 215e-6
-rho_au = 19.3e-15
-c_au = 0.1287e3
 
 
 [Mesh]
@@ -27,7 +37,7 @@ c_au = 0.1287e3
     input = sample_mesh
     block_id = 1
     top_right = '40 0 0'
-    bottom_left = '0 0 -40'
+    bottom_left = '0 0 -${sample_thickness}'
   []
   [transducer_block]
     type = SubdomainBoundingBoxGenerator
@@ -69,7 +79,7 @@ c_au = 0.1287e3
   [bottom_area]
     type = ParsedGenerateSideset
 	input = conductance_area
-	combinatorial_geometry = '((z > -40-1e-8) & (z < -40+1e-8))'
+	combinatorial_geometry = '((z > -${sample_thickness}-1e-8) & (z < -${sample_thickness}+1e-8))'
 	new_sideset_name = bottom_surface
   []
   
@@ -106,7 +116,7 @@ c_au = 0.1287e3
 
 [Kernels]
   [heat_conduction_transducer_real]
-    type = HeatConductionSteadyReal
+    type = HeatConductionSteadyRealAnisotropic
 	
     variable = temp_trans_real
 	imaginary_temp = temp_trans_imag
@@ -119,7 +129,7 @@ c_au = 0.1287e3
 	block = transducer_material
   []
   [heat_conduction_transducer_imag]
-    type = HeatConductionSteadyImag
+    type = HeatConductionSteadyImagAnisotropic
 	
     variable = temp_trans_imag
 	real_temp = temp_trans_real
@@ -134,7 +144,7 @@ c_au = 0.1287e3
   
   
   [heat_conduction_sample_real]
-    type = HeatConductionSteadyReal
+    type = HeatConductionSteadyRealAnisotropic
 	
     variable = temp_samp_real
 	imaginary_temp = temp_samp_imag
@@ -147,7 +157,7 @@ c_au = 0.1287e3
 	block = sample_material
   []
   [heat_conduction_sample_imag]
-    type = HeatConductionSteadyImag
+    type = HeatConductionSteadyImagAnisotropic
 	
     variable = temp_samp_imag
 	real_temp = temp_samp_real
@@ -167,7 +177,7 @@ c_au = 0.1287e3
     variable = temp_trans_real
     neighbor_var = temp_samp_real
     boundary = 'boundary_conductance'
-	conductance = ${au_si_conductance}
+	conductance = -${conductance_12}
 	
 	Tbulk_mat = 0
 	h_primary = 0
@@ -181,7 +191,7 @@ c_au = 0.1287e3
     variable = temp_trans_imag
     neighbor_var = temp_samp_imag
     boundary = 'boundary_conductance'
-	conductance = ${au_si_conductance_positive}
+	conductance = ${conductance_12}
 	
 	Tbulk_mat = 0
 	h_primary = 0
@@ -253,15 +263,34 @@ c_au = 0.1287e3
   [basic_transducer_materials]
     type = ADGenericConstantMaterial
     block = transducer_material
-    prop_names = 'rho_trans c_trans k_trans'
-    prop_values = '${rho_au} ${c_au} ${kappa_bulk_au}'
+    prop_names = 'rho_trans c_trans'
+    prop_values = '${rho_trans} ${c_trans}'
   []
+  [transducer_kappa]
+    type = ADGenericConstantRankTwoTensor
+    tensor_name = k_trans
+    # tensor values are column major-ordered
+    tensor_values = '${k_trans_r} 0 0 0 ${k_trans_r} 0 0 0 ${k_trans_z}'
+	block = transducer_material
+  []
+  
+  
   [basic_sample_materials]
     type = ADGenericConstantMaterial
     block = sample_material
-    prop_names = 'rho_samp c_samp k_samp'
-    prop_values = '${rho_si} ${c_si} ${kappa_bulk_si}'
+    prop_names = 'rho_samp c_samp'
+    prop_values = '${rho_samp} ${c_samp}'
   []
+  [sample_kappa]
+    type = ADGenericConstantRankTwoTensor
+    tensor_name = k_samp
+    # tensor values are column major-ordered
+    tensor_values = '${k_samp_r} 0 0 0 ${k_samp_r} 0 0 0 ${k_samp_z}'
+	block = sample_material
+  []
+  
+  
+  
   [simulation_frequency]
     type = ADGenericFunctionMaterial
 	prop_names = omega
