@@ -156,5 +156,5 @@ gmsh.model.mesh.generate(2)
 
 gmsh.write(newMeshName)
 
-gmsh.fltk.run()
+# gmsh.fltk.run()
 
