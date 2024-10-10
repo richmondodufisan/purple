@@ -11,13 +11,13 @@ radius = 8
 trans_thick = 0.133
 
 dummy_factor = 2
-trans_thick_ref = 0.2
-sub_center_ref=0.2
+trans_thick_ref = 0.1
+sub_center_ref=0.1
 
 x_len = 40
 z_len = 40
 
-pump_refine = 1.5
+pump_refine = 0.4
 reg_element_refine = 4
 
 

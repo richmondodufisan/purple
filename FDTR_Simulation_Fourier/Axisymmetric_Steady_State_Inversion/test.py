@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 freq = 1 # in MHz
-kappa = 130 # in W/(m.K)
-conductance = 3e7 # in W/(m2.K)
+kappa = 2.67 # in W/(m.K)
+conductance = 25.13e6 # in W/(m2.K)
 
 ################################## CALCULATE PHASE AND AMPLITUDE FOR A SINGLE FREQUENCY #####################################
 

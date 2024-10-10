@@ -40,34 +40,6 @@ import pdb
 
 # Two-Layer FDTR Function
 
-# def fit_function_FDTR(freqs, fitting_properties):
-    # phases = []
-    
-    # # CHANGE IF CHANGING FITTING PROPERTIES
-    # kappa_2, conductance_12 = fitting_properties  # Adjust the fitting parameters as needed
-
-    # for freq in freqs:
-        # # Define other parameters required by calc_thermal_response function
-        # N_layers = 2
-        # layer2 = [100e-6, kappa_2, kappa_2, 2630, 741.79]
-        # layer1 = [133e-9, 194, 194, 19300, 126.4]
-        # layer_props = np.array([layer2, layer1])
-        # interface_props = [conductance_12]
-        # r_probe = 1.249e-6
-        # r_pump = 2.216e-6
-        # pump_power = 1.5
-        # calib_consts = [1, 1] # no calibration
-        # freq = freq * 1e6
-
-        # # Calculate analytical phase 
-        # phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
-        # phases.append(phase)
-        
-    # return np.array(phases)
-    
-
-# Three-Layer FDTR Function
-
 def fit_function_FDTR(freqs, fitting_properties):
     phases = []
     
@@ -76,12 +48,11 @@ def fit_function_FDTR(freqs, fitting_properties):
 
     for freq in freqs:
         # Define other parameters required by calc_thermal_response function
-        N_layers = 3
-        layer3 = [100e-6, kappa_2, kappa_2, 2329, 689.1]              #Si
-        layer2 = [1000e-9, 2.711, 2.711, 2630, 741.79]           #SiO2
-        layer1 = [133e-9, 194, 194, 19300, 126.4]               #Au
-        layer_props = np.array([layer3, layer2, layer1])
-        interface_props = [conductance_12, 37.6983e6]
+        N_layers = 2
+        layer2 = [100e-6, kappa_2, kappa_2, 2630, 741.79]
+        layer1 = [133e-9, 194, 194, 19300, 126.4]
+        layer_props = np.array([layer2, layer1])
+        interface_props = [conductance_12]
         r_probe = 1.249e-6
         r_pump = 2.216e-6
         pump_power = 1.5
@@ -93,6 +64,35 @@ def fit_function_FDTR(freqs, fitting_properties):
         phases.append(phase)
         
     return np.array(phases)
+    
+
+# Three-Layer FDTR Function
+
+# def fit_function_FDTR(freqs, fitting_properties):
+    # phases = []
+    
+    # # CHANGE IF CHANGING FITTING PROPERTIES
+    # kappa_2, conductance_12 = fitting_properties  # Adjust the fitting parameters as needed
+
+    # for freq in freqs:
+        # # Define other parameters required by calc_thermal_response function
+        # N_layers = 3
+        # layer3 = [100e-6, kappa_2, kappa_2, 2329, 689.1]              #Si
+        # layer2 = [1000e-9, 2.711, 2.711, 2630, 741.79]           #SiO2
+        # layer1 = [133e-9, 194, 194, 19300, 126.4]               #Au
+        # layer_props = np.array([layer3, layer2, layer1])
+        # interface_props = [conductance_12, 37.6983e6]
+        # r_probe = 1.249e-6
+        # r_pump = 2.216e-6
+        # pump_power = 1.5
+        # calib_consts = [1, 1] # no calibration
+        # freq = freq * 1e6
+
+        # # Calculate analytical phase 
+        # phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
+        # phases.append(phase)
+        
+    # return np.array(phases)
 
 
 
@@ -141,7 +141,7 @@ def process_file(file_path, initial_guesses, bounds_lower, bounds_upper):
 ##################################################### READ DATA AND PERFORM FITTING ###################################################
 
 # Specify the folder and number of files
-folder_path = './Richmond_1000nm_SiO2_on_Si'  
+folder_path = './Rosemary_SiO2_Standard'  
 num_files = 6  # Specify the number of files
 
 # Define initial guesses and bounds for the fitting properties
