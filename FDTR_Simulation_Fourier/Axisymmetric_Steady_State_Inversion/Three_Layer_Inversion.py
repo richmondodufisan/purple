@@ -6,13 +6,13 @@ import re
 def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, freq, pump_power):
 
 
-    if (N_layers != 2):
-        raise RuntimeError("Error: This is for 2 Layer systems only")
+    if (N_layers != 3):
+        raise RuntimeError("Error: This is for 3 Layer systems only")
 
     input_file = "FDTR_Three_Layer.i"
     temp_file = "FDTR_Three_Layer_temp.i"
     
-    h1 = float(layer_props[2][0] * 1e6)
+    h1 = layer_props[2][0] * 1e6
     kappa_z1 = layer_props[2][1] * 1e-6
     kappa_r1 = layer_props[2][2] * 1e-6
     rho1 = layer_props[2][3] * 1e-18
@@ -20,7 +20,7 @@ def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_prob
     
     G_12 = interface_props[1] * 1e-12
     
-    h2 = float(layer_props[1][0] * 1e6)
+    h2 = layer_props[1][0] * 1e6
     kappa_z2 = layer_props[1][1] * 1e-6
     kappa_r2 = layer_props[1][2] * 1e-6
     rho2 = layer_props[1][3] * 1e-18
@@ -28,7 +28,7 @@ def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_prob
     
     G_23 = interface_props[0] * 1e-12
     
-    h3 = int(layer_props[0][0] * 1e6)
+    h3 = layer_props[0][0] * 1e6
     kappa_z3 = layer_props[0][1] * 1e-6
     kappa_r3 = layer_props[0][2] * 1e-6
     rho3 = layer_props[0][3] * 1e-18
@@ -60,7 +60,7 @@ def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_prob
         'probe_radius': r_probe * 1e6,
         'pump_power': pump_power,
         
-        'conductance_12': G_12
+        'conductance_12': G_12,
 
         'conductance_23': G_23 
     }
@@ -106,6 +106,6 @@ def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_prob
     amplitude = math.sqrt(H_real**2 + H_imag**2)
     
     # Clean files
-    os.system(f"rm FDTR_Three_Layer_temp*")
+    # os.system(f"rm FDTR_Three_Layer_temp*")
     
     return phase, amplitude
