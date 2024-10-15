@@ -2,16 +2,16 @@ from Two_Layer_Phase import calc_thermal_response
 import matplotlib.pyplot as plt
 import numpy as np
 
-freq = 1 # in MHz
-kappa = 2.67 # in W/(m.K)
-conductance = 25.13e6 # in W/(m2.K)
+freq = 100.0 # in MHz
+kappa = 130.0 # in W/(m.K)
+conductance = 30e6 # in W/(m2.K)
 
 ################################## CALCULATE PHASE AND AMPLITUDE FOR A SINGLE FREQUENCY #####################################
 
 # Define other parameters required by calc_thermal_response function
 N_layers = 2
 layer2 = [40e-6, kappa, kappa, 2329, 689.1]
-layer1 = [133e-9, 215, 215, 19300, 128.7]
+layer1 = [90e-9, 215, 215, 19300, 128.7]
 layer_props = np.array([layer2, layer1])
 interface_props = [conductance]
 r_probe = 1.34e-6

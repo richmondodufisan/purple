@@ -8,7 +8,7 @@ gmsh.model.add("FDTR_mesh")
 newMeshName = "FDTR_mesh.msh"
 
 radius = 8
-trans_thick = 0.133
+trans_thick = 0.09
 
 dummy_factor = 2
 trans_thick_ref = 0.1

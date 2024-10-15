@@ -18,7 +18,7 @@ kappa_bulk_au = 215e-6
 rho_au = 19.3e-15
 c_au = 0.1287e3
 
-si_distance = 0.2
+si_distance = 1
 gb_thickness = 0.01
 
 block_3_val = ${fparse -si_distance}
