@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from Two_Layer_Phase import calc_thermal_response
+from Two_Layer_Inversion import calc_thermal_response
 from scipy.optimize import curve_fit
 import math
 

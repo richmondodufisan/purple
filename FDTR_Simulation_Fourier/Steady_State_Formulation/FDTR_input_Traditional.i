@@ -97,13 +97,6 @@ block_2_val = ${fparse -si_distance-gb_thickness}
 	combinatorial_geometry = '((z > -40-1e-8) & (z < -40+1e-8))'
 	new_sideset_name = bottom_surface
   []
-  
-  [side_areas]
-    type = ParsedGenerateSideset
-	input = bottom_area
-	combinatorial_geometry = '((x > -160-1e-8) & (x < -160+1e-8)) | ((x > 160-1e-8) & (x < 160+1e-8)) | ((y > -80-1e-8) & (y < -80+1e-8)) | ((y > 80-1e-8) & (y < 80+1e-8))'
-	new_sideset_name = side_surfaces
-  []
 []
 
 [Variables]
