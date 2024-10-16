@@ -177,6 +177,17 @@ excitation_val = 0.00001
   []
 []
 
+
+[VectorPostprocessors]
+  [upper_right_y_disp]
+    type = SideValueSampler
+    variable = 'disp_y'
+    boundary = 'sample_location'
+    sort_by = x
+  []
+[]
+
+
 [Executioner]
   type = Steady
   solve_type = 'NEWTON'
