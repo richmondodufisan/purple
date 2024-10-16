@@ -17,7 +17,7 @@ sub_center_ref=0.1
 x_len = 40
 z_len = 40
 
-pump_refine = 0.4
+pump_refine = 0.1
 reg_element_refine = 4
 
 

@@ -8,7 +8,7 @@ conductance_12 = 30e6 # in W/(m2.K)
 conductance_23 = 30e6 # in W/(m2.K)
 
 
-# ################################## CALCULATE PHASE AND AMPLITUDE FOR A SINGLE FREQUENCY #####################################
+################################### CALCULATE PHASE AND AMPLITUDE FOR A SINGLE FREQUENCY #####################################
 
 # # Define other parameters required by calc_thermal_response function
 # N_layers = 2
@@ -36,8 +36,8 @@ conductance_23 = 30e6 # in W/(m2.K)
 
 # Define other parameters required by calc_thermal_response function
 N_layers = 3
-layer3 = [38.995e-6, kappa, kappa, 2329, 689.1]
-layer2 = [1.005e-6, kappa, kappa, 2329, 689.1]
+layer3 = [39.91e-6, kappa, kappa, 2329, 689.1]
+layer2 = [90e-9, kappa, kappa, 2329, 689.1]
 layer1 = [90e-9, 215, 215, 19300, 128.7]
 layer_props = np.array([layer3, layer2, layer1])
 interface_props = [conductance_23, conductance_12]

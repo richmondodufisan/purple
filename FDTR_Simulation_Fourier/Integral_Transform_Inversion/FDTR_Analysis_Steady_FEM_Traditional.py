@@ -12,7 +12,7 @@ import math
 
 # Read the CSV files into pandas DataFrames
 calibration_data = pd.read_csv('FDTR_CALIBRATION_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
-FDTR_data = pd.read_csv('FDTR_input_Trad_10nm_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+FDTR_data = pd.read_csv('FDTR_input_Traditional_out_0_2_um.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
 theta_angle = "0" # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -189,8 +189,8 @@ def fit_function_FDTR(freqs, G):
     for freq in freqs:
         # Define other parameters required by calc_thermal_response function
         N_layers = 3
-        layer3 = [39e-6, 130, 130, 2329, 689.1]
-        layer2 = [1e-6, 130, 130, 2329, 689.1]
+        layer3 = [39.75e-6, 130, 130, 2329, 689.1]
+        layer2 = [0.25e-6, 130, 130, 2329, 689.1]
         layer1 = [9e-8, 215, 215, 19300, 128.7]
         layer_props = np.array([layer3, layer2, layer1])
         interface_props = [G, 3e7]
@@ -236,23 +236,30 @@ for x0 in FDTR_x0_vals:
     
     interface_conductance = popt[0] # only one value anyway
 
-    # Plot phase/frequency fit for one location
+    # Plot phase/frequency fit for one location (there is only one location here in the traditional FDTR)
     if (counter == 0):
         fitted_phase_vals = fit_function_FDTR(FDTR_freq, interface_conductance)
+        
+        # Calculate MSE of the fit
+        mse = math.sqrt(np.mean((fitted_phase_vals - FDTR_phase) ** 2))
+        mse_deg = mse * (180/np.pi)
+        
+        print("----------------------------------------------------------------------------------------------")
+        print(f"Root Mean Squared Error of the fit: {mse} radians")
+        print(f"Root Mean Squared Error of the fit: {mse_deg} degrees")
         
         plt.figure()
         plt.plot(FDTR_freq, fitted_phase_vals, marker='v', linestyle='solid', color='purple', markersize=8, label = "analytical model")
         plt.plot(FDTR_freq, FDTR_phase, marker='v', linestyle='solid', color='green', markersize=8, label = "simulation")
         plt.xlabel('Frequency')
         plt.ylabel('Phase (radians)')
-        plt.title("Sample phase/frequency fit, θ = " + str(theta_angle))
+        plt.title("Sample phase/frequency fit, θ = " + str(theta_angle) + "RMSE = " + str(mse) + "radians")
         plt.grid(True)
         plt.legend()
         plt.savefig(f"Phase_Fit_{theta_angle}.png", bbox_inches='tight')
         plt.show()
     
     counter = counter + 1
-
 
 resistance = 1/interface_conductance
 
