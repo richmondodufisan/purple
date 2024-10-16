@@ -24,3 +24,6 @@ Curve Loop(1) = {4, 1, 2, 3};
 Plane Surface(1) = {1};
 //+
 Physical Point("loading_point", 5) = {5};
+
+//+
+Physical Curve("sample_location", 6) = {1};
