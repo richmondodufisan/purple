@@ -16,8 +16,14 @@ excitation_val = 0.00001
   second_order = true
   [sample_mesh]
     type = FileMeshGenerator
-    file = eyeball_2D.msh
+    file = eyeball_3D_coarse.msh
   []
+#  [output_sampling_line]
+#    type = ParsedGenerateNodeset
+#	input = sample_mesh
+#	combinatorial_geometry = '(y > 0-1e-8) & (y < 0+1e-8) & ((x^2 + z^2 - 0.002^2) > 0-1e-8) & ((x^2 + z^2 - 0.002^2) < 0+1e-8) & (z > 0-1e-8) & (z < 0+1e-8)'
+#	new_sideset_name = sample_line
+# []
 []
 
 [Variables]
@@ -68,7 +74,7 @@ excitation_val = 0.00001
     type = TotalLagrangianStressDivergence
 	component = 2
 	displacements = 'disp_x_real disp_y_real disp_z_real'
-    variable = disp_y_real
+    variable = disp_z_real
 	base_name = real
   []
   
@@ -220,6 +226,15 @@ excitation_val = 0.00001
 	preset = false
   []
 []
+
+#[VectorPostprocessors]
+#  [upper_right_z_disp]
+#    type = NodalValueSampler
+#    variable = 'disp_z'
+#    boundary = 'sample_line'
+#    sort_by = x
+#  []
+#[]
 
 [Executioner]
   type = Steady
