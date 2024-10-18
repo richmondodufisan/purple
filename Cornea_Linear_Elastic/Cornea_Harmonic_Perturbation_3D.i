@@ -18,12 +18,13 @@ excitation_val = 0.00001
     type = FileMeshGenerator
     file = eyeball_3D_coarse.msh
   []
-#  [output_sampling_line]
-#    type = ParsedGenerateNodeset
-#	input = sample_mesh
-#	combinatorial_geometry = '(y > 0-1e-8) & (y < 0+1e-8) & ((x^2 + z^2 - 0.002^2) > 0-1e-8) & ((x^2 + z^2 - 0.002^2) < 0+1e-8) & (z > 0-1e-8) & (z < 0+1e-8)'
-#	new_sideset_name = sample_line
-# []
+  [output_sampling_line]
+    type = ParsedGenerateNodeset
+	input = sample_mesh
+	combinatorial_geometry = '(y > 0-1e-6) & (y < 0+1e-6) & ((x^2 + z^2 - 0.002^2) > 0-1e-6) & ((x^2 + z^2 - 0.002^2) < 0+1e-6) & (z > 0-1e-6) & (z < 0+1e-6)'
+	new_nodeset_name = sample_line
+	include_only_external_nodes = false
+ []
 []
 
 [Variables]
@@ -227,14 +228,14 @@ excitation_val = 0.00001
   []
 []
 
-#[VectorPostprocessors]
-#  [upper_right_z_disp]
-#    type = NodalValueSampler
-#    variable = 'disp_z'
-#    boundary = 'sample_line'
-#    sort_by = x
-#  []
-#[]
+[VectorPostprocessors]
+  [upper_right_z_disp]
+    type = NodalValueSampler
+    variable = 'disp_z'
+    boundary = 'sample_line'
+    sort_by = x
+  []
+[]
 
 [Executioner]
   type = Steady
@@ -254,8 +255,7 @@ excitation_val = 0.00001
 []
 
 [Outputs]
-  interval = 1
-  #execute_on = 'initial timestep_end'
+  time_step_interval = 1
   print_linear_residuals = false
   csv = true
   exodus = true
