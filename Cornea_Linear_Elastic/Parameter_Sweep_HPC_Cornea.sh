@@ -20,7 +20,7 @@ for freq_val_num in "${freq_vals_num[@]}"; do
 		# Copy the original input file to the new filename
 		cp "$filename$extension1" "$new_filename"
 		
-		# Replace the stretch ratio in the MOOSE script
+		# Replace the frequency in the MOOSE script
 		sed -i "s/\(freq_val\s*=\s*\)[0-9.eE+-]\+/\1$freq_val_num/g" "$new_filename"
 		
 		# Save the new MOOSE script to the list of files

@@ -206,7 +206,7 @@ excitation_val = 0.00001
 []
 
 [Outputs]
-  interval = 1
+  time_step_interval = 1
   #execute_on = 'initial timestep_end'
   print_linear_residuals = false
   csv = true
