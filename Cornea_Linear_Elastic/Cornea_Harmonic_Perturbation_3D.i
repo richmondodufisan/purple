@@ -1,12 +1,12 @@
 #Global Parameters
-freq_val = 4900e3
+freq_val = 3e6
 omega = ${fparse 2 * pi * freq_val}
 
-youngs_modulus_val = 207e9
-poissons_ratio_val = 0.29
-density = 7850
+youngs_modulus_val = 70e9
+poissons_ratio_val = 0.33
+density = 2700
 
-excitation_val = 0.00001
+excitation_val = 0.0001
 
 [GlobalParams]
   large_kinematics = false
@@ -16,7 +16,7 @@ excitation_val = 0.00001
   second_order = true
   [sample_mesh]
     type = FileMeshGenerator
-    file = eyeball_3D_coarse.msh
+    file = eyeball_3D.msh
   []
   [output_sampling_line]
     type = ParsedGenerateNodeset
@@ -24,7 +24,7 @@ excitation_val = 0.00001
 	combinatorial_geometry = '(y > 0-1e-6) & (y < 0+1e-6) & ((x^2 + z^2 - 0.002^2) > 0-1e-6) & ((x^2 + z^2 - 0.002^2) < 0+1e-6) & (z > 0-1e-6) & (z < 0+1e-6)'
 	new_nodeset_name = sample_line
 	include_only_external_nodes = false
- []
+  []
 []
 
 [Variables]

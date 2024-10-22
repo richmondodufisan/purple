@@ -8,10 +8,6 @@ density = 7850
 
 excitation_val = 0.00001
 
-[GlobalParams]
-  large_kinematics = false
-[]
-
 [Mesh]
   second_order = true
   [sample_mesh]
@@ -41,7 +37,7 @@ excitation_val = 0.00001
 
 [Kernels]
   [div_sig_x_real]
-    type = TotalLagrangianStressDivergence
+    type = ADStressDivergenceTensors
 	component = 0
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_x_real
@@ -49,7 +45,7 @@ excitation_val = 0.00001
   []
   
   [div_sig_y_real]
-    type = TotalLagrangianStressDivergence
+    type = ADStressDivergenceTensors
 	component = 1
 	displacements = 'disp_x_real disp_y_real'
     variable = disp_y_real
@@ -72,7 +68,7 @@ excitation_val = 0.00001
   
   
   [div_sig_x_imag]
-    type = TotalLagrangianStressDivergence
+    type = ADStressDivergenceTensors
 	component = 0
 	displacements = 'disp_x_imag disp_y_imag'
     variable = disp_x_imag
@@ -80,7 +76,7 @@ excitation_val = 0.00001
   []
   
   [div_sig_y_imag]
-    type = TotalLagrangianStressDivergence
+    type = ADStressDivergenceTensors
 	component = 1
 	displacements = 'disp_x_imag disp_y_imag'
     variable = disp_y_imag
@@ -124,36 +120,34 @@ excitation_val = 0.00001
 
 [Materials]
   [elastic_tensor_real]
-    type = ComputeIsotropicElasticityTensor
+    type = ADComputeIsotropicElasticityTensor
     youngs_modulus = ${youngs_modulus_val}
     poissons_ratio = ${poissons_ratio_val}
 	base_name = real
   []
   [compute_stress_real]
-    type = ComputeLagrangianLinearElasticStress
-	elasticity_tensor = real_elasticity_tensor
+    type = ADComputeLinearElasticStress
 	base_name = real
   []
   [compute_strain_real]
-    type = ComputeLagrangianStrain
+    type = ADComputeSmallStrain
     displacements = 'disp_x_real disp_y_real'
 	base_name = real
   []
   
   
   [elastic_tensor_imag]
-    type = ComputeIsotropicElasticityTensor
+    type = ADComputeIsotropicElasticityTensor
     youngs_modulus = ${youngs_modulus_val}
     poissons_ratio = ${poissons_ratio_val}
 	base_name = imag
   []
   [compute_stress_imag]
-    type = ComputeLagrangianLinearElasticStress
-	elasticity_tensor = imag_elasticity_tensor
+    type = ADComputeLinearElasticStress
 	base_name = imag
   []
   [compute_strain_imag]
-    type = ComputeLagrangianStrain
+    type = ADComputeSmallStrain
     displacements = 'disp_x_imag disp_y_imag'
 	base_name = imag
   []

@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Simulation File
-filename="Cornea_Harmonic_Perturbation_2D"
+filename="Cornea_Harmonic_Perturbation_3D"
 extension1=".i"
 
 # Define the range of values you want to loop over
-freq_vals_num=("100e3" "1000e3")
+freq_vals_num=("100e3" "3000e3" "20000e3")
 
 # Calculate number of simulations'
 num_freqs=${#freq_vals_num[@]}

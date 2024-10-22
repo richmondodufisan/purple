@@ -1,16 +1,13 @@
 #Global Parameters
-freq_val = 4900e3
+freq_val = 3000e3
 omega = ${fparse 2 * pi * freq_val}
 
-youngs_modulus_val = 207e9
-poissons_ratio_val = 0.29
-density = 7850
+youngs_modulus_val = 70e9
+poissons_ratio_val = 0.33
+density = 2700
 
 excitation_val = 0.00001
 
-[GlobalParams]
-  large_kinematics = false
-[]
 
 [Mesh]
   second_order = true
@@ -22,23 +19,15 @@ excitation_val = 0.00001
 []
 
 [Variables]
-  [disp_x_real]
+  [disp_r_real]
     order = SECOND
     family = LAGRANGE
-  []
-  [disp_y_real]
-    order = SECOND
-	family = LAGRANGE
   []
   [disp_z_real]
     order = SECOND
 	family = LAGRANGE
   []
-  [disp_x_imag]
-    order = SECOND
-    family = LAGRANGE
-  []
-  [disp_y_imag]
+  [disp_r_imag]
     order = SECOND
     family = LAGRANGE
   []
@@ -49,39 +38,25 @@ excitation_val = 0.00001
 []
 
 [Kernels]
-  [div_sig_x_real]
-    type = TotalLagrangianStressDivergence
+  [div_sig_r_real]
+    type = ADStressDivergenceRZTensors
 	component = 0
-	displacements = 'disp_x_real disp_y_real disp_z_real'
-    variable = disp_x_real
-	base_name = real
-  []
-  
-  [div_sig_y_real]
-    type = TotalLagrangianStressDivergence
-	component = 1
-	displacements = 'disp_x_real disp_y_real disp_z_real'
-    variable = disp_y_real
+	displacements = 'disp_r_real disp_z_real'
+    variable = disp_r_real
 	base_name = real
   []
   
   [div_sig_z_real]
-    type = TotalLagrangianStressDivergence
-	component = 2
-	displacements = 'disp_x_real disp_y_real disp_z_real'
+    type = ADStressDivergenceRZTensors
+	component = 1
+	displacements = 'disp_r_real disp_z_real'
     variable = disp_z_real
 	base_name = real
   []
   
-  [reaction_x_real]
+  [reaction_r_real]
     type = ADReaction
-	variable = disp_x_real
-	rate = ${fparse -omega*omega*density}
-  []
-  
-  [reaction_y_real]
-    type = ADReaction
-	variable = disp_y_real
+	variable = disp_r_real
 	rate = ${fparse -omega*omega*density}
   []
   
@@ -94,39 +69,25 @@ excitation_val = 0.00001
   
   
   
-  [div_sig_x_imag]
-    type = TotalLagrangianStressDivergence
+  [div_sig_r_imag]
+    type = ADStressDivergenceRZTensors
 	component = 0
-	displacements = 'disp_x_imag disp_y_imag disp_z_imag'
-    variable = disp_x_imag
-	base_name = imag
-  []
-  
-  [div_sig_y_imag]
-    type = TotalLagrangianStressDivergence
-	component = 1
-	displacements = 'disp_x_imag disp_y_imag disp_z_imag'
-    variable = disp_y_imag
+	displacements = 'disp_r_imag disp_z_imag'
+    variable = disp_r_imag
 	base_name = imag
   []
   
   [div_sig_z_imag]
-    type = TotalLagrangianStressDivergence
-	component = 2
-	displacements = 'disp_x_imag disp_y_imag disp_z_imag'
+    type = ADStressDivergenceRZTensors
+	component = 1
+	displacements = 'disp_r_imag disp_z_imag'
     variable = disp_z_imag
 	base_name = imag
   []
   
-  [reaction_x_imag]
+  [reaction_r_imag]
     type = ADReaction
-	variable = disp_x_imag
-	rate = ${fparse -omega*omega*density}
-  []
-  
-  [reaction_y_imag]
-    type = ADReaction
-	variable = disp_y_imag
+	variable = disp_r_imag
 	rate = ${fparse -omega*omega*density}
   []
   
@@ -138,26 +99,18 @@ excitation_val = 0.00001
 []
 
 [AuxVariables]
-  [disp_x]
-  []
-  [disp_y]
+  [disp_r]
   []
   [disp_z]
   []
 []
 
 [AuxKernels]
-  [x_displacement]
+  [r_displacement]
     type = ParsedAux
-    variable = disp_x
-    coupled_variables = 'disp_x_real disp_x_imag'
-	expression = 'sqrt(disp_x_real^2 + disp_x_imag^2)'
-  []
-  [y_displacement]
-    type = ParsedAux
-    variable = disp_y
-    coupled_variables = 'disp_y_real disp_y_imag'
-	expression = 'sqrt(disp_y_real^2 + disp_y_imag^2)'
+    variable = disp_r
+    coupled_variables = 'disp_r_real disp_r_imag'
+	expression = 'sqrt(disp_r_real^2 + disp_r_imag^2)'
   []
   [z_displacement]
     type = ParsedAux
@@ -169,37 +122,35 @@ excitation_val = 0.00001
 
 [Materials]
   [elastic_tensor_real]
-    type = ComputeIsotropicElasticityTensor
+    type = ADComputeIsotropicElasticityTensor
     youngs_modulus = ${youngs_modulus_val}
     poissons_ratio = ${poissons_ratio_val}
 	base_name = real
   []
   [compute_stress_real]
-    type = ComputeLagrangianLinearElasticStress
-	elasticity_tensor = real_elasticity_tensor
+    type = ADComputeLinearElasticStress
 	base_name = real
   []
   [compute_strain_real]
-    type = ComputeLagrangianStrainAxisymmetricCylindrical
-    displacements = 'disp_x_real disp_y_real disp_z_real'
+    type = ADComputeAxisymmetricRZSmallStrain
+    displacements = 'disp_r_real disp_z_real'
 	base_name = real
   []
   
   
   [elastic_tensor_imag]
-    type = ComputeIsotropicElasticityTensor
+    type = ADComputeIsotropicElasticityTensor
     youngs_modulus = ${youngs_modulus_val}
     poissons_ratio = ${poissons_ratio_val}
 	base_name = imag
   []
   [compute_stress_imag]
-    type = ComputeLagrangianLinearElasticStress
-	elasticity_tensor = imag_elasticity_tensor
+    type = ADComputeLinearElasticStress
 	base_name = imag
   []
   [compute_strain_imag]
-    type = ComputeLagrangianStrainAxisymmetricCylindrical
-    displacements = 'disp_x_imag disp_y_imag disp_z_imag'
+    type = ADComputeAxisymmetricRZSmallStrain
+    displacements = 'disp_r_imag disp_z_imag'
 	base_name = imag
   []
 []
@@ -222,14 +173,14 @@ excitation_val = 0.00001
   []
 []
 
-#[VectorPostprocessors]
-#  [upper_right_z_disp]
-#    type = NodalValueSampler
-#    variable = 'disp_z'
-#    boundary = 'sample_location'
-#    sort_by = x
-#  []
-#[]
+[VectorPostprocessors]
+  [upper_right_z_disp]
+    type = NodalValueSampler
+    variable = 'disp_z'
+    boundary = 'sample_location'
+    sort_by = x
+  []
+[]
 
 [Executioner]
   type = Steady
@@ -249,7 +200,7 @@ excitation_val = 0.00001
 []
 
 [Outputs]
-  interval = 1
+  time_step_interval = 1
   #execute_on = 'initial timestep_end'
   print_linear_residuals = false
   csv = true
