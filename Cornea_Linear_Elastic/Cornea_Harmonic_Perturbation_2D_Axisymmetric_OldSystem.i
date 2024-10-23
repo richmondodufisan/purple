@@ -1,12 +1,12 @@
 #Global Parameters
-freq_val = 3000e3
+freq_val = 3e6
 omega = ${fparse 2 * pi * freq_val}
 
 youngs_modulus_val = 70e9
 poissons_ratio_val = 0.33
 density = 2700
 
-excitation_val = 0.00001
+excitation_val = 0.0001
 
 
 [Mesh]

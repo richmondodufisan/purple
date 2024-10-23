@@ -21,6 +21,4 @@ simulation_list="NeoHookeanDispersion_Stretch.txt"
 
 IFS=$'\n' read -d '' -r -a lines < ${simulation_list}
 
-mpiexec -np ${SLURM_NTASKS} singularity exec -B /projects:/projects -B /scratch:/scratch -B /projects/p32089/singularity/moose/moose:/opt/moose /projects/p32089/singularity/moose_latest.sif /projects/p32089/MOOSE_Applications/purple/purple-opt -i ${lines[$SLURM_ARRAY_TASK_ID]}
-
-
+mpiexec -np ${SLURM_NTASKS} singularity exec -B /projects:/projects -B /projects/p32089/moose:/opt/moose /projects/p32089/moose_latest.sif /projects/p32089/purple/purple-opt -i ${lines[$SLURM_ARRAY_TASK_ID]}

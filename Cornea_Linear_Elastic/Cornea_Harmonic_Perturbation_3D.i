@@ -16,14 +16,13 @@ excitation_val = 0.0001
   second_order = true
   [sample_mesh]
     type = FileMeshGenerator
-    file = eyeball_3D.msh
+    file = eyeball_3D_coarse.msh
   []
-  [output_sampling_line]
+  [nodes]
     type = ParsedGenerateNodeset
-	input = sample_mesh
-	combinatorial_geometry = '(y > 0-1e-6) & (y < 0+1e-6) & ((x^2 + z^2 - 0.002^2) > 0-1e-6) & ((x^2 + z^2 - 0.002^2) < 0+1e-6) & (z > 0-1e-6) & (z < 0+1e-6)'
-	new_nodeset_name = sample_line
-	include_only_external_nodes = false
+    input = sample_mesh
+    combinatorial_geometry = '(abs(y) < 1e-8) & (abs(x * x + z * z - 0.002 *0.002) < 1e-8 ) & (z > 0) & (x > 0)'
+    new_nodeset_name = sample_line
   []
 []
 
@@ -230,6 +229,18 @@ excitation_val = 0.0001
 
 [VectorPostprocessors]
   [upper_right_z_disp]
+    type = NodalValueSampler
+    variable = 'disp_z'
+    boundary = 'sample_line'
+    sort_by = x
+  []
+  [upper_right_y_disp]
+    type = NodalValueSampler
+    variable = 'disp_z'
+    boundary = 'sample_line'
+    sort_by = x
+  []
+  [upper_right_x_disp]
     type = NodalValueSampler
     variable = 'disp_z'
     boundary = 'sample_line'
