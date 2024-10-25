@@ -16,7 +16,7 @@ excitation_val = 0.0001
   second_order = true
   [sample_mesh]
     type = FileMeshGenerator
-    file = eyeball_3D.msh
+    file = eyeball_3D_sphere.msh
   []
   [curve_surface_1]
     type = ParsedGenerateNodeset
