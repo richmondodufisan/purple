@@ -234,18 +234,6 @@ excitation_val = 0.0001
 []
 
 [VectorPostprocessors]
-  [surf_1_disp_x]
-    type = NodalValueSampler
-    variable = 'disp_x'
-    boundary = 'curve_surf_1'
-    sort_by = x
-  []
-  [surf_1_disp_y]
-    type = NodalValueSampler
-    variable = 'disp_y'
-    boundary = 'curve_surf_1'
-    sort_by = y
-  []
   [surf_1_disp_z]
     type = NodalValueSampler
     variable = 'disp_z'
