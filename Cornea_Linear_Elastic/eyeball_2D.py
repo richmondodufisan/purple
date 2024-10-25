@@ -5,7 +5,7 @@ gmsh.initialize()
 gmsh.model.add("2D geometry")
 
 # Set the refinement size
-refinement = 0.00005
+refinement = 0.00002
 
 # Create points
 p1 = gmsh.model.occ.addPoint(0, 0, 0, refinement)

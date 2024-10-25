@@ -39,7 +39,7 @@ excitation_val = 0.0001
 
 [Kernels]
   [div_sig_r_real]
-    type = ADStressDivergenceRZTensors
+    type = ADStressDivergenceRZTensors_FreqDomain
 	component = 0
 	displacements = 'disp_r_real disp_z_real'
     variable = disp_r_real
@@ -47,7 +47,7 @@ excitation_val = 0.0001
   []
   
   [div_sig_z_real]
-    type = ADStressDivergenceRZTensors
+    type = ADStressDivergenceRZTensors_FreqDomain
 	component = 1
 	displacements = 'disp_r_real disp_z_real'
     variable = disp_z_real
@@ -70,7 +70,7 @@ excitation_val = 0.0001
   
   
   [div_sig_r_imag]
-    type = ADStressDivergenceRZTensors
+    type = ADStressDivergenceRZTensors_FreqDomain
 	component = 0
 	displacements = 'disp_r_imag disp_z_imag'
     variable = disp_r_imag
@@ -78,7 +78,7 @@ excitation_val = 0.0001
   []
   
   [div_sig_z_imag]
-    type = ADStressDivergenceRZTensors
+    type = ADStressDivergenceRZTensors_FreqDomain
 	component = 1
 	displacements = 'disp_r_imag disp_z_imag'
     variable = disp_z_imag
@@ -168,6 +168,23 @@ excitation_val = 0.0001
     type = DirichletBC
     variable = disp_z_imag
     boundary = 'loading_point'
+    value = 0
+	preset = false
+  []
+  
+  
+  [symmetry_real]
+    type = DirichletBC
+    variable = disp_r_real
+    boundary = 'symmetry_axis'
+	value = 0
+	preset = false
+  []
+  
+  [symmetry_imag]
+    type = DirichletBC
+    variable = disp_r_imag
+    boundary = 'symmetry_axis'
     value = 0
 	preset = false
   []

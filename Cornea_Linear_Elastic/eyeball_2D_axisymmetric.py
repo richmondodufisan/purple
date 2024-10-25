@@ -5,7 +5,7 @@ gmsh.initialize()
 gmsh.model.add("2D geometry")
 
 # Set the refinement size
-refinement = 0.0002
+refinement = 0.00002
 
 # Create points
 p1 = gmsh.model.occ.addPoint(0, 0, 0, refinement)
@@ -29,6 +29,7 @@ gmsh.model.occ.synchronize()
 # Physical groups (for boundary conditions, etc.)
 gmsh.model.addPhysicalGroup(0, [p2], 5, "loading_point")
 gmsh.model.addPhysicalGroup(1, [c1], 6, "sample_location")
+gmsh.model.addPhysicalGroup(1, [l3, l4], 7, "symmetry_axis")  # Include both l3 and l4
 
 # Ensure that all elements are saved in the mesh file, even those not part of physical groups
 gmsh.option.setNumber("Mesh.SaveAll", 1)

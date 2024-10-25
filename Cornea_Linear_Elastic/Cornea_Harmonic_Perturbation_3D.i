@@ -231,12 +231,56 @@ excitation_val = 0.0001
     value = 0
 	preset = false
   []
+  
+  [stable_x_real]
+    type = DirichletBC
+    variable = disp_x_real
+    boundary = 'loading_point'
+	value = 0
+	preset = false
+  []
+  
+  [stable_x_imag]
+    type = DirichletBC
+    variable = disp_x_imag
+    boundary = 'loading_point'
+    value = 0
+	preset = false
+  []
+  
+  [stable_y_real]
+    type = DirichletBC
+    variable = disp_y_real
+    boundary = 'loading_point'
+	value = 0
+	preset = false
+  []
+  
+  [stable_y_imag]
+    type = DirichletBC
+    variable = disp_y_imag
+    boundary = 'loading_point'
+    value = 0
+	preset = false
+  []
 []
 
 [VectorPostprocessors]
   [surf_1_disp_z]
     type = NodalValueSampler
     variable = 'disp_z'
+    boundary = 'curve_surf_1'
+    sort_by = z
+  []
+  [surf_1_disp_y]
+    type = NodalValueSampler
+    variable = 'disp_y'
+    boundary = 'curve_surf_1'
+    sort_by = z
+  []
+  [surf_1_disp_x]
+    type = NodalValueSampler
+    variable = 'disp_x'
     boundary = 'curve_surf_1'
     sort_by = z
   []
