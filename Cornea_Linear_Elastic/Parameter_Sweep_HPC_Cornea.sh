@@ -33,4 +33,4 @@ sed -i "s/^#SBATCH --array=0-[0-9]\+/#SBATCH --array=0-$total_simulations/" Batc
 # Update the simulation list
 sed -i "s|^simulation_list=.*|simulation_list=\"Cornea_Simulations.txt\"|" Batch_MOOSE.sh
 
-# sbatch Batch_MOOSE.sh
+sbatch Batch_MOOSE.sh
