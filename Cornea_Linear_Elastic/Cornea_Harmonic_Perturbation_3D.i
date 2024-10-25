@@ -24,11 +24,11 @@ excitation_val = 0.0001
     combinatorial_geometry = '(abs(y) < 1e-8) & (abs(x * x + z * z - 0.002 *0.002) < 1e-8 ) & (z > 0) & (x > 0)'
     new_nodeset_name = curve_surf_1
   []
-  [curve_surface_2]
-    type = ParsedGenerateNodeset
+  [apply_load]
+    type = ExtraNodesetGenerator
+    new_boundary = 'loading_point'
+    coord = '0 0 0.002'
     input = curve_surface_1
-    combinatorial_geometry = '(abs(x) < 1e-8) & (abs(y * y + z * z - 0.002 *0.002) < 1e-8 ) & (z > 0) & (y > 0)'
-    new_nodeset_name = curve_surf_2
   []
 []
 
@@ -250,26 +250,6 @@ excitation_val = 0.0001
     type = NodalValueSampler
     variable = 'disp_z'
     boundary = 'curve_surf_1'
-    sort_by = z
-  []
-  
-  
-  [surf_2_disp_x]
-    type = NodalValueSampler
-    variable = 'disp_x'
-    boundary = 'curve_surf_2'
-    sort_by = x
-  []
-  [surf_2_disp_y]
-    type = NodalValueSampler
-    variable = 'disp_y'
-    boundary = 'curve_surf_2'
-    sort_by = y
-  []
-  [surf_2_disp_z]
-    type = NodalValueSampler
-    variable = 'disp_z'
-    boundary = 'curve_surf_2'
     sort_by = z
   []
 []
