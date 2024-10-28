@@ -34,7 +34,7 @@ excitation_val = 0.00001
     type = ExtraNodesetGenerator
     new_boundary = 'fixed_point'
     coord = '0 0 -0.002'
-    input = curve_surface_1
+    input = apply_load
   []
 []
 
