@@ -1,6 +1,7 @@
 # Mesh files and other simulation junk
 
 ./classes
+*.msh
 *Zone.Identifier*
 *.txt
 *.mat
