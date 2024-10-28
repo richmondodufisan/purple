@@ -67,7 +67,7 @@ gmsh.model.mesh.generate(3)
 gmsh.write("eyeball_3D.msh")
 
 # Uncomment to run Gmsh's built-in GUI (optional)
-gmsh.fltk.run()
+# gmsh.fltk.run()
 
 # Finalize Gmsh
 gmsh.finalize()
