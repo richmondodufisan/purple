@@ -1,10 +1,6 @@
 #Global Parameters
-freq_val = 3e6
-omega = ${fparse 2 * pi * freq_val}
-
 youngs_modulus_val = 70e9
 poissons_ratio_val = 0.33
-density = 2700
 
 excitation_val = -0.00001
 
@@ -17,16 +13,34 @@ excitation_val = -0.00001
   coord_type = RZ
   [sample_mesh]
     type = FileMeshGenerator
-    file = eyeball_2D_axisymmetric.msh
+    file = eyeball_2D_axisymmetric_xy_plane.msh
+  []
+  [apply_load]
+    type = ExtraNodesetGenerator
+    new_boundary = 'loading_point'
+    coord = '0 0.002 0'
+    input = sample_mesh
+  []
+  [restrain]
+    type = ExtraNodesetGenerator
+    new_boundary = 'fixed_point'
+    coord = '0 -0.002 0'
+    input = apply_load
+  []
+  [symmetry_axis_gen]
+    type = ParsedGenerateNodeset
+    input = restrain
+    combinatorial_geometry = '(abs(x) < 1e-8)'
+    new_nodeset_name = symmetry_axis
   []
 []
 
 [Variables]
-  [disp_r]
+  [disp_r_val]
     order = SECOND
     family = LAGRANGE
   []
-  [disp_z]
+  [disp_z_val]
     order = SECOND
 	family = LAGRANGE
   []
@@ -36,44 +50,38 @@ excitation_val = -0.00001
   [div_sig_r]
     type = TotalLagrangianStressDivergenceAxisymmetricCylindrical
 	component = 0
-	displacements = 'disp_r disp_z'
-    variable = disp_r_real
-	base_name = real
+	displacements = 'disp_r_val disp_z_val'
+    variable = disp_r_val
   []
   
   [div_sig_z]
     type = TotalLagrangianStressDivergenceAxisymmetricCylindrical
 	component = 1
-	displacements = 'disp_r disp_z'
-    variable = disp_z_real
-	base_name = real
+	displacements = 'disp_r_val disp_z_val'
+    variable = disp_z_val
   []
 []
 
 
 [Materials]
-  [elastic_tensor_real]
+  [elastic_tensor]
     type = ComputeIsotropicElasticityTensor
     youngs_modulus = ${youngs_modulus_val}
     poissons_ratio = ${poissons_ratio_val}
-	base_name = real
   []
-  [compute_stress_real]
+  [compute_stress]
     type = ComputeLagrangianLinearElasticStress
-	elasticity_tensor = real_elasticity_tensor
-	base_name = real
   []
-  [compute_strain_real]
+  [compute_strain]
     type = ComputeLagrangianStrainAxisymmetricCylindrical
-    displacements = 'disp_r disp_z'
-	base_name = real
+    displacements = 'disp_r_val disp_z_val'
   []
 []
 
 [BCs]
-  [harmonic_perturbation_real]
+  [downward_disp]
     type = DirichletBC
-    variable = disp_z
+    variable = disp_z_val
     boundary = 'loading_point'
 	value = '${excitation_val}'
 	preset = false
@@ -81,12 +89,19 @@ excitation_val = -0.00001
   
   [symmetry]
     type = DirichletBC
-    variable = disp_r
+    variable = disp_r_val
     boundary = 'symmetry_axis'
 	value = 0
 	preset = false
   []
-
+  
+  [fix_disp]
+    type = DirichletBC
+    variable = disp_z_val
+    boundary = 'fixed_point'
+	value = 0
+	preset = false
+  []
 []
 
 

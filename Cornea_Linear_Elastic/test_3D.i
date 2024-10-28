@@ -1,10 +1,6 @@
 #Global Parameters
-freq_val = 3e6
-omega = ${fparse 2 * pi * freq_val}
-
 youngs_modulus_val = 70e9
 poissons_ratio_val = 0.33
-density = 2700
 
 excitation_val = -0.00001
 
@@ -29,6 +25,12 @@ excitation_val = -0.00001
     new_boundary = 'loading_point'
     coord = '0 0 0.002'
     input = curve_surface_1
+  []
+  [restrain]
+    type = ExtraNodesetGenerator
+    new_boundary = 'fixed_point'
+    coord = '0 0 -0.002'
+    input = apply_load
   []
 []
 
@@ -100,11 +102,18 @@ excitation_val = -0.00001
 []
 
 [BCs]
-  [downward_disp_real]
+  [downward_disp]
     type = DirichletBC
-    variable = disp_z_real
+    variable = disp_z
     boundary = 'loading_point'
 	value = '${excitation_val}'
+	preset = false
+  []
+  [fix_disp]
+    type = DirichletBC
+    variable = disp_z
+    boundary = 'fixed_point'
+	value = 0
 	preset = false
   []
 []
