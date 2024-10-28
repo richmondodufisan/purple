@@ -1,10 +1,10 @@
 #Global Parameters
-freq_val = 3e6
+freq_val = 5e6
 omega = ${fparse 2 * pi * freq_val}
 
-youngs_modulus_val = 70e9
-poissons_ratio_val = 0.33
-density = 2700
+youngs_modulus_val = 207e9
+poissons_ratio_val = 0.29
+density = 7850
 
 excitation_val = 0.0001
 
@@ -248,13 +248,13 @@ excitation_val = 0.0001
 [VectorPostprocessors]
   [upper_right_z_disp]
     type = NodalValueSampler
-    variable = 'disp_z'
+    variable = 'disp_z_real'
     boundary = 'sample_location'
     sort_by = x
   []
   [upper_right_r_disp]
     type = NodalValueSampler
-    variable = 'disp_r'
+    variable = 'disp_r_real'
     boundary = 'sample_location'
     sort_by = x
   []

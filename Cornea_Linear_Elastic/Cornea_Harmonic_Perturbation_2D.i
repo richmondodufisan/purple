@@ -1,12 +1,12 @@
 #Global Parameters
-freq_val = 4900e3
+freq_val = 5e6
 omega = ${fparse 2 * pi * freq_val}
 
 youngs_modulus_val = 207e9
 poissons_ratio_val = 0.29
 density = 7850
 
-excitation_val = 0.00001
+excitation_val = 0.0001
 
 [GlobalParams]
   large_kinematics = false
