@@ -196,14 +196,20 @@ excitation_val = 0.0001
 
 []
 
-#[VectorPostprocessors]
-#  [upper_right_z_disp]
-#    type = NodalValueSampler
-#    variable = 'disp_z'
-#    boundary = 'sample_location'
-#    sort_by = x
-#  []
-#[]
+[VectorPostprocessors]
+  [upper_right_z_disp]
+    type = NodalValueSampler
+    variable = 'disp_z'
+    boundary = 'sample_location'
+    sort_by = x
+  []
+  [upper_right_r_disp]
+    type = NodalValueSampler
+    variable = 'disp_r'
+    boundary = 'sample_location'
+    sort_by = x
+  []
+[]
 
 [Executioner]
   type = Steady

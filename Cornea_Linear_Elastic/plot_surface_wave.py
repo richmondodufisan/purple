@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Replace 'your_file.csv' with the path to your CSV file
-file_path = 'Cornea_Harmonic_Perturbation_3D_freq_3000e3_out_surf_1_disp_z_0001.csv'
+file_path = 'Cornea_Harmonic_Perturbation_2D_Axisymmetric_out_upper_right_r_disp_0001.csv'
 
 # Read the CSV file
 data = pd.read_csv(file_path)
