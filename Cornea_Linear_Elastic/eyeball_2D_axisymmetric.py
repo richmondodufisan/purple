@@ -28,8 +28,9 @@ gmsh.model.occ.synchronize()
 
 # Physical groups (for boundary conditions, etc.)
 gmsh.model.addPhysicalGroup(0, [p2], 5, "loading_point")
-gmsh.model.addPhysicalGroup(1, [c1], 6, "sample_location")
-gmsh.model.addPhysicalGroup(1, [l3, l4], 7, "symmetry_axis")  # Include both l3 and l4
+gmsh.model.addPhysicalGroup(0, [p3], 6, "fixed_point")
+gmsh.model.addPhysicalGroup(1, [c1], 7, "sample_location")
+gmsh.model.addPhysicalGroup(1, [l3, l4], 8, "symmetry_axis")  # Include both l3 and l4
 
 # Ensure that all elements are saved in the mesh file, even those not part of physical groups
 gmsh.option.setNumber("Mesh.SaveAll", 1)

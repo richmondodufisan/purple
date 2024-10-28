@@ -1,12 +1,12 @@
 #Global Parameters
-freq_val = 3e6
-omega = ${fparse 2 * pi * freq_val}
+#freq_val = 3e6
+#omega = ${fparse 2 * pi * freq_val}
 
 youngs_modulus_val = 70e9
 poissons_ratio_val = 0.33
-density = 2700
+#density = 2700
 
-excitation_val = 0.0001
+excitation_val = -0.00001
 
 [GlobalParams]
   large_kinematics = false
@@ -29,6 +29,12 @@ excitation_val = 0.0001
     new_boundary = 'loading_point'
     coord = '0 0 0.002'
     input = curve_surface_1
+  []
+  [fix_disp]
+    type = ExtraNodesetGenerator
+    new_boundary = 'fixed_point'
+    coord = '0 0 -0.002'
+    input = apply_load
   []
 []
 
@@ -84,24 +90,6 @@ excitation_val = 0.0001
 	base_name = real
   []
   
-  [reaction_x_real]
-    type = ADReaction
-	variable = disp_x_real
-	rate = ${fparse -omega*omega*density}
-  []
-  
-  [reaction_y_real]
-    type = ADReaction
-	variable = disp_y_real
-	rate = ${fparse -omega*omega*density}
-  []
-  
-  [reaction_z_real]
-    type = ADReaction
-	variable = disp_z_real
-	rate = ${fparse -omega*omega*density}
-  []
-  
   
   
   
@@ -128,24 +116,6 @@ excitation_val = 0.0001
     variable = disp_z_imag
 	base_name = imag
   []
-  
-  [reaction_x_imag]
-    type = ADReaction
-	variable = disp_x_imag
-	rate = ${fparse -omega*omega*density}
-  []
-  
-  [reaction_y_imag]
-    type = ADReaction
-	variable = disp_y_imag
-	rate = ${fparse -omega*omega*density}
-  []
-  
-  [reaction_z_imag]
-    type = ADReaction
-	variable = disp_z_imag
-	rate = ${fparse -omega*omega*density}
-  []
 []
 
 [AuxVariables]
@@ -155,7 +125,6 @@ excitation_val = 0.0001
   []
   [disp_z]
   []
-  
   [disp_r]
   []
 []
@@ -242,7 +211,7 @@ excitation_val = 0.0001
 	preset = false
   []
   
-  [stable_x_real]
+  [fix_x_real_top]
     type = DirichletBC
     variable = disp_x_real
     boundary = 'loading_point'
@@ -250,15 +219,15 @@ excitation_val = 0.0001
 	preset = false
   []
   
-  [stable_x_imag]
+  [fix_x_imag_top]
     type = DirichletBC
     variable = disp_x_imag
     boundary = 'loading_point'
     value = 0
 	preset = false
   []
-  
-  [stable_y_real]
+
+  [fix_y_real_top]
     type = DirichletBC
     variable = disp_y_real
     boundary = 'loading_point'
@@ -266,10 +235,67 @@ excitation_val = 0.0001
 	preset = false
   []
   
-  [stable_y_imag]
+  [fix_y_imag_top]
     type = DirichletBC
     variable = disp_y_imag
     boundary = 'loading_point'
+    value = 0
+	preset = false
+  []  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  [fix_x_real_bottom]
+    type = DirichletBC
+    variable = disp_x_real
+    boundary = 'fixed_point'
+	value = 0
+	preset = false
+  []
+  
+  [fix_x_imag_bottom]
+    type = DirichletBC
+    variable = disp_x_imag
+    boundary = 'fixed_point'
+    value = 0
+	preset = false
+  []
+
+  [fix_y_real_bottom]
+    type = DirichletBC
+    variable = disp_y_real
+    boundary = 'fixed_point'
+	value = 0
+	preset = false
+  []
+  
+  [fix_y_imag_bottom]
+    type = DirichletBC
+    variable = disp_y_imag
+    boundary = 'fixed_point'
+    value = 0
+	preset = false
+  []
+  
+  [fix_z_real_bottom]
+    type = DirichletBC
+    variable = disp_z_real
+    boundary = 'fixed_point'
+	value = 0
+	preset = false
+  []
+  
+  [fix_z_imag_bottom]
+    type = DirichletBC
+    variable = disp_z_imag
+    boundary = 'fixed_point'
     value = 0
 	preset = false
   []

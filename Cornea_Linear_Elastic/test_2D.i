@@ -6,7 +6,7 @@ youngs_modulus_val = 70e9
 poissons_ratio_val = 0.33
 density = 2700
 
-excitation_val = 0.0001
+excitation_val = -0.0001
 
 [GlobalParams]
   large_kinematics = false
@@ -16,19 +16,7 @@ excitation_val = 0.0001
   second_order = true
   [sample_mesh]
     type = FileMeshGenerator
-    file = eyeball_3D.msh
-  []
-  [curve_surface_1]
-    type = ParsedGenerateNodeset
-    input = sample_mesh
-    combinatorial_geometry = '(abs(y) < 1e-8) & (abs(x * x + z * z - 0.002 *0.002) < 1e-8 ) & (z > 0) & (x > 0)'
-    new_nodeset_name = curve_surf_1
-  []
-  [apply_load]
-    type = ExtraNodesetGenerator
-    new_boundary = 'loading_point'
-    coord = '0 0 0.002'
-    input = curve_surface_1
+    file = eyeball_2D.msh
   []
 []
 
@@ -41,10 +29,6 @@ excitation_val = 0.0001
     order = SECOND
 	family = LAGRANGE
   []
-  [disp_z_real]
-    order = SECOND
-	family = LAGRANGE
-  []
   [disp_x_imag]
     order = SECOND
     family = LAGRANGE
@@ -53,17 +37,13 @@ excitation_val = 0.0001
     order = SECOND
     family = LAGRANGE
   []
-  [disp_z_imag]
-    order = SECOND
-	family = LAGRANGE
-  []
 []
 
 [Kernels]
   [div_sig_x_real]
     type = TotalLagrangianStressDivergence
 	component = 0
-	displacements = 'disp_x_real disp_y_real disp_z_real'
+	displacements = 'disp_x_real disp_y_real'
     variable = disp_x_real
 	base_name = real
   []
@@ -71,16 +51,8 @@ excitation_val = 0.0001
   [div_sig_y_real]
     type = TotalLagrangianStressDivergence
 	component = 1
-	displacements = 'disp_x_real disp_y_real disp_z_real'
+	displacements = 'disp_x_real disp_y_real'
     variable = disp_y_real
-	base_name = real
-  []
-  
-  [div_sig_z_real]
-    type = TotalLagrangianStressDivergence
-	component = 2
-	displacements = 'disp_x_real disp_y_real disp_z_real'
-    variable = disp_z_real
 	base_name = real
   []
   
@@ -96,19 +68,13 @@ excitation_val = 0.0001
 	rate = ${fparse -omega*omega*density}
   []
   
-  [reaction_z_real]
-    type = ADReaction
-	variable = disp_z_real
-	rate = ${fparse -omega*omega*density}
-  []
-  
   
   
   
   [div_sig_x_imag]
     type = TotalLagrangianStressDivergence
 	component = 0
-	displacements = 'disp_x_imag disp_y_imag disp_z_imag'
+	displacements = 'disp_x_imag disp_y_imag'
     variable = disp_x_imag
 	base_name = imag
   []
@@ -116,19 +82,11 @@ excitation_val = 0.0001
   [div_sig_y_imag]
     type = TotalLagrangianStressDivergence
 	component = 1
-	displacements = 'disp_x_imag disp_y_imag disp_z_imag'
+	displacements = 'disp_x_imag disp_y_imag'
     variable = disp_y_imag
 	base_name = imag
   []
-  
-  [div_sig_z_imag]
-    type = TotalLagrangianStressDivergence
-	component = 2
-	displacements = 'disp_x_imag disp_y_imag disp_z_imag'
-    variable = disp_z_imag
-	base_name = imag
-  []
-  
+
   [reaction_x_imag]
     type = ADReaction
 	variable = disp_x_imag
@@ -140,23 +98,12 @@ excitation_val = 0.0001
 	variable = disp_y_imag
 	rate = ${fparse -omega*omega*density}
   []
-  
-  [reaction_z_imag]
-    type = ADReaction
-	variable = disp_z_imag
-	rate = ${fparse -omega*omega*density}
-  []
 []
 
 [AuxVariables]
   [disp_x]
   []
   [disp_y]
-  []
-  [disp_z]
-  []
-  
-  [disp_r]
   []
 []
 
@@ -172,19 +119,6 @@ excitation_val = 0.0001
     variable = disp_y
     coupled_variables = 'disp_y_real disp_y_imag'
 	expression = 'sqrt(disp_y_real^2 + disp_y_imag^2)'
-  []
-  [z_displacement]
-    type = ParsedAux
-    variable = disp_z
-    coupled_variables = 'disp_z_real disp_z_imag'
-	expression = 'sqrt(disp_z_real^2 + disp_z_imag^2)'
-  []
-  
-  [r_displacement]
-    type = ParsedAux
-    variable = disp_r
-    coupled_variables = 'disp_x disp_y'
-	expression = 'sqrt(disp_x^2 + disp_y^2)'
   []
 []
 
@@ -202,7 +136,7 @@ excitation_val = 0.0001
   []
   [compute_strain_real]
     type = ComputeLagrangianStrain
-    displacements = 'disp_x_real disp_y_real disp_z_real'
+    displacements = 'disp_x_real disp_y_real'
 	base_name = real
   []
   
@@ -220,7 +154,7 @@ excitation_val = 0.0001
   []
   [compute_strain_imag]
     type = ComputeLagrangianStrain
-    displacements = 'disp_x_imag disp_y_imag disp_z_imag'
+    displacements = 'disp_x_imag disp_y_imag'
 	base_name = imag
   []
 []
@@ -228,7 +162,7 @@ excitation_val = 0.0001
 [BCs]
   [harmonic_perturbation_real]
     type = DirichletBC
-    variable = disp_z_real
+    variable = disp_y_real
     boundary = 'loading_point'
 	value = '${excitation_val}'
 	preset = false
@@ -236,13 +170,13 @@ excitation_val = 0.0001
   
   [harmonic_perturbation_imag]
     type = DirichletBC
-    variable = disp_z_imag
+    variable = disp_y_imag
     boundary = 'loading_point'
     value = 0
 	preset = false
   []
   
-  [stable_x_real]
+  [fix_x_real_top]
     type = DirichletBC
     variable = disp_x_real
     boundary = 'loading_point'
@@ -250,7 +184,7 @@ excitation_val = 0.0001
 	preset = false
   []
   
-  [stable_x_imag]
+  [fix_x_imag_top]
     type = DirichletBC
     variable = disp_x_imag
     boundary = 'loading_point'
@@ -258,43 +192,49 @@ excitation_val = 0.0001
 	preset = false
   []
   
-  [stable_y_real]
+  [fix_x_real_bottom]
     type = DirichletBC
-    variable = disp_y_real
-    boundary = 'loading_point'
+    variable = disp_x_real
+    boundary = 'fixed_point'
 	value = 0
 	preset = false
   []
   
-  [stable_y_imag]
+  [fix_x_imag_bottom]
+    type = DirichletBC
+    variable = disp_x_imag
+    boundary = 'fixed_point'
+    value = 0
+	preset = false
+  []
+  
+  [fix_y_real_bottom]
+    type = DirichletBC
+    variable = disp_y_real
+    boundary = 'fixed_point'
+	value = 0
+	preset = false
+  []
+  
+  [fix_y_imag_bottom]
     type = DirichletBC
     variable = disp_y_imag
-    boundary = 'loading_point'
+    boundary = 'fixed_point'
     value = 0
 	preset = false
   []
 []
 
+
 [VectorPostprocessors]
-  [surf_1_disp_z]
-    type = NodalValueSampler
-    variable = 'disp_z'
-    boundary = 'curve_surf_1'
-    sort_by = z
-  []
-  [surf_1_disp_y]
-    type = NodalValueSampler
+  [upper_right_y_disp]
+    type = SideValueSampler
     variable = 'disp_y'
-    boundary = 'curve_surf_1'
-    sort_by = z
-  []
-  [surf_1_disp_x]
-    type = NodalValueSampler
-    variable = 'disp_x'
-    boundary = 'curve_surf_1'
-    sort_by = z
+    boundary = 'sample_location'
+    sort_by = x
   []
 []
+
 
 [Executioner]
   type = Steady
@@ -315,6 +255,7 @@ excitation_val = 0.0001
 
 [Outputs]
   time_step_interval = 1
+  #execute_on = 'initial timestep_end'
   print_linear_residuals = false
   csv = true
   exodus = true

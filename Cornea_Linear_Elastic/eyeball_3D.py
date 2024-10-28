@@ -5,7 +5,7 @@ gmsh.initialize()
 gmsh.model.add("3D geometry")
 
 # Set the refinement size
-refinement = 0.002 / 20
+refinement = 0.002 / 10
 
 # Create the sphere by specifying the center point and radius
 radius = 0.002
