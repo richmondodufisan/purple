@@ -8,6 +8,17 @@ density = 2700
 
 excitation_val = 0.0001
 
+
+shear_modulus_val = ${fparse youngs_modulus_val/(2 * (1 + poissons_ratio_val))}
+c_shear = ${fparse sqrt(shear_modulus_val/density)}
+
+
+bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
+c_pressure = ${fparse sqrt((bulk_modulus_val + ((4.0/3.0)*shear_modulus_val))/density)}
+
+
+mechanical_impedance = ${fparse density*((c_shear + c_pressure)/2.0)}
+
 [GlobalParams]
   large_kinematics = false
 []
@@ -192,6 +203,39 @@ excitation_val = 0.0001
     boundary = 'symmetry_axis'
     value = 0
 	preset = false
+  []
+
+
+
+
+  [low_reflecting_boundary_r_real]
+    type = CoupledVarNeumannBC
+	variable = disp_r_real
+	boundary = 'fixed_point'
+	v = disp_r_imag
+	coef = ${fparse omega*mechanical_impedance}
+  []
+  [low_reflecting_boundary_r_imag]
+    type = CoupledVarNeumannBC
+	variable = disp_r_imag
+	boundary = 'fixed_point'
+	v = disp_r_real
+	coef = ${fparse -omega*mechanical_impedance}
+  []
+  
+  [low_reflecting_boundary_z_real]
+    type = CoupledVarNeumannBC
+	variable = disp_z_real
+	boundary = 'fixed_point'
+	v = disp_z_imag
+	coef = ${fparse omega*mechanical_impedance}
+  []
+  [low_reflecting_boundary_z_imag]
+    type = CoupledVarNeumannBC
+	variable = disp_z_imag
+	boundary = 'fixed_point'
+	v = disp_z_real
+	coef = ${fparse -omega*mechanical_impedance}
   []
 
 []
