@@ -30,6 +30,12 @@ excitation_val = 0.00001
     coord = '0 0 0.002'
     input = curve_surface_1
   []
+  [restrain]
+    type = ExtraNodesetGenerator
+    new_boundary = 'fixed_point'
+    coord = '0 0 -0.002'
+    input = curve_surface_1
+  []
 []
 
 [Variables]
@@ -271,6 +277,53 @@ excitation_val = 0.00001
     variable = disp_y_imag
     boundary = 'loading_point'
     value = 0
+	preset = false
+  []
+  
+  
+  
+  [fix_x_real]
+    type = DirichletBC
+    variable = disp_x_real
+    boundary = 'fixed_point'
+	value = 0
+	preset = false
+  []
+  [fix_x_imag]
+    type = DirichletBC
+    variable = disp_x_imag
+    boundary = 'fixed_point'
+	value = 0
+	preset = false
+  []
+  
+  [fix_y_real]
+    type = DirichletBC
+    variable = disp_y_real
+    boundary = 'fixed_point'
+	value = 0
+	preset = false
+  []
+  [fix_y_imag]
+    type = DirichletBC
+    variable = disp_y_imag
+    boundary = 'fixed_point'
+	value = 0
+	preset = false
+  []
+  
+  [fix_z_real]
+    type = DirichletBC
+    variable = disp_z_real
+    boundary = 'fixed_point'
+	value = 0
+	preset = false
+  []
+  [fix_z_imag]
+    type = DirichletBC
+    variable = disp_z_imag
+    boundary = 'fixed_point'
+	value = 0
 	preset = false
   []
 []
