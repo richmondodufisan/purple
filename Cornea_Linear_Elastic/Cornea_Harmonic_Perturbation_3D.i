@@ -6,7 +6,7 @@ youngs_modulus_val = 70e9
 poissons_ratio_val = 0.33
 density = 2700
 
-excitation_val = 0.00001
+excitation_val = 0.0001
 
 [GlobalParams]
   large_kinematics = false

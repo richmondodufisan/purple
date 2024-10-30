@@ -1,10 +1,10 @@
 #Global Parameters
-freq_val = 5e6
+freq_val = 3e6
 omega = ${fparse 2 * pi * freq_val}
 
-youngs_modulus_val = 207e9
-poissons_ratio_val = 0.29
-density = 7850
+youngs_modulus_val = 70e9
+poissons_ratio_val = 0.33
+density = 2700
 
 excitation_val = 0.0001
 
