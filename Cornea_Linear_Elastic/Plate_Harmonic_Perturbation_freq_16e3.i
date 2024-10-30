@@ -1,5 +1,5 @@
 #Global Parameters
-freq_val = 1e3
+freq_val = 16e3
 omega = ${fparse 2 * pi * freq_val}
 
 

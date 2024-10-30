@@ -5,7 +5,7 @@ from scipy.fftpack import fft, fftfreq
 from scipy.signal import find_peaks
 
 # Load the CSV file
-file_path = 'Plate_Harmonic_Perturbation_out_wave_profile_0001.csv'  # Replace with your actual file path
+file_path = 'Plate_Harmonic_Perturbation_freq_15.5e3_out_wave_profile_0001.csv'  # Replace with your actual file path
 data = pd.read_csv(file_path)
 
 # Extract columns: 4th column for y displacement, 13th column for x position
@@ -36,7 +36,7 @@ max_peak = np.max(fft_magnitude)
 fft_magnitude_normalized = fft_magnitude / max_peak  # Now the range is 0 to 1
 
 # Find peaks above 0.5 in the normalized magnitude
-peaks, _ = find_peaks(fft_magnitude_normalized, height=0.5)
+peaks, _ = find_peaks(fft_magnitude_normalized, height=0.2)
 
 # Print the frequencies corresponding to the peaks
 print("Peaks found at frequencies (in units of 1/x_position):")

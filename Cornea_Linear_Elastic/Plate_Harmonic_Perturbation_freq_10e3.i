@@ -22,7 +22,7 @@ mechanical_impedance = ${fparse density*((c_shear + c_pressure)/2.0)}
 
 h_plate = 0.001
 l_plate = ${fparse 30 * h_plate}
-mid_height = ${fparse h_plate/2}
+#mid_height = ${fparse h_plate/2}
 number_of_points = ${fparse l_plate/0.000025}
 
 excitation_val = ${fparse (h_plate/10)}
@@ -230,8 +230,8 @@ excitation_val = ${fparse (h_plate/10)}
   [wave_profile]
     type = LineValueSampler
     variable = disp_y_real
-    start_point = '0 ${mid_height} 0'
-    end_point = '${fparse l_plate} ${mid_height} 0'
+    start_point = '0 ${h_plate} 0'
+    end_point = '${fparse l_plate} ${h_plate} 0'
     num_points = ${number_of_points}
     sort_by = x
   []
