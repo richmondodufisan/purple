@@ -44,7 +44,7 @@ def process_file(file_path, excitation_frequency):
     # Scale FFT magnitudes by maximum peak
     fft_magnitude_normalized = fft_magnitude / np.max(fft_magnitude)
 
-    # Find peaks with magnitude > 0.5
+    # Find peaks with magnitude > 0.5 (these are spatial frequencies, i.e k = wave number)
     peaks, _ = find_peaks(fft_magnitude_normalized, height=0.2)
 
     # Calculate wave speeds for peaks
