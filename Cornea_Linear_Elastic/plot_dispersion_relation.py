@@ -12,7 +12,7 @@ excitation_frequencies = ["1e3", "1.5e3", "2e3", "2.5e3", "3e3", "3.5e3", "4e3",
                           "6.5e3", "7e3", "7.5e3", "8e3", "8.5e3", "9e3", "9.5e3", "10e3", "10.5e3", "11e3", 
                           "11.5e3", "12e3", "12.5e3", "13e3", "13.5e3", "14e3", "14.5e3", "15e3", "15.5e3", 
                           "16e3", "16.5e3", "17e3", "17.5e3", "18e3", "18.5e3", "19e3", "19.5e3", "20e3"]  # Frequencies as strings for filename matching
-file_template = 'Plate_Harmonic_Perturbation_freq_{freq}_out_wave_profile_*.csv'
+file_template = './Validated_Data/Plate_Harmonic_Perturbation_freq_{freq}_out_wave_profile_*.csv'
 
 # Material and physical properties
 thickness = 0.001
@@ -21,7 +21,7 @@ poissons_ratio = 0.49
 shear_modulus = 100000
 freq_min = 1000
 freq_max = 20000
-num_points = 40
+num_points = 50
 
 # Function to process each file and calculate wave speeds
 def process_file(file_path, excitation_frequency):
@@ -78,6 +78,9 @@ def find_latest_file(excitation_frequency):
 # Prepare a figure for plotting
 plt.figure(figsize=(10, 6))
 
+# Initialize a variable to track if the label has been added
+label_added = False
+
 # Plot numerical dispersion relation points in a single color
 for excitation_frequency in excitation_frequencies:
     # Find the latest file for the given excitation frequency
@@ -91,17 +94,22 @@ for excitation_frequency in excitation_frequencies:
     # Process the file and calculate wave speeds for peaks above threshold
     wave_speeds, _ = process_file(file_path, excitation_frequency)
 
+    # Set label only once
+    label = "Numerical - FEM" if not label_added else None
+    label_added = True  # Mark that the label has been added
+
     # Plot each wave speed point in the same color
-    plt.scatter([float(excitation_frequency.replace('e3', 'e+03'))] * len(wave_speeds), wave_speeds, color='blue', label="Numerical - FEM" if excitation_frequency == "1e3" else "")
+    excitation_frequency = float(excitation_frequency)
+    plt.scatter([excitation_frequency] * len(wave_speeds), wave_speeds, color='blue', label=label)
 
 # Plot analytical dispersion relation
 frequencies_analytical, phase_velocities_analytical = calc_dispersion_relation(
     thickness, density, poissons_ratio, shear_modulus, freq_min, freq_max, num_points
 )
-plt.plot(np.array(frequencies_analytical) / 1000, phase_velocities_analytical, color='red', label="Analytical")
+plt.plot(np.array(frequencies_analytical), phase_velocities_analytical, color='red', label="Analytical")
 
 # Plot customization
-plt.xlabel('Excitation Frequency (kHz)')
+plt.xlabel('Excitation Frequency (Hz)')
 plt.ylabel('Wave Speed (m/s)')
 plt.title('Dispersion Relation: Frequency vs. Phase Velocity')
 plt.grid(True)
