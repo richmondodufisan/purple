@@ -1,64 +1,82 @@
 import numpy as np
+import cmath
 import matplotlib.pyplot as plt
-from scipy.optimize import fsolve
 
-# Material properties (update as needed)
-E = 210e9           # Young's modulus in Pa
-nu = 0.3            # Poisson's ratio
-rho = 7800          # Density in kg/m^3
-h = 0.001           # Half-thickness of plate in m
+# Material and physical properties
+thickness = 0.001
+h_half = thickness / 2
+density = 1000
+poissons_ratio = 0.49
+shear_modulus = 100000
 
-# Derived wave speeds
-c_L = np.sqrt(E / (rho * (1 - nu**2)))   # Longitudinal wave speed
-c_T = np.sqrt(E / (2 * rho * (1 + nu)))  # Shear wave speed
+# Define frequency range
+freq_range = np.linspace(1000, 20000, 40)  # Frequency range in Hz
+c_T = np.sqrt(shear_modulus / density)
+lame_lambda = (2 * shear_modulus * poissons_ratio) / (1 - (2 * poissons_ratio))
+c_L = np.sqrt((lame_lambda + (2 * shear_modulus)) / density)
 
-# Frequency range (rad/s)
-frequencies = np.linspace(1e3, 1e6, 500)  # Adjust range and resolution as needed
+# Dispersion relation function returning the magnitude
+def D_cp(w, c_T, c_L, c_phase, h):
+    k = (w / c_phase)  # wave number, k
+    q = cmath.sqrt((w**2) / (c_T**2) - k**2)
+    p = cmath.sqrt((w**2) / (c_L**2) - k**2)
 
-# Rayleigh-Lamb functions for symmetric and antisymmetric modes
-def symmetric_mode(k, omega):
-    if (omega / c_T)**2 < k**2 or (omega / c_L)**2 < k**2:
-        return np.nan  # Skip invalid k values
-    p = np.sqrt((omega / c_T)**2 - k**2)
-    q = np.sqrt((omega / c_L)**2 - k**2)
-    return np.tan(q * h) * np.tan(p * h) + (4 * k**2 * p * q) / (k**2 - q**2)**2
+    LHS_term = (cmath.tan(q * h)) / (cmath.tan(p * h))
+    RHS_term = -(((q**2) - (k**2))**2) / (4 * (k**2) * p * q)
 
-def antisymmetric_mode(k, omega):
-    if (omega / c_T)**2 < k**2 or (omega / c_L)**2 < k**2:
-        return np.nan  # Skip invalid k values
-    p = np.sqrt((omega / c_T)**2 - k**2)
-    q = np.sqrt((omega / c_L)**2 - k**2)
-    return np.tan(q * h) * (1 / np.tan(p * h)) + (4 * k**2 * p * q) / (k**2 - q**2)**2
+    D = LHS_term - RHS_term
+    return D.real
 
-# Solve for wavenumber k at each frequency for each mode
-wavenumbers_symmetric = []
-wavenumbers_antisymmetric = []
+# Bracketing and Bisection parameters
+cp_min, cp_max = 0.1, 50  # Range for phase velocities
+jump = 0.05                 # Step size for bracketing
+tolerance = 1e-8           # Tolerance for bisection convergence
 
-for omega in frequencies:
-    # Initial guess range for wavenumber k
-    k_guess_range = np.linspace(omega / (2 * c_T), omega / c_T, 3)
-    
-    # Solve for symmetric mode
-    k_sym = [fsolve(symmetric_mode, k_guess, args=(omega))[0] for k_guess in k_guess_range]
-    k_sym = [k for k in k_sym if k > 0]  # Keep only positive values
-    wavenumbers_symmetric.append(min(k_sym) if k_sym else np.nan)
+# Initialize lists to store frequencies and corresponding phase velocities
+frequencies = []
+phase_velocities = []
 
-    # Solve for antisymmetric mode
-    k_anti = [fsolve(antisymmetric_mode, k_guess, args=(omega))[0] for k_guess in k_guess_range]
-    k_anti = [k for k in k_anti if k > 0]  # Keep only positive values
-    wavenumbers_antisymmetric.append(min(k_anti) if k_anti else np.nan)
+# Loop over each frequency to calculate D(cp) and find roots
+for freq in freq_range:
+    w = 2 * np.pi * freq  # Angular frequency for this iteration
+    cp_roots = []  # To store phase velocities (roots) for each frequency
 
-# Convert to arrays for plotting
-wavenumbers_symmetric = np.array(wavenumbers_symmetric)
-wavenumbers_antisymmetric = np.array(wavenumbers_antisymmetric)
+    # Bracketing: Find intervals where sign change occurs
+    cp1 = cp_min
+    while cp1 < cp_max:
+        cp2 = cp1 + jump
+        f1val = D_cp(w, c_T, c_L, cp1, h_half)
+        f2val = D_cp(w, c_T, c_L, cp2, h_half)
 
-# Plotting the dispersion curves
+        if f1val * f2val < 0:  # Sign change indicates a potential root
+            # Bisection method within the interval [cp1, cp2]
+            while (cp2 - cp1) > tolerance:
+                cp_mid = (cp1 + cp2) / 2
+                f_mid = D_cp(w, c_T, c_L, cp_mid, h_half)
+
+                if f1val * f_mid < 0:
+                    cp2 = cp_mid
+                    f2val = f_mid
+                elif f2val * f_mid < 0:
+                    cp1 = cp_mid
+                    f1val = f_mid
+                else:
+                    break  # If f_mid is close enough to zero
+
+            cp_roots.append((cp1 + cp2) / 2)
+
+        cp1 = cp2  # Move to the next bracket interval
+
+    # Store results for plotting
+    frequencies.extend([freq] * len(cp_roots))
+    phase_velocities.extend(cp_roots)
+
+# Plotting the dispersion relation
 plt.figure(figsize=(10, 6))
-plt.plot(frequencies / (2 * np.pi), wavenumbers_symmetric, label='Symmetric Mode (S)')
-plt.plot(frequencies / (2 * np.pi), wavenumbers_antisymmetric, label='Antisymmetric Mode (A)')
-plt.xlabel('Frequency (Hz)')
-plt.ylabel('Wavenumber (1/m)')
-plt.title('Rayleigh-Lamb Dispersion Curves')
-plt.legend()
+plt.plot(np.array(frequencies) / 1000, phase_velocities, 'o', color='blue', label="Phase Velocity Roots")
+plt.xlabel("Frequency (kHz)", fontsize=14)
+plt.ylabel("Phase Velocity (m/s)", fontsize=14)
+plt.title("Dispersion Relation: Frequency vs. Phase Velocity", fontsize=16)
 plt.grid(True)
+plt.legend()
 plt.show()
