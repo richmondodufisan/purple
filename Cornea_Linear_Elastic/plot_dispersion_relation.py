@@ -5,15 +5,23 @@ from scipy.fftpack import fft, fftfreq
 from scipy.signal import find_peaks
 import os
 import glob
-from sklearn.cluster import KMeans
+from Analytical_Antisymmetric_RL import calc_dispersion_relation  # Import the analytical helper function
 
 # Define your excitation frequencies
-excitation_frequencies = ["1e3", "1.5e3", "2e3", "2.5e3", "3e3", "3.5e3", "4e3", "4.5e3", "5e3", 
-                          "5.5e3", "6e3", "6.5e3", "7e3", "7.5e3", "8e3", "8.5e3", "9e3", "9.5e3", 
-                          "10e3", "10.5e3", "11e3", "11.5e3", "12e3", "12.5e3", "13e3", "13.5e3", 
-                          "14e3", "14.5e3", "15e3", "15.5e3", "16e3", "16.5e3", "17e3", "17.5e3", 
-                          "18e3", "18.5e3", "19e3", "19.5e3", "20e3"] # Frequencies as strings for filename matching
+excitation_frequencies = ["1e3", "1.5e3", "2e3", "2.5e3", "3e3", "3.5e3", "4e3", "4.5e3", "5e3", "5.5e3", "6e3", 
+                          "6.5e3", "7e3", "7.5e3", "8e3", "8.5e3", "9e3", "9.5e3", "10e3", "10.5e3", "11e3", 
+                          "11.5e3", "12e3", "12.5e3", "13e3", "13.5e3", "14e3", "14.5e3", "15e3", "15.5e3", 
+                          "16e3", "16.5e3", "17e3", "17.5e3", "18e3", "18.5e3", "19e3", "19.5e3", "20e3"]  # Frequencies as strings for filename matching
 file_template = 'Plate_Harmonic_Perturbation_freq_{freq}_out_wave_profile_*.csv'
+
+# Material and physical properties
+thickness = 0.001
+density = 1000
+poissons_ratio = 0.49
+shear_modulus = 100000
+freq_min = 1000
+freq_max = 20000
+num_points = 40
 
 # Function to process each file and calculate wave speeds
 def process_file(file_path, excitation_frequency):
@@ -67,35 +75,35 @@ def find_latest_file(excitation_frequency):
     latest_file = max(files, key=lambda f: extract_wave_profile(f))
     return latest_file
 
-# Collect all wave speeds and peak frequencies across excitation frequencies for clustering
-all_wave_speeds = []
-all_excitation_freqs = []
+# Prepare a figure for plotting
+plt.figure(figsize=(10, 6))
 
-# Loop over each excitation frequency and aggregate data
+# Plot numerical dispersion relation points in a single color
 for excitation_frequency in excitation_frequencies:
+    # Find the latest file for the given excitation frequency
     file_path = find_latest_file(excitation_frequency)
+
+    # Check if the file was found before proceeding
     if not file_path:
+        print(f"No file found for frequency {excitation_frequency} Hz")
         continue
 
-    wave_speeds, peak_frequencies = process_file(file_path, excitation_frequency)
-    all_wave_speeds.extend(wave_speeds)
-    all_excitation_freqs.extend([float(excitation_frequency.replace('e3', 'e+03'))] * len(wave_speeds))
+    # Process the file and calculate wave speeds for peaks above threshold
+    wave_speeds, _ = process_file(file_path, excitation_frequency)
 
-# Apply clustering to sort branches (adjust 'n_clusters' based on visible branches)
-wave_speed_data = np.array(list(zip(all_excitation_freqs, all_wave_speeds)))
-kmeans = KMeans(n_clusters=5).fit(wave_speed_data)  # Adjust n_clusters as needed
-labels = kmeans.labels_
+    # Plot each wave speed point in the same color
+    plt.scatter([float(excitation_frequency.replace('e3', 'e+03'))] * len(wave_speeds), wave_speeds, color='blue', label="Numerical - FEM" if excitation_frequency == "1e3" else "")
 
-# Plotting with clusters as branches
-plt.figure(figsize=(10, 6))
-for i, label in enumerate(set(labels)):
-    label_indices = np.where(labels == label)
-    plt.scatter(wave_speed_data[label_indices, 0], wave_speed_data[label_indices, 1], label=f'Branch {i+1}')
+# Plot analytical dispersion relation
+frequencies_analytical, phase_velocities_analytical = calc_dispersion_relation(
+    thickness, density, poissons_ratio, shear_modulus, freq_min, freq_max, num_points
+)
+plt.plot(np.array(frequencies_analytical) / 1000, phase_velocities_analytical, color='red', label="Analytical")
 
-plt.xlabel('Excitation Frequency (Hz)')
+# Plot customization
+plt.xlabel('Excitation Frequency (kHz)')
 plt.ylabel('Wave Speed (m/s)')
-plt.title('Dispersion Relation Sorted by Clustering')
+plt.title('Dispersion Relation: Frequency vs. Phase Velocity')
 plt.grid(True)
-plt.legend()
-plt.savefig('sorted_dispersion_relation.png')
+plt.legend(loc="best")
 plt.show()
