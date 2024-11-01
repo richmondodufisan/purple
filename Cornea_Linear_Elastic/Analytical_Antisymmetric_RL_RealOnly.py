@@ -1,7 +1,7 @@
 import numpy as np
 import cmath
 
-def calc_dispersion_relation(thickness, density, poissons_ratio, shear_modulus, freq_min, freq_max, num_points):
+def calc_dispersion_relation_asym(thickness, density, poissons_ratio, shear_modulus, freq_min, freq_max, num_points):
     # Derived material properties
     h_half = thickness / 2
     c_T = np.sqrt(shear_modulus / density)
@@ -17,16 +17,16 @@ def calc_dispersion_relation(thickness, density, poissons_ratio, shear_modulus, 
         q = cmath.sqrt((w**2) / (c_T**2) - k**2)
         p = cmath.sqrt((w**2) / (c_L**2) - k**2)
 
-        LHS_term = (cmath.tan(q * h)) / (cmath.tan(p * h))
-        RHS_term = -(((q**2) - (k**2))**2) / (4 * (k**2) * p * q)
+        term_1 = q * (cmath.tan(q * h)) 
+        term_2 = ((((q**2) - (k**2))**2) *  (cmath.tan(p * h)))/ (4 * (k**2) * p)
 
-        D = LHS_term - RHS_term
+        D = term_1 + term_2
         return D.real
 
     # Bracketing and Bisection parameters
     cp_min, cp_max = 0.1, 50  # Range for phase velocities
     jump = 0.05                 # Step size for bracketing
-    tolerance = 1e-8            # Tolerance for bisection convergence
+    tolerance = 1e-9            # Tolerance for bisection convergence
 
     # Initialize lists to store frequencies and corresponding phase velocities
     frequencies = []

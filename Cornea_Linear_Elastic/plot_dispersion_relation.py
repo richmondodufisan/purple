@@ -5,7 +5,8 @@ from scipy.fftpack import fft, fftfreq
 from scipy.signal import find_peaks
 import os
 import glob
-from Analytical_Antisymmetric_RL import calc_dispersion_relation  # Import the analytical helper function
+from Analytical_Antisymmetric_RL_RealOnly import calc_dispersion_relation_asym
+from Analytical_Symmetric_RL_RealOnly import calc_dispersion_relation_sym
 
 # Define your excitation frequencies
 excitation_frequencies = ["1e3", "1.5e3", "2e3", "2.5e3", "3e3", "3.5e3", "4e3", "4.5e3", "5e3", "5.5e3", "6e3", 
@@ -100,13 +101,22 @@ for excitation_frequency in excitation_frequencies:
 
     # Plot each wave speed point in the same color
     excitation_frequency = float(excitation_frequency)
-    plt.scatter([excitation_frequency] * len(wave_speeds), wave_speeds, color='blue', label=label)
+    plt.scatter([excitation_frequency] * len(wave_speeds), wave_speeds, color='blue', marker='o', s=30, label=label)
 
-# Plot analytical dispersion relation
-frequencies_analytical, phase_velocities_analytical = calc_dispersion_relation(
+# Plot analytical dispersion relation for the antisymmetric modes
+frequencies_analytical_asym, phase_velocities_analytical_asym = calc_dispersion_relation_asym(
     thickness, density, poissons_ratio, shear_modulus, freq_min, freq_max, num_points
 )
-plt.plot(np.array(frequencies_analytical), phase_velocities_analytical, color='red', label="Analytical")
+plt.scatter(np.array(frequencies_analytical_asym), phase_velocities_analytical_asym, color='red', marker='^', s=15, label="Analytical - Antisymmetric")
+
+
+# Plot analytical dispersion relation for the symmetric modes
+# frequencies_analytical_sym, phase_velocities_analytical_sym = calc_dispersion_relation_sym(
+    # thickness, density, poissons_ratio, shear_modulus, freq_min, freq_max, num_points
+# )
+# plt.scatter(np.array(frequencies_analytical_sym), phase_velocities_analytical_sym, color='green', marker='^', s=10, label="Analytical - Symmetric")
+
+
 
 # Plot customization
 plt.xlabel('Excitation Frequency (Hz)')
