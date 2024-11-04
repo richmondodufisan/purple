@@ -4,7 +4,7 @@ omega = ${fparse 2 * pi * freq_val}
 
 
 shear_modulus_val = 100000
-poissons_ratio_val = 0.49
+poissons_ratio_val = 0.4999
 
 
 density = 1000
@@ -23,7 +23,7 @@ mechanical_impedance = ${fparse density*((c_shear + c_pressure)/2.0)}
 h_plate = 0.001
 l_plate = ${fparse 30 * h_plate}
 #mid_height = ${fparse h_plate/2}
-number_of_points = ${fparse l_plate/0.000025}
+number_of_points = 3000
 
 excitation_val = ${fparse (h_plate/10)}
 
@@ -194,6 +194,22 @@ excitation_val = ${fparse (h_plate/10)}
 	preset = false
   []
   
+  [fixed_real]
+    type = DirichletBC
+    variable = disp_x_real
+    boundary = 'loading_point'
+	value = ${excitation_val}
+	preset = false
+  []
+  
+  [fixed_imag]
+    type = DirichletBC
+    variable = disp_x_imag
+    boundary = 'loading_point'
+    value = 0
+	preset = false
+  []
+  
   [low_reflecting_boundary_x_real]
     type = CoupledVarNeumannBC
 	variable = disp_x_real
@@ -227,9 +243,17 @@ excitation_val = ${fparse (h_plate/10)}
 
 
 [VectorPostprocessors]
-  [wave_profile]
+  [wave_profile_y]
     type = LineValueSampler
     variable = disp_y_real
+    start_point = '0 ${h_plate} 0'
+    end_point = '${fparse l_plate} ${h_plate} 0'
+    num_points = ${number_of_points}
+    sort_by = x
+  []
+  [wave_profile_x]
+    type = LineValueSampler
+    variable = disp_x_real
     start_point = '0 ${h_plate} 0'
     end_point = '${fparse l_plate} ${h_plate} 0'
     num_points = ${number_of_points}

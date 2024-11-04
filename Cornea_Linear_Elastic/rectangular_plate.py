@@ -14,7 +14,7 @@ ylen = 0.001
 
 xlen = 30 * ylen
 
-mesh_refine = 0.00025/4
+mesh_refine = ylen/20
 
 # Adding points 
 p1 = gmsh.model.occ.addPoint(0, 0, 0, mesh_refine)

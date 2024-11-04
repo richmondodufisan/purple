@@ -13,12 +13,16 @@ excitation_frequencies = ["1e3", "1.5e3", "2e3", "2.5e3", "3e3", "3.5e3", "4e3",
                           "6.5e3", "7e3", "7.5e3", "8e3", "8.5e3", "9e3", "9.5e3", "10e3", "10.5e3", "11e3", 
                           "11.5e3", "12e3", "12.5e3", "13e3", "13.5e3", "14e3", "14.5e3", "15e3", "15.5e3", 
                           "16e3", "16.5e3", "17e3", "17.5e3", "18e3", "18.5e3", "19e3", "19.5e3", "20e3"]  # Frequencies as strings for filename matching
-file_template = './Validated_Data/Plate_Harmonic_Perturbation_freq_{freq}_out_wave_profile_*.csv'
+                          
+file_template = './Free_X_Data/Plate_Harmonic_Perturbation_freq_{freq}_out_wave_profile_*.csv'
+# file_template = './Fixed_X_Data/Plate_Harmonic_Perturbation_freq_{freq}_out_wave_profile_x_*.csv'
+
+
 
 # Material and physical properties
 thickness = 0.001
 density = 1000
-poissons_ratio = 0.49
+poissons_ratio = 0.4999
 shear_modulus = 100000
 freq_min = 1000
 freq_max = 20000
