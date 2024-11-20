@@ -36,7 +36,7 @@ import pdb
 
 # r_probe: radius of the probe laser
 
-# calib_constants: additional constants to calibrate model if comparing to FEM simulations. 
+# calib_constants: additional constants to calibrate model if comparing to FEM simulations with poor/coarse meshes. 
 # The calibration is done on the pump and probe radii.
 # If using experimental data, set each value to 1 (i.e calib_constants = [1, 1])
 
