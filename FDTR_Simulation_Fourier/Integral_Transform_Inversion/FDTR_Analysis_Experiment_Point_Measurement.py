@@ -48,14 +48,15 @@ def fit_function_FDTR(freqs, fitting_properties):
 
     for freq in freqs:
         # Define other parameters required by calc_thermal_response function
+        # See comments in Layered_Heat_Conduction.py for documentation
         N_layers = 2
-        layer2 = [100e-6, kappa_2, kappa_2, 2630, 741.79]
-        layer1 = [133e-9, 194, 194, 19300, 126.4]
+        layer2 = [100e-6, kappa_2, kappa_2, 2630, 610.2]
+        layer1 = [50e-9, 215, 215, 19300, 128.5]
         layer_props = np.array([layer2, layer1])
         interface_props = [conductance_12]
-        r_probe = 1.249e-6
-        r_pump = 2.216e-6
-        pump_power = 1.5
+        r_probe = 1.912e-6
+        r_pump = 1.461e-6
+        pump_power = 0.0042 # Power * Absorbance
         calib_consts = [1, 1] # no calibration
         freq = freq * 1e6
 
@@ -77,9 +78,9 @@ def fit_function_FDTR(freqs, fitting_properties):
     # for freq in freqs:
         # # Define other parameters required by calc_thermal_response function
         # N_layers = 3
-        # layer3 = [100e-6, kappa_2, kappa_2, 2329, 689.1]              #Si
+        # layer3 = [100e-6, kappa_2, kappa_2, 2329, 689.1]         #Si
         # layer2 = [1000e-9, 2.711, 2.711, 2630, 741.79]           #SiO2
-        # layer1 = [133e-9, 194, 194, 19300, 126.4]               #Au
+        # layer1 = [133e-9, 194, 194, 19300, 126.4]                #Au
         # layer_props = np.array([layer3, layer2, layer1])
         # interface_props = [conductance_12, 37.6983e6]
         # r_probe = 1.249e-6
@@ -107,8 +108,8 @@ def process_file(file_path, initial_guesses, bounds_lower, bounds_upper):
     
     # Optional: Cutoff points from the start and end of the data
     
-    cutoff_end = 13  # Number of points to cutoff from the end
-    FDTR_data = FDTR_data[:-cutoff_end]
+    # cutoff_end = 13  # Number of points to cutoff from the end
+    # FDTR_data = FDTR_data[:-cutoff_end]
     
     # cutoff_start = 14 # number of points to cutoff from the start
     # FDTR_data = FDTR_data[cutoff_start:]
@@ -141,8 +142,10 @@ def process_file(file_path, initial_guesses, bounds_lower, bounds_upper):
 ##################################################### READ DATA AND PERFORM FITTING ###################################################
 
 # Specify the folder and number of files
-folder_path = './Rosemary_SiO2_Standard'  
+folder_path = './Point_UndopedSi'  
 num_files = 6  # Specify the number of files
+
+output_file_prefix = "Si"
 
 # Define initial guesses and bounds for the fitting properties
 # CHANGE IF CHANGING FITTING PROPERTIES
@@ -157,7 +160,7 @@ axes = axes.flatten()
 
 # Loop through each file
 for i in range(num_files):
-    file_path = os.path.join(folder_path, f'Results_SiSi_interface_{i + 1}.csv')
+    file_path = os.path.join(folder_path, f'Results_Si_{i + 1}.csv')
     
     # Process the file and perform the fitting
     FDTR_data, popt = process_file(file_path, initial_guesses, bounds_lower, bounds_upper)
@@ -188,7 +191,7 @@ for i in range(num_files):
 plt.subplots_adjust(wspace=0.3, hspace=0.5)
 
 # Save the figure
-save_path = f'{folder_path}.png'
+save_path = f'{output_file_prefix}.png'
 plt.savefig(save_path)
 
 plt.show()
