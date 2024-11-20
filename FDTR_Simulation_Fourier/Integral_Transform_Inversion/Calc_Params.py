@@ -12,21 +12,34 @@ import math
 # File for calculating phase and amplitude for any parameters (for checking)
 # Mostly for debugging purposes
 
-freq = 1 # in MHz
-kappa = 130 # in W/(m.K)
-conductance = 3e7 # in W/(m2.K)
+freq = 20 # in MHz
+kappa = 1.5 # in W/(m.K)
+# conductance = 3e7 # in W/(m2.K)
+conductance = 8e6 # in W/(m2.K)
 
 ################################## CALCULATE PHASE AND AMPLITUDE FOR A SINGLE FREQUENCY #####################################
 
 # Define other parameters required by calc_thermal_response function
+# N_layers = 2
+# layer2 = [40e-6, kappa, kappa, 2329, 689.1]
+# layer1 = [9e-8, 215, 215, 19300, 128.7]
+# layer_props = np.array([layer2, layer1])
+# interface_props = [conductance]
+# r_probe = 1.34e-6
+# r_pump = 1.53e-6
+# pump_power = 0.01
+# calib_consts = [1, 1] # no calibration
+# freq = freq * 1e6
+
+
 N_layers = 2
-layer2 = [40e-6, kappa, kappa, 2329, 689.1]
-layer1 = [9e-8, 215, 215, 19300, 128.7]
+layer2 = [100e-6, kappa, kappa, 6180, 249.06]
+layer1 = [80e-9, 215, 215, 19300, 128.5]
 layer_props = np.array([layer2, layer1])
 interface_props = [conductance]
-r_probe = 1.34e-6
-r_pump = 1.53e-6
-pump_power = 0.01
+r_probe = 1.46e-6
+r_pump = 1.912e-6
+pump_power = 1.5
 calib_consts = [1, 1] # no calibration
 freq = freq * 1e6
 
