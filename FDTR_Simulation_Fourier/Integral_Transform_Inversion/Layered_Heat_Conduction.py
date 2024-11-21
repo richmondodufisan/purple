@@ -11,7 +11,7 @@ import pdb
 # This is a helper file for calculating phase and temperature increase in FDTR experiments
 # It is assumed that thermal transport is within the diffusive regime, hence Fourier's equation applies
 # This is the analytical solution for radial heat transfer as detailed in the thesis of AJ Schmidt (2008)
-# The calc_thermal_response should be used to find the phase and amplitude given the appropriate material properties
+# The calc_thermal_response function should be used to find the phase and amplitude given the appropriate material properties
 
 
 
@@ -38,11 +38,11 @@ import pdb
 
 # calib_constants: additional constants to calibrate model if comparing to FEM simulations with poor/coarse meshes. 
 # The calibration is done on the pump and probe radii.
-# If using experimental data, set each value to 1 (i.e calib_constants = [1, 1])
+# If using experimental data or data from an appropriately refined FEM mesh, set each value to 1 (i.e calib_constants = [1, 1])
 
 # freq: frequency of the input signal (pump laser)
 
-# pump_power: the pump power, Q0
+# pump_power: the pump power, Q0 * absorbance
 
 
 
