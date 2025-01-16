@@ -77,8 +77,9 @@ plt.title('Sensitivity Plot for 90nm Au on Si', fontsize=16)
 plt.legend(fontsize=14)
 
 # Display and save plot
-plt.show()
 plt.savefig('sensitivity.png')
+plt.show()
+
 
 
 

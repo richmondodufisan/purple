@@ -1,7 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from Layered_Heat_Conduction_Beam_Offset import calc_thermal_response
+# from Layered_Heat_Conduction_Beam_Offset_Integral_Ring_Avg import calc_thermal_response
+from Layered_Heat_Conduction import calc_thermal_response
 import pdb
 import csv
 import math
@@ -35,7 +36,8 @@ def FDTR_function(freqs, kappa_z, kappa_r, G):
         offset = 3e-6
 
         # Calculate analytical phase 
-        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, offset, calib_consts, freq, pump_power)
+        # phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, offset, calib_consts, freq, pump_power)
+        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
         
         # phase = phase * (180/np.pi)   # Toggle to plot sensitivity in degrees instead of radians
         phases.append(phase)
@@ -85,12 +87,15 @@ plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
 
 # Set title and legend font size
-plt.title('Sensitivity Plot for 90nm Au on Si, 3 micron offset', fontsize=16)
+# plt.title('Sensitivity Plot for 90nm Au on Si, 3 micron offset', fontsize=16)
+plt.title('Sensitivity Plot for 90nm Au on Si, concentric beams', fontsize=16)
 plt.legend(fontsize=14)
 
 # Display and save plot
+# plt.savefig('sensitivity_offset.png')
+plt.savefig('sensitivity_concentric.png')
 plt.show()
-plt.savefig('sensitivity_offset.png')
+
 
 
 
