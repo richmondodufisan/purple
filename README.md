@@ -1,6 +1,5 @@
 purple
 =====
 
-Fork "purple" to create a new MOOSE-based application.
+This directory contains code (Primarily FEM Applications based on the MOOSE Framework & Inverse Problem codes) implemented to solve research problems during my PhD in Theoretical and Applied Mechanics at Northwestern University.
 
-For more information see: [https://mooseframework.org/getting_started/new_users.html#create-an-app](https://mooseframework.org/getting_started/new_users.html#create-an-app)

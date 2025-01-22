@@ -1,3 +1,16 @@
+# Mesh files and other simulation junk
+
+./classes
+*.msh
+*Zone.Identifier*
+*.txt
+*.mat
+*.m
+*.fig
+slurm*
+FDTR_input_theta_*
+FDTR_input_KCM_*
+FDTR_input_Fourier_*
 .libs
 *.la
 *.lo
@@ -184,9 +197,9 @@ framework/contrib/asio/
 *.rd-*
 
 # Checkpoint Files
-*.cpa.gz
+*.cpa
 *.cpr
-*.cpa.gz-*
+*.cpa-*
 *.cpr-*
 
 # Ignore petsc arch
@@ -283,10 +296,9 @@ share/
 /modules/peridynamics/peridynamics.yaml
 /modules/ray_tracing/ray_tracing.yaml
 /modules/phase_field/phase_field.yaml
-/modules/heat_transfer/heat_transfer.yaml
+/modules/heat_conduction/heat_conduction.yaml
 /modules/tensor_mechanics/tensor_mechanics.yaml
 /modules/richards/richards.yaml
-/modules/solid_mechanics/solid_mechanics.yaml
 /modules/level_set/level_set.yaml
 /modules/combined/combined.yaml
 /modules/fluid_properties/fluid_properties.yaml
@@ -311,8 +323,8 @@ share/
 /modules/peridynamics/unit/peridynamics-unit.yaml
 /modules/ray_tracing/unit/ray_tracing-unit.yaml
 /modules/phase_field/unit/phase_field-unit.yaml
-/modules/heat_transfer/unit/heat_transfer-unit.yaml
 /modules/solid_mechanics/unit/solid_mechanics-unit.yaml
+/modules/heat_conduction/unit/heat_conduction-unit.yaml
 /modules/tensor_mechanics/unit/tensor_mechanics-unit.yaml
 /modules/richards/unit/richards-unit.yaml
 /modules/level_set/unit/level_set-unit.yaml
@@ -339,3 +351,7 @@ share/
 *.hpc_result
 *.hpc_submit
 purple.yaml
+
+/tutorials/tutorial01_app_development/*/babbler.yaml
+/tutorials/darcy_thermo_mech/*/darcy_thermo_mech.yaml
+
