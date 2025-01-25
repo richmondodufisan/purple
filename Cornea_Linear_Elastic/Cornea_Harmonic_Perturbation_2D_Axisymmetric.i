@@ -133,7 +133,7 @@ excitation_val = 0.0001
   []
   [compute_stress_real]
     type = ComputeLagrangianLinearElasticStress
-	elasticity_tensor = real_elasticity_tensor
+	elasticity_tensor = elasticity_tensor
 	base_name = real
   []
   [compute_strain_real]
@@ -151,7 +151,7 @@ excitation_val = 0.0001
   []
   [compute_stress_imag]
     type = ComputeLagrangianLinearElasticStress
-	elasticity_tensor = imag_elasticity_tensor
+	elasticity_tensor = elasticity_tensor
 	base_name = imag
   []
   [compute_strain_imag]

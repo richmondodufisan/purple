@@ -13,8 +13,8 @@ radius = 8
 trans_thick = 0.09
 
 dummy_factor = 2
-trans_thick_ref = 0.2
-sub_center_ref=0.2
+trans_thick_ref = 0.5
+sub_center_ref=0.5
 
 x_dir = 160
 y_dir = 80
