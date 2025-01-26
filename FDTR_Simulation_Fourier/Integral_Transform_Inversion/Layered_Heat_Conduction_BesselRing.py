@@ -19,10 +19,7 @@ import pdb
 # To use in another file, include the line: 
 # "from Layered_Heat_Conduction_ConcentricGaussian import calc_thermal_response"
 
-# This is the same as Layered_Heat_Conduction
-# However, the equations are formatted differently so as to be more explanatory
-# This file serves as a base for potential modifications of the pump/probe gaussians
-
+# This is a modification to allow for offset beam positions
 
 
 # Input arguments for calc_thermal_response:
@@ -54,14 +51,16 @@ import pdb
 
 
 # Expression for normalized gaussian based on 1/e^2 beam waist
-def pump_integrand_to_hankel(r, w, k):
+def pump_integrand_to_hankel(r, x0, w, k):
     
-    exponent_term = np.exp(  (-2 * (r**2))   /   (w**2)   )
+    exponent_term = np.exp(  (-2 * ((r**2) + (x0**2)))   /   (w**2)   )
+    
+    bessel_i0_term = i0( (4 * x0 * r) / (w**2) )
   
     prefactor = 2 / (np.pi * (w**2))
     
     # Pump gaussian in r
-    P_r = prefactor * exponent_term
+    P_r = prefactor * exponent_term * bessel_i0_term
     
     return P_r * r * j0(k * r)
     
@@ -82,7 +81,7 @@ def probe_integrand_to_hankel(r, w, k):
 
 
 
-def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, calib_consts, freq):
+def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, x0, calib_consts, freq):
 
   # Checks to ensure data is properly submitted/formatted
   
@@ -99,7 +98,7 @@ def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, calib_
   r_bound = 50*w_pump
   
   # Pump Gaussian in Hankel Space 
-  P_k, _ = quad(pump_integrand_to_hankel, 0, r_bound, args=(w_pump, k))
+  P_k, _ = quad(pump_integrand_to_hankel, 0, r_bound, args=(x0, w_pump, k))
   S_k, _ = quad(probe_integrand_to_hankel, 0, r_bound, args=(w_probe, k))
   
 
@@ -149,7 +148,7 @@ def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, calib_
 
 
 
-def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, calib_consts, freq, pump_power):
+def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, x0, calib_consts, freq, pump_power):
 
 
   # Converting from 1/e beam waist to 1/e^2 beam waist
@@ -159,7 +158,7 @@ def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_prob
 
 
 
-  result, error = quad_vec(integrand, 0, 10000001, args=(N_layers, layer_props, interface_props, w_pump, w_probe, calib_consts, freq))\
+  result, error = quad_vec(integrand, 0, 10000001, args=(N_layers, layer_props, interface_props, w_pump, w_probe, x0, calib_consts, freq))
   
   H = pump_power * result
 
