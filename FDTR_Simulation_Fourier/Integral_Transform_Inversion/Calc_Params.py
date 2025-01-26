@@ -1,9 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from Layered_Heat_Conduction_Test_B import calc_thermal_response
+from Layered_Heat_Conduction_BesselRing import calc_thermal_response
+# from Layered_Heat_Conduction_ConcentricGaussian import calc_thermal_response
 from scipy.optimize import curve_fit
-from scipy.integrate import trapz
+# from scipy.integrate import trapz
 import pdb
 import csv
 import math
@@ -28,7 +29,7 @@ interface_props = [conductance]
 w_probe = 1.34e-6
 w_pump = 1.53e-6
 pump_power = 0.01
-calib_consts = [1, 1] # no calibration
+offset = 2e-6
 freq = freq * 1e6
 
 
@@ -40,11 +41,11 @@ freq = freq * 1e6
 # w_probe = 1.46e-6
 # w_pump = 1.987e-6
 # pump_power = 1.5
-# calib_consts = [1, 1] # no calibration
 # freq = freq * 1e6
 
 # Calculate analytical phase 
-phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, calib_consts, freq, pump_power)
+# phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
+phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
 
 print("----------------------------------------------------------------------------------------------")
 print("Phase: " + str(phase) + " radians") 
@@ -110,11 +111,10 @@ print("-------------------------------------------------------------------------
 # w_probe = 1.34e-6
 # w_pump = 1.53e-6
 # pump_power = 0.01
-# calib_consts = [1, 1] # no calibration
 # freq = freq * 1e6
 
 # # Calculate analytical phase 
-# phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, calib_consts, freq, pump_power)
+# phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
 
 # print("----------------------------------------------------------------------------------------------")
 # print("Phase: " + str(phase)) 

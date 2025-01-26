@@ -6,9 +6,17 @@ freq_val = 1e6
 transducer_thickness = 0.09
 probe_radius = 1.34
 pump_radius = 1.53
+
+w_Probe = ${fparse probe_radius * sqrt(2)}
+w_Pump = ${fparse pump_radius * sqrt(2)}
+
+offset = 3
+
 pump_power = 0.01
 pump_absorbance = 1
+gb_width_val = 0.1
 kappa_bulk_si = 130e-6
+kappa_gb_si = 130e-6
 rho_si = 2.329e-15
 c_si = 0.6891e3
 au_si_conductance = -3e-5
@@ -16,6 +24,9 @@ au_si_conductance_positive = 3e-5
 kappa_bulk_au = 215e-6
 rho_au = 19.3e-15
 c_au = 0.1287e3
+
+theta_deg = 0
+theta_rad = ${fparse (theta_deg/180)*pi}
 
 [Mesh]
   [sample_mesh]
@@ -207,20 +218,20 @@ c_au = 0.1287e3
     type = ParsedAux
     variable = avg_surf_temp_real
     coupled_variables = 'temp_trans_real'
-	constant_names = 'x0 y0 Rprobe pi'
-	constant_expressions = '${x0_val} ${y0_val} ${probe_radius} 3.14159265359'
+	constant_names = 'x0 y0 w_Probe pi'
+	constant_expressions = '${x0_val} ${y0_val} ${w_Probe} 3.14159265359'
 	use_xyzt = true
-	expression = '((temp_trans_real)/(pi*(Rprobe^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rprobe^2))'
+	expression = '((2 * temp_trans_real)/(pi*(w_Probe^2)))*exp((-2 * ((x-x0)^2+(y-y0)^2))/(w_Probe^2))'
 	block = transducer_material
   []
   [average_surface_temperature_imag]
     type = ParsedAux
     variable = avg_surf_temp_imag
     coupled_variables = 'temp_trans_imag'
-	constant_names = 'x0 y0 Rprobe pi'
-	constant_expressions = '${x0_val} ${y0_val} ${probe_radius} 3.14159265359'
+	constant_names = 'x0 y0 w_Probe pi'
+	constant_expressions = '${x0_val} ${y0_val} ${w_Probe} 3.14159265359'
 	use_xyzt = true
-	expression = '((temp_trans_imag)/(pi*(Rprobe^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rprobe^2))'
+	expression = '((2 * temp_trans_imag)/(pi*(w_Probe^2)))*exp((-2 * ((x-x0)^2+(y-y0)^2))/(w_Probe^2))'
 	block = transducer_material
   []
 []
@@ -239,11 +250,11 @@ c_au = 0.1287e3
 []
 
 [Functions]
-  [heat_source_function]
+  [grain_boundary_function]
     type = ADParsedFunction
-    expression = '-((Q0*absorbance)/(pi*(Rpump^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rpump^2))'
-    symbol_names = 'x0 y0 Rpump Q0 absorbance'
-    symbol_values = '${x0_val} ${y0_val} ${pump_radius} ${pump_power} ${pump_absorbance}'
+	expression = 'if ( (x<((-gb_width/(2*cos(theta)))+(abs(z)*tan(theta)))) | (x>((gb_width/(2*cos(theta)))+(abs(z)*tan(theta)))), k_bulk, k_gb)'
+	symbol_names = 'gb_width theta k_bulk k_gb'
+	symbol_values = '${gb_width_val} ${theta_rad} ${kappa_bulk_si} ${kappa_gb_si}'
   []
   [angular_frequency]
 	type = ADParsedFunction
@@ -263,8 +274,8 @@ c_au = 0.1287e3
   [basic_sample_materials]
     type = ADGenericConstantMaterial
     block = sample_material
-    prop_names = 'rho_samp c_samp k_samp'
-    prop_values = '${rho_si} ${c_si} ${kappa_bulk_si}'
+    prop_names = 'rho_samp c_samp'
+    prop_values = '${rho_si} ${c_si}'
   []
   [simulation_frequency]
     type = ADGenericFunctionMaterial
@@ -272,10 +283,11 @@ c_au = 0.1287e3
     prop_values = angular_frequency
 	block = 'transducer_material sample_material'
   []
-  [heat_source_material]
+  [thermal_conductivity_sample]
     type = ADGenericFunctionMaterial
-    prop_names = heat_source_mat
-    prop_values = heat_source_function
+    prop_names = k_samp
+    prop_values = grain_boundary_function
+	block = sample_material
   []
 []
 
@@ -295,10 +307,16 @@ c_au = 0.1287e3
   
   
   [heat_source_term_real]
-    type = FunctionNeumannBC
+    type = RingGaussianPumpBessel
 	variable = temp_trans_real
 	boundary = 'top_pump_area'
-	function = heat_source_function
+	
+	pump_power = ${pump_power}
+	absorbance = ${pump_absorbance}
+	pump_spot_size = ${w_Pump}
+	offset = ${offset}
+	center_x = ${x0_val}
+	center_y = ${y0_val}
   []
   [heat_source_term_imag]
     type = NeumannBC

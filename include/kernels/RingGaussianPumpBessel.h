@@ -24,6 +24,7 @@ protected:
   const Real _pump_power;
   const Real _absorbance;
   const Real _pump_spot_size;
+  const Real _offset;
   
   const Real _center_x;
   const Real _center_y;

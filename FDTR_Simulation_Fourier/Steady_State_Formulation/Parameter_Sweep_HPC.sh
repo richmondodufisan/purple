@@ -10,10 +10,6 @@
 og_filename=FDTR_input_Traditional
 extension=".i"
 
-# Original file name (calibration)
-# og_filename="FDTR_CALIBRATION"
-# extension=".i"
-
 og_mesh_script="FDTR_mesh_no_gb"
 og_mesh_ext=".py"
 

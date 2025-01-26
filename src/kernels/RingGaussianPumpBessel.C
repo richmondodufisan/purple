@@ -14,7 +14,9 @@ RingGaussianPumpBessel::validParams()
 
   params.addRequiredParam<Real>("pump_power", "Q0, the applied pump power");
   params.addRequiredParam<Real>("absorbance", "The fraction of the pump absorbed by the transducer");
-  params.addRequiredParam<Real>("pump_spot_size", "the 1/e beam waist");
+  params.addRequiredParam<Real>("pump_spot_size", "the 1/e^2 beam waist");
+  params.addRequiredParam<Real>("offset", "the approximate offset of the pump");
+  
   
   params.addRequiredParam<Real>("center_x", "center of the gaussian (x - coordinate)");
   params.addRequiredParam<Real>("center_y", "center of the gaussian (y - coordinate)");
@@ -39,6 +41,7 @@ RingGaussianPumpBessel::RingGaussianPumpBessel(const InputParameters & parameter
 	_pump_power(getParam<Real>("pump_power")),
     _absorbance(getParam<Real>("absorbance")),
 	_pump_spot_size(getParam<Real>("pump_spot_size")),
+	_offset(getParam<Real>("offset")),
 	
 	_center_x(getParam<Real>("center_x")),
     _center_y(getParam<Real>("center_y"))
@@ -61,13 +64,19 @@ RingGaussianPumpBessel::computeQpResidual()
   
   auto Q0 = _pump_power;
   auto absorbance = _absorbance;
-  auto Rpump = _pump_spot_size;
+  auto w_Pump = _pump_spot_size;
   
-  auto prefactor = -((Q0*absorbance)/(pi*(std::pow(Rpump, 2.0))));
+  auto r_squared = ((std::pow((x-x0), 2.0))+(std::pow((y-y0), 2.0)));
+  auto r = std::pow(r_squared, (1.0/2.0));
   
-  auto beam_function = std::exp((-((std::pow((x-x0), 2.0))+(std::pow((y-y0), 2.0))))/(std::pow(Rpump, 2.0)));
+  auto prefactor = ((2*Q0*absorbance)/(pi*(std::pow(w_Pump, 2.0))));
   
-  return -_test[_i][_qp] * (prefactor   *   beam_function);
+  auto exp_term = std::exp(   (- 2.0 * ( r_squared + std::pow(x0, 2.0)))    /    (std::pow(w_Pump, 2.0))   );
+  
+  auto bessel_arg = (   (4.0 * x0 * r)    /    (std::pow(w_Pump, 2.0))   );
+  auto bessel_term = std::cyl_bessel_i(0.0, bessel_arg);
+  
+  return -_test[_i][_qp] * (prefactor   *   exp_term  *  bessel_term);
   
   // return -_test[_i][_qp] * _func.value(_t, _q_point[_qp]);
 }
