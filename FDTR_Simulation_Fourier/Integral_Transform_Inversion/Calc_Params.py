@@ -29,7 +29,7 @@ interface_props = [conductance]
 w_probe = 1.34e-6
 w_pump = 1.53e-6
 pump_power = 0.01
-offset = 2e-6
+offset = 3e-6
 freq = freq * 1e6
 
 

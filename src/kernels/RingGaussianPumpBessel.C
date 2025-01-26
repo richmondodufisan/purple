@@ -66,14 +66,16 @@ RingGaussianPumpBessel::computeQpResidual()
   auto absorbance = _absorbance;
   auto w_Pump = _pump_spot_size;
   
+  auto x_off = _offset;
+  
   auto r_squared = ((std::pow((x-x0), 2.0))+(std::pow((y-y0), 2.0)));
   auto r = std::pow(r_squared, (1.0/2.0));
   
   auto prefactor = ((2*Q0*absorbance)/(pi*(std::pow(w_Pump, 2.0))));
   
-  auto exp_term = std::exp(   (- 2.0 * ( r_squared + std::pow(x0, 2.0)))    /    (std::pow(w_Pump, 2.0))   );
+  auto exp_term = std::exp(   (- 2.0 * ( r_squared + std::pow(x_off, 2.0)))    /    (std::pow(w_Pump, 2.0))   );
   
-  auto bessel_arg = (   (4.0 * x0 * r)    /    (std::pow(w_Pump, 2.0))   );
+  auto bessel_arg = (   (4.0 * x_off * r)    /    (std::pow(w_Pump, 2.0))   );
   auto bessel_term = std::cyl_bessel_i(0.0, bessel_arg);
   
   return -_test[_i][_qp] * (prefactor   *   exp_term  *  bessel_term);
