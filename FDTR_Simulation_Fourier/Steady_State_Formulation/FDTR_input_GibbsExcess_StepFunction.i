@@ -6,6 +6,10 @@ freq_val = 1e6
 transducer_thickness = 0.09
 probe_radius = 1.34
 pump_radius = 1.53
+
+w_Probe = ${fparse probe_radius * sqrt(2)}
+w_Pump = ${fparse pump_radius * sqrt(2)}
+
 pump_power = 0.01
 pump_absorbance = 1
 gb_width_val = 0.1
@@ -212,20 +216,20 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     type = ParsedAux
     variable = avg_surf_temp_real
     coupled_variables = 'temp_trans_real'
-	constant_names = 'x0 y0 Rprobe pi'
-	constant_expressions = '${x0_val} ${y0_val} ${probe_radius} 3.14159265359'
+	constant_names = 'x0 y0 w_Probe pi'
+	constant_expressions = '${x0_val} ${y0_val} ${w_Probe} 3.14159265359'
 	use_xyzt = true
-	expression = '((temp_trans_real)/(pi*(Rprobe^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rprobe^2))'
+	expression = '((2 * temp_trans_real)/(pi*(w_Probe^2)))*exp((-2 * ((x-x0)^2+(y-y0)^2))/(w_Probe^2))'
 	block = transducer_material
   []
   [average_surface_temperature_imag]
     type = ParsedAux
     variable = avg_surf_temp_imag
     coupled_variables = 'temp_trans_imag'
-	constant_names = 'x0 y0 Rprobe pi'
-	constant_expressions = '${x0_val} ${y0_val} ${probe_radius} 3.14159265359'
+	constant_names = 'x0 y0 w_Probe pi'
+	constant_expressions = '${x0_val} ${y0_val} ${w_Probe} 3.14159265359'
 	use_xyzt = true
-	expression = '((temp_trans_imag)/(pi*(Rprobe^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rprobe^2))'
+	expression = '((2 * temp_trans_imag)/(pi*(w_Probe^2)))*exp((-2 * ((x-x0)^2+(y-y0)^2))/(w_Probe^2))'
 	block = transducer_material
   []
 []
@@ -244,12 +248,6 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 []
 
 [Functions]
-  [heat_source_function]
-    type = ADParsedFunction
-    expression = '-((Q0*absorbance)/(pi*(Rpump^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rpump^2))'
-    symbol_names = 'x0 y0 Rpump Q0 absorbance'
-    symbol_values = '${x0_val} ${y0_val} ${pump_radius} ${pump_power} ${pump_absorbance}'
-  []
   [grain_boundary_function]
     type = ADParsedFunction
 	expression = 'if ( (x<((-gb_width/(2*cos(theta)))+(abs(z)*tan(theta)))) | (x>((gb_width/(2*cos(theta)))+(abs(z)*tan(theta)))), k_bulk, k_gb)'
@@ -289,11 +287,6 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     prop_values = grain_boundary_function
 	block = sample_material
   []
-  [heat_source_material]
-    type = ADGenericFunctionMaterial
-    prop_names = heat_source_mat
-    prop_values = heat_source_function
-  []
 []
 
 [BCs]
@@ -312,10 +305,15 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   
   
   [heat_source_term_real]
-    type = FunctionNeumannBC
+    type = ConcentricGaussianPumpStandard
 	variable = temp_trans_real
 	boundary = 'top_pump_area'
-	function = heat_source_function
+	
+	pump_power = ${pump_power}
+	absorbance = ${pump_absorbance}
+	pump_spot_size = ${w_Pump}
+	center_x = ${x0_val}
+	center_y = ${y0_val}
   []
   [heat_source_term_imag]
     type = NeumannBC
