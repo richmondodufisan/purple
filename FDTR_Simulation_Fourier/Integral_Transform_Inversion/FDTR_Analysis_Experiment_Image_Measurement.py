@@ -107,14 +107,13 @@ def fit_function_FDTR(freqs, fitting_properties, material_properties):
         layer1 = [80e-9, kappa_1, kappa_1, rho_1, c_1]
         layer_props = np.array([layer2, layer1])
         interface_props = [conductance_12]
-        r_probe = 1.46e-6
-        r_pump = 1.987e-6
+        w_probe = 1.46e-6
+        w_pump = 1.987e-6
         pump_power = 1.5
-        calib_consts = [1, 1] # no calibration
         freq = freq * 1e6
 
         # Calculate analytical phase 
-        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
+        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
         phases.append(phase)
         
     return np.array(phases)

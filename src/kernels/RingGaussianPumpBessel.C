@@ -1,12 +1,12 @@
-#include "ConcentricGaussianPumpStandard.h"
+#include "RingGaussianPumpBessel.h"
 #include "Function.h"
 #include <cmath>
 #include <numbers>
 
-registerMooseObject("purpleApp", ConcentricGaussianPumpStandard);
+registerMooseObject("purpleApp", RingGaussianPumpBessel);
 
 InputParameters
-ConcentricGaussianPumpStandard::validParams()
+RingGaussianPumpBessel::validParams()
 {
   InputParameters params = IntegratedBC::validParams();
   
@@ -30,7 +30,7 @@ ConcentricGaussianPumpStandard::validParams()
   return params;
 }
 
-ConcentricGaussianPumpStandard::ConcentricGaussianPumpStandard(const InputParameters & parameters)
+RingGaussianPumpBessel::RingGaussianPumpBessel(const InputParameters & parameters)
   : IntegratedBC(parameters), 
   
     // _func(getFunction("function"))
@@ -48,7 +48,7 @@ ConcentricGaussianPumpStandard::ConcentricGaussianPumpStandard(const InputParame
 }
 
 Real
-ConcentricGaussianPumpStandard::computeQpResidual()
+RingGaussianPumpBessel::computeQpResidual()
 {
   auto x0 = _center_x;
   auto y0 = _center_y;
@@ -61,11 +61,11 @@ ConcentricGaussianPumpStandard::computeQpResidual()
   
   auto Q0 = _pump_power;
   auto absorbance = _absorbance;
-  auto w_Pump = _pump_spot_size;
+  auto Rpump = _pump_spot_size;
   
-  auto prefactor = -((2*Q0*absorbance)/(pi*(std::pow(w_Pump, 2.0))));
+  auto prefactor = -((Q0*absorbance)/(pi*(std::pow(Rpump, 2.0))));
   
-  auto beam_function = std::exp( (- 2.0 * ((std::pow((x-x0), 2.0))+(std::pow((y-y0), 2.0))) )  /  (std::pow(w_Pump, 2.0)) );
+  auto beam_function = std::exp((-((std::pow((x-x0), 2.0))+(std::pow((y-y0), 2.0))))/(std::pow(Rpump, 2.0)));
   
   return -_test[_i][_qp] * (prefactor   *   beam_function);
   

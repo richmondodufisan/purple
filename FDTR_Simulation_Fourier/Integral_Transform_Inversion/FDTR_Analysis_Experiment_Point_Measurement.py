@@ -54,14 +54,13 @@ def fit_function_FDTR(freqs, fitting_properties):
         layer1 = [50e-9, 215, 215, 19300, 128.5]
         layer_props = np.array([layer2, layer1])
         interface_props = [conductance_12]
-        r_probe = 1.912e-6
-        r_pump = 1.461e-6
+        w_probe = 1.912e-6
+        w_pump = 1.461e-6
         pump_power = 0.0042 # Power * Absorbance
-        calib_consts = [1, 1] # no calibration
         freq = freq * 1e6
 
         # Calculate analytical phase 
-        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
+        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
         phases.append(phase)
         
     return np.array(phases)
@@ -83,14 +82,13 @@ def fit_function_FDTR(freqs, fitting_properties):
         # layer1 = [133e-9, 194, 194, 19300, 126.4]                #Au
         # layer_props = np.array([layer3, layer2, layer1])
         # interface_props = [conductance_12, 37.6983e6]
-        # r_probe = 1.249e-6
-        # r_pump = 2.216e-6
+        # w_probe = 1.249e-6
+        # w_pump = 2.216e-6
         # pump_power = 1.5
-        # calib_consts = [1, 1] # no calibration
         # freq = freq * 1e6
 
         # # Calculate analytical phase 
-        # phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power)
+        # phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
         # phases.append(phase)
         
     # return np.array(phases)

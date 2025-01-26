@@ -41,10 +41,6 @@ import pdb
 
 # w_probe: radius of the probe laser
 
-# calib_constants: additional constants to calibrate model if comparing to FEM simulations with poor/coarse meshes. 
-# The calibration is done on the pump and probe radii.
-# If using experimental data or data from an appropriately refined FEM mesh, set each value to 1 (i.e calib_constants = [1, 1])
-
 # freq: frequency of the input signal (pump laser)
 
 # pump_power: the pump power, Q0 * absorbance
@@ -82,7 +78,7 @@ def probe_integrand_to_hankel(r, w, k):
 
 
 
-def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, calib_consts, freq):
+def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, freq):
 
   # Checks to ensure data is properly submitted/formatted
   
@@ -149,7 +145,7 @@ def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, calib_
 
 
 
-def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, calib_consts, freq, pump_power):
+def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power):
 
 
   # Converting from 1/e beam waist to 1/e^2 beam waist
@@ -159,7 +155,7 @@ def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_prob
 
 
 
-  result, error = quad_vec(integrand, 0, 10000001, args=(N_layers, layer_props, interface_props, w_pump, w_probe, calib_consts, freq))\
+  result, error = quad_vec(integrand, 0, 10000001, args=(N_layers, layer_props, interface_props, w_pump, w_probe, freq))
   
   H = pump_power * result
 

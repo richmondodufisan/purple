@@ -32,13 +32,9 @@ import pdb
 # interface_props: this is an array of the interface conductances between layers. There should be one less
 # conductance than the number of layers (e.g 1 interface conductance for a 2-layer system)
 
-# r_pump: radius of the pump laser
+# w_pump: radius of the pump laser
 
-# r_probe: radius of the probe laser
-
-# calib_constants: additional constants to calibrate model if comparing to FEM simulations with poor/coarse meshes. 
-# The calibration is done on the pump and probe radii.
-# If using experimental data or data from an appropriately refined FEM mesh, set each value to 1 (i.e calib_constants = [1, 1])
+# w_probe: radius of the probe laser
 
 # freq: frequency of the input signal (pump laser)
 
@@ -47,7 +43,7 @@ import pdb
 
 
 # Integral in Equation 3.5
-def integrand(k, N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq):
+def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, freq):
 
   # Checks to ensure data is properly submitted/formatted
   
@@ -93,26 +89,17 @@ def integrand(k, N_layers, layer_props, interface_props, r_pump, r_probe, calib_
   D_total = ConductionMatrix[1][1]
   
   # converting from 1/e beam waist to 1/e^2 beam waist
-  r_pump = r_pump * np.sqrt(2)
-  r_probe = r_probe * np.sqrt(2)
+  w_pump = w_pump * np.sqrt(2)
+  w_probe = w_probe * np.sqrt(2)
 
-  # calibration constants to account for mesh sensitivity  
-  # Only use calibration in extreme cases where a fine mesh is not an option
-  # For most applications, ignore this
-
-  beta1 = calib_consts[0]
-  r_pump = r_pump*beta1
-
-  beta2 = calib_consts[1]
-  r_pump = r_pump*beta2
   
   # Integral part of Equation 3.5
-  return k * (-D_total/C_total) * np.exp(((-k**2) * (r_pump**2 + r_probe**2))/8.0)
+  return k * (-D_total/C_total) * np.exp(((-k**2) * (w_pump**2 + w_probe**2))/8.0)
   
   
 
-def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq, pump_power):
-  result, error = quad_vec(integrand, 0, 10000001, args=(N_layers, layer_props, interface_props, r_pump, r_probe, calib_consts, freq))
+def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power):
+  result, error = quad_vec(integrand, 0, 10000001, args=(N_layers, layer_props, interface_props, w_pump, w_probe, freq))
 
   # Thermal response in frequency domain, Equation 3.5
   H = (pump_power/(2 * np.pi)) * result

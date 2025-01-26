@@ -11,7 +11,8 @@ import pdb
 
 # This is a helper file for calculating phase and temperature increase in FDTR experiments
 # It is assumed that thermal transport is within the diffusive regime, hence Fourier's equation applies
-# This is the analytical solution for radial heat transfer as detailed in the thesis of AJ Schmidt (2008)
+# This is the analytical solution for radial heat transfer with an offset as in Feser 2012
+
 # The calc_thermal_response function should be used to find the phase and amplitude given the appropriate material properties
 
 
@@ -37,10 +38,6 @@ import pdb
 # w_pump: radius of the pump laser
 
 # w_probe: radius of the probe laser
-
-# calib_constants: additional constants to calibrate model if comparing to FEM simulations with poor/coarse meshes. 
-# The calibration is done on the pump and probe radii.
-# If using experimental data or data from an appropriately refined FEM mesh, set each value to 1 (i.e calib_constants = [1, 1])
 
 # freq: frequency of the input signal (pump laser)
 
@@ -81,7 +78,7 @@ def probe_integrand_to_hankel(r, w, k):
 
 
 
-def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, x0, calib_consts, freq):
+def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, x0, freq):
 
   # Checks to ensure data is properly submitted/formatted
   
@@ -148,7 +145,7 @@ def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, x0, ca
 
 
 
-def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, x0, calib_consts, freq, pump_power):
+def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, x0, freq, pump_power):
 
 
   # Converting from 1/e beam waist to 1/e^2 beam waist
@@ -158,7 +155,7 @@ def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_prob
 
 
 
-  result, error = quad_vec(integrand, 0, 10000001, args=(N_layers, layer_props, interface_props, w_pump, w_probe, x0, calib_consts, freq))
+  result, error = quad_vec(integrand, 0, 10000001, args=(N_layers, layer_props, interface_props, w_pump, w_probe, x0, freq))
   
   H = pump_power * result
 

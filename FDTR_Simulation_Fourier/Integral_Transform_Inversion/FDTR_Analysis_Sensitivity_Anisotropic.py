@@ -30,14 +30,13 @@ def FDTR_function(freqs, kappa_z, kappa_r, G):
         w_probe = 1.34e-6
         w_pump = 1.53e-6
         pump_power = 0.01
-        calib_consts = [1, 1] # no calibration
         freq = freq * 1e6
         
         offset = 4e-6
 
         # Calculate analytical phase 
-        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, calib_consts, freq, pump_power)
-        # phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, calib_consts, freq, pump_power)
+        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
+        # phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
         
         # phase = phase * (180/np.pi)   # Toggle to plot sensitivity in degrees instead of radians
         phases.append(phase)
