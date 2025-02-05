@@ -72,7 +72,7 @@ def fit_function_FDTR(freqs, fitting_properties):
     # phases = []
     
     # # CHANGE IF CHANGING FITTING PROPERTIES
-    # kappa_2, conductance_12 = fitting_properties  # Adjust the fitting parameters as needed
+    # kappa_3, conductance_23 = fitting_properties  # Adjust the fitting parameters as needed
 
     # for freq in freqs:
         # # Define other parameters required by calc_thermal_response function
@@ -81,7 +81,7 @@ def fit_function_FDTR(freqs, fitting_properties):
         # layer2 = [1000e-9, 2.711, 2.711, 2630, 741.79]           #SiO2
         # layer1 = [133e-9, 194, 194, 19300, 126.4]                #Au
         # layer_props = np.array([layer3, layer2, layer1])
-        # interface_props = [conductance_12, 37.6983e6]
+        # interface_props = [conductance_23, 37.6983e6]
         # w_probe = 1.249e-6
         # w_pump = 2.216e-6
         # pump_power = 1.5
