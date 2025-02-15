@@ -1,8 +1,10 @@
 #Global Parameters
 shear_modulus_val = 100000
-poissons_ratio_val = 0.49
+poissons_ratio_val = 0.3
 
-stretch_ratio = 10.0
+lame_lambda_val = ${fparse (2 * poissons_ratio_val * shear_modulus_val)/(1 - (2 * poissons_ratio_val))}
+
+stretch_ratio = 5.0
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
@@ -19,7 +21,7 @@ dt_val = ${fparse right_disp_val/100}
   
   [sample_mesh]
     type = FileMeshGenerator
-    file = cornea_rectangle.msh
+    file = rectangular_plate.msh
   []
 []
 
@@ -117,9 +119,9 @@ dt_val = ${fparse right_disp_val/100}
 
 [Materials]
   [strain_energy]
-    type = ComputeStrainEnergyNeoHookeanNearlyIncompressible
-    mu_0 = ${shear_modulus_val}
-	poissons_ratio = ${poissons_ratio_val}
+    type = ComputeStrainEnergyNeoHookeanCompressible
+    mu = ${shear_modulus_val}
+	lambda = ${lame_lambda_val}
   []
   
   [strain]
@@ -128,7 +130,7 @@ dt_val = ${fparse right_disp_val/100}
   []
   
   [stress]
-    type = ComputeStressNeoHookean
+    type = ComputeCustomPK2BasedStress
   []
 []
 
@@ -168,7 +170,7 @@ dt_val = ${fparse right_disp_val/100}
 [Executioner]
   type = Transient
   solve_type = 'NEWTON'
-  line_search = 'none'
+  #line_search = 'none'
   
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'

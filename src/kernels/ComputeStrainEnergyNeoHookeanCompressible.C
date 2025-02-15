@@ -107,7 +107,7 @@ Real ComputeStrainEnergyNeoHookeanCompressible::computeStrainEnergy(const Real &
 RankTwoTensor ComputeStrainEnergyNeoHookeanCompressible::compute_dWdC(const Real &mu, const Real &lambda, const RankTwoTensor &C) 
 {
     // Initialize derivative
-	RankTwoTensor dWdC;
+    RankTwoTensor dWdC;
     
     // Compute the scalar function for the original tensor
     Real W = computeStrainEnergy(mu, lambda, C);
@@ -118,23 +118,26 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanCompressible::compute_dWdC(const Real
             // Compute an optimal epsilon for this component
             Real epsilon = chooseOptimalEpsilon(C(i, j));
             
-            // Create a copy of the tensor to perturb
-            RankTwoTensor C_perturbed = C;
-            C_perturbed(i, j) += epsilon;
+            // Create copies of the tensor to perturb in both directions
+            RankTwoTensor C_plus = C;
+            C_plus(i, j) += epsilon;
 
-            // Evaluate the scalar function at the perturbed tensor
-            Real W_perturbed = computeStrainEnergy(mu, lambda, C_perturbed);
+            RankTwoTensor C_minus = C;
+            C_minus(i, j) -= epsilon;
 
-            // Compute the finite difference derivative and store it in the dfdT tensor
-			// Recall epsilon = C(i,j) - C_perturbed(i,j)
-			
-            dWdC(i, j) = (W_perturbed - W) / epsilon;
+            // Evaluate the scalar function at the perturbed tensors
+            Real W_plus = computeStrainEnergy(mu, lambda, C_plus);
+            Real W_minus = computeStrainEnergy(mu, lambda, C_minus);
+
+            // Compute the central difference derivative and store it in the dWdC tensor
+            dWdC(i, j) = (W_plus - W_minus) / (2 * epsilon);
         }
     }
 
     // Return the tensor of derivatives
     return dWdC;
 }
+
 
 
 
@@ -168,42 +171,40 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanCompressible::computePiolaKStress2(co
 RankFourTensor ComputeStrainEnergyNeoHookeanCompressible::compute_dPK2dE(const Real &mu, const Real &lambda, const RankTwoTensor &C)
 {
     RankTwoTensor I;
-	I.setToIdentity();
-	
-	// Green Lagrange Strain Tensor
-	RankTwoTensor E = 0.5 * (C - I);
-	
+    I.setToIdentity();
+    
+    // Green Lagrange Strain Tensor
+    RankTwoTensor E = 0.5 * (C - I);
+    
     // Initialize derivative
     RankFourTensor dPK2dE;
-	
-	// Compute the original PK2
+    
+    // Compute the original PK2
     RankTwoTensor PK2_original = computePiolaKStress2(mu, lambda, C);
 
     // Loop over all components of tensor A
-    for (int i = 0; i < 3; i++) 
-	{
-        for (int j = 0; j < 3; j++) 
-		{           
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
 
             // Loop over all components of tensor B (perturb tensor)
-            for (int k = 0; k < 3; k++) 
-			{
-                for (int l = 0; l < 3; l++) 
-				{
-					// Compute an optimal epsilon for this component
+            for (int k = 0; k < 3; k++) {
+                for (int l = 0; l < 3; l++) {
+                    // Compute an optimal epsilon for this component
                     Real epsilon = chooseOptimalEpsilon(E(k, l));
-					
-                    // Create a copy of B to perturb
-					RankTwoTensor E_perturbed = E;
+                    
+                    // Create copies of E to perturb in both directions
+                    RankTwoTensor E_plus = E;
+                    E_plus(k, l) += epsilon;
 
-					// Perturb the (k, l) component by epsilon
-					E_perturbed(k, l) += epsilon;
+                    RankTwoTensor E_minus = E;
+                    E_minus(k, l) -= epsilon;
 
-					// Evaluate the PK2 at the perturbed tensor
-					RankTwoTensor PK2_perturbed = computePiolaKStress2(mu, lambda, C);
+                    // Evaluate the PK2 at the perturbed tensors
+                    RankTwoTensor PK2_plus = computePiolaKStress2(mu, lambda, C);
+                    RankTwoTensor PK2_minus = computePiolaKStress2(mu, lambda, C);
 
-                    // Compute the finite difference derivative and store it in dAdB
-                    dPK2dE(i, j, k, l) = (PK2_perturbed(i, j) - PK2_original(i, j)) / epsilon;
+                    // Compute the central difference derivative and store it in dPK2dE
+                    dPK2dE(i, j, k, l) = (PK2_plus(i, j) - PK2_minus(i, j)) / (2 * epsilon);
                 }
             }
         }
@@ -212,6 +213,7 @@ RankFourTensor ComputeStrainEnergyNeoHookeanCompressible::compute_dPK2dE(const R
     // Return the rank-four tensor of derivatives
     return dPK2dE;
 }
+
 
 
 
