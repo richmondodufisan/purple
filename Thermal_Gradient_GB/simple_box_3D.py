@@ -5,13 +5,13 @@ gmsh.initialize()
 gmsh.model.add("Box Geometry")
 
 # Specify the dimensions of the rectangular box
-length = 200  # X-dimension
+length = 500  # X-dimension
 width = 50   # Y-dimension
 height = 50   # Z-dimension
 half_height = height / 2
 
 # Set mesh refinement size (optional)
-refinement = 2.0
+refinement = 5.0
 
 # Create points based on specified dimensions
 p1 = gmsh.model.occ.addPoint(0, 0, 0, refinement)
@@ -83,7 +83,7 @@ gmsh.model.mesh.generate(3)
 gmsh.write("simple_box_3D.msh")
 
 # Run the GUI to view the geometry (optional)
-# gmsh.fltk.run()
+gmsh.fltk.run()
 
 # Finalize Gmsh
 gmsh.finalize()

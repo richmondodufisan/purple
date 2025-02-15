@@ -1,4 +1,4 @@
-kappa_val = 9.00
+kappa_val = 130.00
 density_c_val = ${fparse 2630 * 741.79}
 
 

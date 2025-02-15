@@ -9,12 +9,12 @@
 #include <unsupported/Eigen/CXX11/Tensor>
 #include "ADMaterial.h"
 
-class ComputeStressNeoHookean : public ComputeLagrangianStressPK2
+class ComputeCustomPK2BasedStress : public ComputeLagrangianStressPK2
 {
 public:
   static InputParameters validParams();
 
-  ComputeStressNeoHookean(const InputParameters & parameters);
+  ComputeCustomPK2BasedStress(const InputParameters & parameters);
 
 protected:
 

@@ -1,11 +1,11 @@
-#include "ComputeStressNeoHookean.h"
+#include "ComputeCustomPK2BasedStress.h"
 #include <Eigen/Dense>
 #include <cmath>
 
-registerMooseObject("purpleApp", ComputeStressNeoHookean);
+registerMooseObject("purpleApp", ComputeCustomPK2BasedStress);
 
 InputParameters
-ComputeStressNeoHookean::validParams()
+ComputeCustomPK2BasedStress::validParams()
 {
   InputParameters params = ComputeLagrangianStressPK2::validParams();
   params.addClassDescription("send PK2 Stress for Neo Hookean Model to system");
@@ -13,7 +13,7 @@ ComputeStressNeoHookean::validParams()
   return params;
 }
 
-ComputeStressNeoHookean::ComputeStressNeoHookean(const InputParameters & parameters)
+ComputeCustomPK2BasedStress::ComputeCustomPK2BasedStress(const InputParameters & parameters)
   : ComputeLagrangianStressPK2(parameters),
 
 	/// Base name to prefix material properties
@@ -28,7 +28,7 @@ ComputeStressNeoHookean::ComputeStressNeoHookean(const InputParameters & paramet
 
 
 void
-ComputeStressNeoHookean::computeQpPK2Stress()
+ComputeCustomPK2BasedStress::computeQpPK2Stress()
 {
 	// _S and _C are the names of the stress and tangent in the class it inherits from
 	
