@@ -119,33 +119,24 @@ RankTwoTensor ComputeStrainEnergyNeoHookeanCompressible::compute_dWdC(const Real
             Real epsilon = chooseOptimalEpsilon(C(i, j));
             
             // Create copies of the tensor to perturb in both directions
-            RankTwoTensor C_plus2 = C;
-            C_plus2(i, j) += 2 * epsilon;
-
             RankTwoTensor C_plus = C;
             C_plus(i, j) += epsilon;
 
             RankTwoTensor C_minus = C;
             C_minus(i, j) -= epsilon;
 
-            RankTwoTensor C_minus2 = C;
-            C_minus2(i, j) -= 2 * epsilon;
-
             // Evaluate the scalar function at the perturbed tensors
-            Real W_plus2 = computeStrainEnergy(mu, lambda, C_plus2);
             Real W_plus = computeStrainEnergy(mu, lambda, C_plus);
             Real W_minus = computeStrainEnergy(mu, lambda, C_minus);
-            Real W_minus2 = computeStrainEnergy(mu, lambda, C_minus2);
 
-            // Compute the 6-point central difference derivative and store it in the dWdC tensor
-            dWdC(i, j) = (-W_plus2 + 8*W_plus - 8*W_minus + W_minus2) / (12 * epsilon);
+            // Compute the central difference derivative and store it in the dWdC tensor
+            dWdC(i, j) = (W_plus - W_minus) / (2 * epsilon);
         }
     }
 
     // Return the tensor of derivatives
     return dWdC;
 }
-
 
 
 
@@ -202,26 +193,18 @@ RankFourTensor ComputeStrainEnergyNeoHookeanCompressible::compute_dPK2dE(const R
                     Real epsilon = chooseOptimalEpsilon(E(k, l));
                     
                     // Create copies of E to perturb in both directions
-                    RankTwoTensor E_plus2 = E;
-                    E_plus2(k, l) += 2 * epsilon;
-
                     RankTwoTensor E_plus = E;
                     E_plus(k, l) += epsilon;
 
                     RankTwoTensor E_minus = E;
                     E_minus(k, l) -= epsilon;
 
-                    RankTwoTensor E_minus2 = E;
-                    E_minus2(k, l) -= 2 * epsilon;
-
                     // Evaluate the PK2 at the perturbed tensors
-                    RankTwoTensor PK2_plus2 = computePiolaKStress2(mu, lambda, C);
                     RankTwoTensor PK2_plus = computePiolaKStress2(mu, lambda, C);
                     RankTwoTensor PK2_minus = computePiolaKStress2(mu, lambda, C);
-                    RankTwoTensor PK2_minus2 = computePiolaKStress2(mu, lambda, C);
 
-                    // Compute the 6-point central difference derivative and store it in dPK2dE
-                    dPK2dE(i, j, k, l) = (-PK2_plus2(i, j) + 8*PK2_plus(i, j) - 8*PK2_minus(i, j) + PK2_minus2(i, j)) / (12 * epsilon);
+                    // Compute the central difference derivative and store it in dPK2dE
+                    dPK2dE(i, j, k, l) = (PK2_plus(i, j) - PK2_minus(i, j)) / (2 * epsilon);
                 }
             }
         }
@@ -241,13 +224,12 @@ RankFourTensor ComputeStrainEnergyNeoHookeanCompressible::compute_dPK2dE(const R
 
 
 
-
 // Function to dynamically choose epsilon
 Real ComputeStrainEnergyNeoHookeanCompressible::chooseOptimalEpsilon(const Real &value) 
 {
     // Real epsilon_machine = std::numeric_limits<Real>::epsilon();
 	
-	Real epsilon_machine = 1e-9;
+	Real epsilon_machine = 1e-12;
 	
     return std::max(epsilon_machine, std::sqrt(epsilon_machine) * std::abs(value));
 }

@@ -1,8 +1,10 @@
 #Global Parameters
 shear_modulus_val = 100000
-poissons_ratio_val = 0.3
+#poissons_ratio_val = 0.3
 
-lame_lambda_val = ${fparse (2 * poissons_ratio_val * shear_modulus_val)/(1 - (2 * poissons_ratio_val))}
+#lame_lambda_val = ${fparse (2 * poissons_ratio_val * shear_modulus_val)/(1 - (2 * poissons_ratio_val))}
+
+lame_lambda_val = 500000
 
 stretch_ratio = 5.0
 l_plate = 0.02
@@ -17,7 +19,7 @@ dt_val = ${fparse right_disp_val/100}
 []
 
 [Mesh]
-  second_order = true
+  #second_order = true
   
   [sample_mesh]
     type = FileMeshGenerator
@@ -27,11 +29,11 @@ dt_val = ${fparse right_disp_val/100}
 
 [Variables]
   [disp_x]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
   []
   [disp_y]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
   []
 []
@@ -119,7 +121,7 @@ dt_val = ${fparse right_disp_val/100}
 
 [Materials]
   [strain_energy]
-    type = ComputeStrainEnergyNeoHookeanCompressible
+    type = ComputeStressCompressibleNeoHookean
     mu = ${shear_modulus_val}
 	lambda = ${lame_lambda_val}
   []
@@ -129,9 +131,9 @@ dt_val = ${fparse right_disp_val/100}
 	displacements = 'disp_x disp_y'
   []
   
-  [stress]
-    type = ComputeCustomPK2BasedStress
-  []
+#  [stress]
+#    type = ComputeCustomPK2BasedStress
+#  []
 []
 
 [BCs]
@@ -170,14 +172,14 @@ dt_val = ${fparse right_disp_val/100}
 [Executioner]
   type = Transient
   solve_type = 'NEWTON'
-  #line_search = 'none'
+  line_search = 'none'
   
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
 
-  nl_rel_tol = 1e-12
-  nl_abs_tol = 1e-12
-  l_tol = 1e-8
+  nl_rel_tol = 1e-10
+  nl_abs_tol = 1e-10
+  l_tol = 1e-5
   l_max_its = 300
   nl_max_its = 20
   
