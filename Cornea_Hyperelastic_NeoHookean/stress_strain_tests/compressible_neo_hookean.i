@@ -130,10 +130,6 @@ dt_val = ${fparse right_disp_val/100}
     type = ComputeLagrangianStrain
 	displacements = 'disp_x disp_y'
   []
-  
-  [stress_linker]
-    type = ComputeCustomPK2BasedStress
-  []
 []
 
 [BCs]

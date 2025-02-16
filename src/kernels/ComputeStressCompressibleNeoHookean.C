@@ -7,45 +7,32 @@ registerMooseObject("purpleApp", ComputeStressCompressibleNeoHookean);
 InputParameters
 ComputeStressCompressibleNeoHookean::validParams()
 {
-  InputParameters params = ADMaterial::validParams();
+  InputParameters params = ComputeLagrangianStressPK2::validParams();
   params.addClassDescription("Collect material properties required and calculate the strain energy, stress, and tangent for an incompressible Neo-Hookean solid");
 
   params.addRequiredParam<Real>("mu", "the shear modulus");
   params.addRequiredParam<Real>("lambda", "the 1st Lame parameter");
-  params.addParam<std::string>("base_name", "", "Base name for material properties");
 
   return params;
 }
 
 ComputeStressCompressibleNeoHookean::ComputeStressCompressibleNeoHookean(const InputParameters & parameters)
-  : DerivativeMaterialInterface<Material>(parameters),
-
-	/// Base name to prefix material properties
-	_base_name(isParamValid("base_name") && !getParam<std::string>("base_name").empty() 
-                ? getParam<std::string>("base_name") + "_" 
-                : ""),
-
-
-    /// Get from user, name in input file is in quotes
+  : ComputeLagrangianStressPK2(parameters),
+  
+  
 	_user_mu(getParam<Real>("mu")),
-	_user_lambda(getParam<Real>("lambda")),
-	_deformation_gradient(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient")),
-	
-	
-	
-	_PK2(declareProperty<RankTwoTensor>(_base_name + "PK2")),
-	_dPK2_dE(declareProperty<RankFourTensor>(_base_name + "dPK2_dE"))
+	_user_lambda(getParam<Real>("lambda"))
 
 {
 }
 
 
+
 void
-ComputeStressCompressibleNeoHookean::computeQpProperties()
-{	
-	
-	// Deformation gradient
-	RankTwoTensor F = _deformation_gradient[_qp];
+ComputeStressCompressibleNeoHookean::computeQpPK2Stress()
+{ 
+   	// Deformation gradient
+	RankTwoTensor F = _F[_qp];
 	
 	// Right Cauchy-Green deformation tensor
 	RankTwoTensor C = F.transpose() * F;
@@ -57,56 +44,55 @@ ComputeStressCompressibleNeoHookean::computeQpProperties()
 	// That is, the PK2 Template Class
 	// These are the final submissions of stress and tangent operator
 	
-	_PK2[_qp] = computePiolaKStress2(_user_mu, _user_lambda, C);
+	_S[_qp] = computePiolaKStress2(_user_mu, _user_lambda, C, F);
 	
-	_dPK2_dE[_qp] = compute_dSdE(_user_mu, _user_lambda, C);
+	_C[_qp] = compute_dSdE(_user_mu, _user_lambda, C, F);
 }
 
 
-
-RankTwoTensor ComputeStressCompressibleNeoHookean::computePiolaKStress2(const Real &mu, const Real &lambda, const RankTwoTensor &C)
+RankTwoTensor ComputeStressCompressibleNeoHookean::computePiolaKStress2(const Real &mu, const Real &lambda, const RankTwoTensor &C, const RankTwoTensor &F)
 {	
 	// Jacobian
-	Real J = std::pow(C.det(), 1.0 / 2.0);
+	// Real J = std::pow(C.det(), 1.0 / 2.0);
+	Real J = F.det();
 	
 	RankTwoTensor C_inv = C.inverse();
 	
 	// Identity Tensor
-	RankTwoTensor I;
-	I.setToIdentity();
+	RankTwoTensor I = RankTwoTensor::Identity();
 	
-	RankTwoTensor S = (mu * (I - C_inv))  +  (lambda * (std::log(J)) * C_inv);
+	RankTwoTensor S = (mu * (I - C_inv))  +   (lambda * (std::log(J)) * C_inv);
 	
 	return S;
 }
  
 
 
-RankFourTensor ComputeStressCompressibleNeoHookean::compute_dSdE(const Real &mu, const Real &lambda, const RankTwoTensor &C)
+RankFourTensor ComputeStressCompressibleNeoHookean::compute_dSdE(const Real &mu, const Real &lambda, const RankTwoTensor &C, const RankTwoTensor &F)
 {	
 	// Jacobian
-	Real J = std::pow(C.det(), 1.0 / 2.0);
+	// Real J = std::pow(C.det(), 1.0 / 2.0);
+	Real J = F.det();
 	
 	RankTwoTensor C_inv = C.inverse();
 	
 	// Identity Tensor
-	RankTwoTensor I;
-	I.setToIdentity();
+	RankTwoTensor I = RankTwoTensor::Identity();
 	
 	RankFourTensor C_inv_C_inv = kroneckerProduct4thOrder(C_inv, C_inv);
 	
-	RankFourTensor first_term = ((2*mu) + lambda - (2 * lambda * (std::log(J)))) * C_inv_C_inv;
+	RankFourTensor first_term = (mu + (lambda/2.0) + (lambda * (std::log(J)))) * C_inv_C_inv;
 	
 	
 	
-	// RankFourTensor I_I = kroneckerProduct4thOrder(I, I);
+	RankFourTensor I_I = kroneckerProduct4thOrder(I, I);
 	
 	
 	
 	
-	// RankFourTensor dSdE = innerProduct4thOrder(first_term, I_I);
+	RankFourTensor dSdE = innerProduct4thOrder(first_term, I_I);
 	
-	return first_term;
+	return dSdE;
 }
 
 
