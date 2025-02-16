@@ -79,11 +79,11 @@ RankFourTensor ComputeStressCompressibleNeoHookean::compute_dSdE(const Real &mu,
 	{
         for (int j = 0; j < 3; ++j) 
 		{
-			for (int k = 0; k < 3; ++k) 
+			for (int p = 0; p < 3; ++p) 
 			{
-				for (int l = 0; l < 3; ++l) 
+				for (int q = 0; q < 3; ++q) 
 				{
-					dSdE(i, j, k, l) = (((mu - (lambda * std::log(J))) * C_inv(i,k) * C_inv(l,j)) + ((lambda/2.0) * C_inv(i, j) * C_inv(k,l))) * 2.0;
+					dSdE(i, j, p, q) = (((mu - (lambda * std::log(J))) * C_inv(i,p) * C_inv(q,j)) + ((lambda/2.0) * C_inv(i, j) * C_inv(p,q))) * 2.0;
 				}
 			}
         }
