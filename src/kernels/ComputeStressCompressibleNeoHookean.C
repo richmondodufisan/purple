@@ -34,9 +34,9 @@ ComputeStressCompressibleNeoHookean::computeQpPK2Stress()
    	// Deformation gradient
 	RankTwoTensor F = _F[_qp];
 	
-	// Right Cauchy-Green deformation tensor
 	RankTwoTensor C = F.transpose() * F;
-
+	
+	RankTwoTensor C_inv = C.inverse();
 
 
 	
@@ -44,19 +44,16 @@ ComputeStressCompressibleNeoHookean::computeQpPK2Stress()
 	// That is, the PK2 Template Class
 	// These are the final submissions of stress and tangent operator
 	
-	_S[_qp] = computePiolaKStress2(_user_mu, _user_lambda, C, F);
+	_S[_qp] = computePiolaKStress2(_user_mu, _user_lambda, C_inv, F);
 	
-	_C[_qp] = compute_dSdE(_user_mu, _user_lambda, C, F);
+	_C[_qp] = compute_dSdE(_user_mu, _user_lambda, C_inv, F);
 }
 
 
-RankTwoTensor ComputeStressCompressibleNeoHookean::computePiolaKStress2(const Real &mu, const Real &lambda, const RankTwoTensor &C, const RankTwoTensor &F)
+RankTwoTensor ComputeStressCompressibleNeoHookean::computePiolaKStress2(const Real &mu, const Real &lambda, const RankTwoTensor &C_inv, const RankTwoTensor &F)
 {	
 	// Jacobian
-	// Real J = std::pow(C.det(), 1.0 / 2.0);
 	Real J = F.det();
-	
-	RankTwoTensor C_inv = C.inverse();
 	
 	// Identity Tensor
 	RankTwoTensor I = RankTwoTensor::Identity();
@@ -68,89 +65,29 @@ RankTwoTensor ComputeStressCompressibleNeoHookean::computePiolaKStress2(const Re
  
 
 
-RankFourTensor ComputeStressCompressibleNeoHookean::compute_dSdE(const Real &mu, const Real &lambda, const RankTwoTensor &C, const RankTwoTensor &F)
+RankFourTensor ComputeStressCompressibleNeoHookean::compute_dSdE(const Real &mu, const Real &lambda, const RankTwoTensor &C_inv, const RankTwoTensor &F)
 {	
 	// Jacobian
-	// Real J = std::pow(C.det(), 1.0 / 2.0);
 	Real J = F.det();
-	
-	RankTwoTensor C_inv = C.inverse();
 	
 	// Identity Tensor
 	RankTwoTensor I = RankTwoTensor::Identity();
 	
-	RankFourTensor C_inv_C_inv = kroneckerProduct4thOrder(C_inv, C_inv);
+	RankFourTensor dSdE;
 	
-	RankFourTensor first_term = (mu + (lambda/2.0) + (lambda * (std::log(J)))) * C_inv_C_inv;
-	
-	
-	
-	RankFourTensor I_I = kroneckerProduct4thOrder(I, I);
-	
-	
-	
-	
-	RankFourTensor dSdE = innerProduct4thOrder(first_term, I_I);
+    for (int i = 0; i < 3; ++i) 
+	{
+        for (int j = 0; j < 3; ++j) 
+		{
+			for (int k = 0; k < 3; ++k) 
+			{
+				for (int l = 0; l < 3; ++l) 
+				{
+					dSdE(i, j, k, l) = (((mu - (lambda * std::log(J))) * C_inv(i,k) * C_inv(l,j)) + ((lambda/2.0) * C_inv(i, j) * C_inv(k,l))) * 2.0;
+				}
+			}
+        }
+    }
 	
 	return dSdE;
-}
-
-
-
-
-
-
-
-
-RankFourTensor ComputeStressCompressibleNeoHookean::innerProduct4thOrder(const RankFourTensor &A, const RankFourTensor &B)
-{
-    // Initialize the rank-four tensor for the result
-    RankFourTensor C;
-    
-    // Loop through the indices of the resulting tensor C
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            for (int p = 0; p < 3; ++p) {
-                for (int q = 0; q < 3; ++q) {
-                    // Initialize the sum to zero for each component of C
-                    C(i, j, p, q) = 0.0;
-
-                    // Perform the inner product sum over the shared indices k and l
-                    for (int k = 0; k < 3; ++k) {
-                        for (int l = 0; l < 3; ++l) {
-                            C(i, j, p, q) += A(i, j, k, l) * B(k, l, p, q);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    // Return the resulting fourth-order tensor C
-    return C;
-}
-
-
-
-
-
-RankFourTensor ComputeStressCompressibleNeoHookean::kroneckerProduct4thOrder(const RankTwoTensor &A, const RankTwoTensor &B)
-{
-    // Initialize the rank-four tensor for the result
-    RankFourTensor C;
-    
-    // Loop through the indices of the tensors A and B
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            for (int k = 0; k < 3; ++k) {
-                for (int l = 0; l < 3; ++l) {
-                    // Compute the Kronecker product by multiplying the respective components of A and B
-                    C(i, j, k, l) = A(i, j) * B(k, l);
-                }
-            }
-        }
-    }
-    
-    // Return the resulting fourth-order tensor
-    return C;
 }

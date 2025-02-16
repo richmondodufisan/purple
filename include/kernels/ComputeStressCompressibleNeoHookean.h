@@ -13,11 +13,8 @@ protected:
   virtual void computeQpPK2Stress();
   
   
-  RankTwoTensor computePiolaKStress2(const Real &mu, const Real &lambda, const RankTwoTensor &C, const RankTwoTensor &F);
-  RankFourTensor compute_dSdE(const Real &mu, const Real &lambda, const RankTwoTensor &C, const RankTwoTensor &F);
-  
-  RankFourTensor innerProduct4thOrder(const RankFourTensor &A, const RankFourTensor &B);
-  RankFourTensor kroneckerProduct4thOrder(const RankTwoTensor &A, const RankTwoTensor &B);
+  RankTwoTensor computePiolaKStress2(const Real &mu, const Real &lambda, const RankTwoTensor &C_inv, const RankTwoTensor &F);
+  RankFourTensor compute_dSdE(const Real &mu, const Real &lambda, const RankTwoTensor &C_inv, const RankTwoTensor &F);
 
 protected:
   const Real _user_mu;
