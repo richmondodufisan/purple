@@ -120,7 +120,7 @@ dt_val = ${fparse right_disp_val/100}
 []
 
 [Materials]
-  [strain_energy]
+  [stress]
     type = ComputeStressCompressibleNeoHookean
     mu = ${shear_modulus_val}
 	lambda = ${lame_lambda_val}
@@ -131,9 +131,9 @@ dt_val = ${fparse right_disp_val/100}
 	displacements = 'disp_x disp_y'
   []
   
-#  [stress]
-#    type = ComputeCustomPK2BasedStress
-#  []
+  [stress_linker]
+    type = ComputeCustomPK2BasedStress
+  []
 []
 
 [BCs]

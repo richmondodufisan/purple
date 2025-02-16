@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ComputeLagrangianStressPK2.h"
+#include "DerivativeMaterialInterface.h"
 #include "RankTwoTensor.h"
 #include "RankFourTensor.h"
 #include "RankTwoTensor.h"
@@ -9,7 +9,7 @@
 #include <unsupported/Eigen/CXX11/Tensor>
 #include "ADMaterial.h"
 
-class ComputeStressCompressibleNeoHookean : public ComputeLagrangianStressPK2
+class ComputeStressCompressibleNeoHookean : public DerivativeMaterialInterface<ADMaterial>
 {
 public:
   static InputParameters validParams();
@@ -18,7 +18,9 @@ public:
 
 protected:
 
-  virtual void computeQpPK2Stress() override;
+  // Methods
+  virtual void computeQpProperties() override;
+
   
   // Base name of the material system
   const std::string _base_name;
@@ -34,4 +36,10 @@ protected:
   
   const Real _user_mu;
   const Real _user_lambda;
+  
+  const MaterialProperty<RankTwoTensor> & _deformation_gradient;
+  
+  
+  MaterialProperty<RankTwoTensor> & _PK2;
+  MaterialProperty<RankFourTensor> & _dPK2_dE;
 };
