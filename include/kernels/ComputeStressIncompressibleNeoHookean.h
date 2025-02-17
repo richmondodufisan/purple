@@ -13,12 +13,11 @@ protected:
   virtual void computeQpPK2Stress();
   
   
-  RankTwoTensor computePiolaKStress2(const Real &mu, const Real &lambda, const RankTwoTensor &C, const RankTwoTensor &F, const Real &p);
-  RankFourTensor compute_dSdE(const Real &mu, const Real &lambda, const RankTwoTensor &C, const RankTwoTensor &F, const Real &p);
+  RankTwoTensor computePiolaKStress2(const Real &mu, const RankTwoTensor &C, const RankTwoTensor &F, const Real &p);
+  RankFourTensor compute_dSdE(const Real &mu, const RankTwoTensor &C, const RankTwoTensor &F, const Real &p);
 
 protected:
   const Real _user_mu;
-  const Real _user_lambda;
   
   const VariableValue & _pressure;
 };

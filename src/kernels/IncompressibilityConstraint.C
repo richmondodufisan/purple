@@ -23,7 +23,8 @@ IncompressibilityConstraint::validParams()
 
   params.addParam<std::string>("base_name", "Material property base name");
   
-  params.addRequiredCoupledVar("lagrange_multiplier", "the lagrangian multiplier for pressure stabilization");
+  params.addRequiredParam<Real>("kappa", "stabilizing term");
+  
 
   return params;
 }
@@ -36,7 +37,7 @@ IncompressibilityConstraint::IncompressibilityConstraint(const InputParameters &
 
     _deformation_gradient(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient")),
 	
-	_lagrange_multiplier(coupledScalarValue("lagrange_multiplier"))
+	_user_kappa(getParam<Real>("kappa"))
 {
 }
 
@@ -47,7 +48,7 @@ IncompressibilityConstraint::computeQpResidual()
   
   auto J = F.det();
   
-  auto residual = (1 - J + _lagrange_multiplier[_qp]) * _test[_i][_qp];
+  auto residual = ((1 - J) + (_u[_qp] * _user_kappa)) * _test[_i][_qp];
   
   return  residual;
 }

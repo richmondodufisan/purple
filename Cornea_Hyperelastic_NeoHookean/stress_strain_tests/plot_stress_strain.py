@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load the CSV file
-filename = 'nearly_incompressible_neo_hookean_out.csv'  # Replace with your CSV file path
+filename = 'incompressible_neo_hookean_augmented_out.csv'  # Replace with your CSV file path
 data = pd.read_csv(filename)
 
 # Extract displacement (2nd column) and force (3rd column)
