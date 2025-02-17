@@ -122,7 +122,7 @@ dt_val = ${fparse right_disp_val/100}
   [stress]
     type = ComputeStressNearlyIncompressibleNeoHookean
     mu = ${shear_modulus_val}
-	kappa = 10e3
+	kappa = 10e2
   []
   
   [strain]
