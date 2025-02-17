@@ -1,10 +1,8 @@
 #Global Parameters
 shear_modulus_val = 100000
-#poissons_ratio_val = 0.3
+#poissons_ratio_val = 0.49
 
-#lame_lambda_val = ${fparse (2 * poissons_ratio_val * shear_modulus_val)/(1 - (2 * poissons_ratio_val))}
-
-lame_lambda_val = 500000
+#bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
 
 stretch_ratio = 5.0
 l_plate = 0.02
@@ -15,11 +13,11 @@ dt_val = ${fparse right_disp_val/100}
 #observation_point = ${fparse l_plate/10}
 
 [GlobalParams]
-  use_displaced_mesh = true
+  large_kinematics = true
 []
 
 [Mesh]
-  #second_order = true
+  second_order = true
   
   [sample_mesh]
     type = FileMeshGenerator
@@ -38,16 +36,17 @@ dt_val = ${fparse right_disp_val/100}
   []
 []
 
+
 [Kernels]
   [div_sig_x]
-    type = ADStressDivergenceTensors
+    type = TotalLagrangianStressDivergence
 	component = 0
 	displacements = 'disp_x disp_y'
     variable = disp_x
   []
   
   [div_sig_y]
-    type = ADStressDivergenceTensors
+    type = TotalLagrangianStressDivergence
 	component = 1
 	displacements = 'disp_x disp_y'
     variable = disp_y
@@ -76,29 +75,29 @@ dt_val = ${fparse right_disp_val/100}
 
 [AuxKernels]
   [stress_xx]
-    type = ADRankTwoAux
-    rank_two_tensor = stress
+    type = RankTwoAux
+    rank_two_tensor = cauchy_stress
     variable = stress_xx
     index_i = 0
     index_j = 0
   []
   [stress_yy]
-    type = ADRankTwoAux
-    rank_two_tensor = stress
+    type = RankTwoAux
+    rank_two_tensor = cauchy_stress
     variable = stress_yy
     index_i = 1
     index_j = 1
   []
 
   [strain_xx]
-    type = ADRankTwoAux
+    type = RankTwoAux
     rank_two_tensor = total_strain
     variable = strain_xx
     index_i = 0
     index_j = 0
   []
   [strain_yy]
-    type = ADRankTwoAux
+    type = RankTwoAux
     rank_two_tensor = total_strain
     variable = strain_yy
     index_i = 1
@@ -121,13 +120,13 @@ dt_val = ${fparse right_disp_val/100}
 
 [Materials]
   [stress]
-    type = ADComputeStressCompressibleNeoHookean
+    type = ComputeStressNearlyIncompressibleNeoHookean
     mu = ${shear_modulus_val}
-	lambda = ${lame_lambda_val}
+	kappa = 10e3
   []
   
   [strain]
-    type = ADComputeFiniteStrain
+    type = ComputeLagrangianStrain
 	displacements = 'disp_x disp_y'
   []
 []
@@ -173,8 +172,8 @@ dt_val = ${fparse right_disp_val/100}
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
 
-  nl_rel_tol = 1e-10
-  nl_abs_tol = 1e-10
+  nl_rel_tol = 1e-8
+  nl_abs_tol = 1e-8
   l_tol = 1e-5
   l_max_its = 300
   nl_max_its = 20
