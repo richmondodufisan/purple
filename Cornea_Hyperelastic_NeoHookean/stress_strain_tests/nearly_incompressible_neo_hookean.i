@@ -1,8 +1,8 @@
 #Global Parameters
 shear_modulus_val = 100000
-#poissons_ratio_val = 0.49
+poissons_ratio_val = 0.49
 
-#bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
+bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
 
 stretch_ratio = 5.0
 l_plate = 0.02
@@ -122,7 +122,7 @@ dt_val = ${fparse right_disp_val/100}
   [stress]
     type = ComputeStressNearlyIncompressibleNeoHookean
     mu = ${shear_modulus_val}
-	kappa = 10e2
+	kappa = ${bulk_modulus_val}
   []
   
   [strain]

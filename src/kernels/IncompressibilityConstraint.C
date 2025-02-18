@@ -48,7 +48,7 @@ IncompressibilityConstraint::computeQpResidual()
   
   auto J = F.det();
   
-  auto residual = ((1 - J) + (_u[_qp] * _user_kappa)) * _test[_i][_qp];
+  auto residual = ((J - 1) - (_u[_qp] * _user_kappa)) * _test[_i][_qp];
   
   return  residual;
 }
