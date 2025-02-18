@@ -1,10 +1,8 @@
 #Global Parameters
 shear_modulus_val = 100000
-#poissons_ratio_val = 0.3
+poissons_ratio_val = 0.2
 
-#lame_lambda_val = ${fparse (2 * poissons_ratio_val * shear_modulus_val)/(1 - (2 * poissons_ratio_val))}
-
-lame_lambda_val = 500000
+lame_lambda_val = ${fparse (2 * poissons_ratio_val * shear_modulus_val)/(1 - (2 * poissons_ratio_val))}
 
 stretch_ratio = 5.0
 l_plate = 0.02

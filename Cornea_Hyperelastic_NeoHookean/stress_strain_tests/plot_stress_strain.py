@@ -1,19 +1,31 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Load the CSV file
-filename = 'nearly_incompressible_neo_hookean_out.csv'  # Replace with your CSV file path
-data = pd.read_csv(filename)
+# Load the CSV files
+filename1 = 'nearly_incompressible_neo_hookean_out.csv'  # Replace with your CSV file path
+filename2 = 'compressible_neo_hookean_out.csv'
 
-# Extract displacement (2nd column) and force (3rd column)
-strain11 = data.iloc[:, 1]  # 2nd column
-stress11 = data.iloc[:, 2]         # 3rd column
+data1 = pd.read_csv(filename1)
+data2 = pd.read_csv(filename2)
+
+# Extract strain and stress data
+strain11_1 = data1.iloc[:, 1]  # 2nd column
+stress11_1 = data1.iloc[:, 2]  # 3rd column
+
+strain11_2 = data2.iloc[:, 1]  # 2nd column
+stress11_2 = data2.iloc[:, 2]  # 3rd column
 
 # Plot the data
 plt.figure(figsize=(8, 6))
-plt.plot(strain11, stress11, marker='o', linestyle='-')
+plt.plot(strain11_1, stress11_1, marker='o', linestyle='-', label='Nearly Incompressible Neo-Hookean')
+plt.plot(strain11_2, stress11_2, marker='s', linestyle='--', label='Compressible Neo-Hookean')
+
+# Customize plot
 plt.title('Stress xx vs Strain xx')
 plt.xlabel('Strain xx')
 plt.ylabel('Stress xx')
+plt.legend()
 plt.grid(True)
+
+# Show the plot
 plt.show()
