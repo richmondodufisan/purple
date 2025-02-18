@@ -21,7 +21,7 @@ dt_val = ${fparse right_disp_val/100}
   
   [sample_mesh]
     type = FileMeshGenerator
-    file = cornea_rectangle.msh
+    file = rectangular_plate.msh
   []
 []
 
@@ -65,13 +65,18 @@ dt_val = ${fparse right_disp_val/100}
     type = IncompressibilityConstraint
     variable = pressure
   []
+  [sk_lm]
+    type = ScalarLagrangeMultiplier
+    variable = pressure
+    lambda = lambda
+  []
 []
 
 [ScalarKernels]
   [constraint]
     type = AverageValueConstraint
     variable = lambda
-    pp_name = total_pressure
+    pp_name = pressure_integral
     value = 0.0
   []
 []
@@ -150,16 +155,16 @@ dt_val = ${fparse right_disp_val/100}
     variable = stress_xx
     point = '${l_plate} 0.001 0'
   []
-  [total_pressure]
+  [pressure_integral]
     type = ElementIntegralVariablePostprocessor
     variable = pressure
-	execute_on = linear
+	execute_on = timestep_begin
   []
 []
 
 [Materials]
   [stress]
-    type = ComputeStressIncompressibleNeoHookeanAugmented
+    type = ComputeStressIncompressibleNeoHookean
     mu = ${shear_modulus_val}
 	
 	pressure = pressure
@@ -202,6 +207,24 @@ dt_val = ${fparse right_disp_val/100}
     value = 0
 	preset = false
   []
+  
+  
+  [pressure]
+    type = ADDirichletBC
+    variable = pressure
+    boundary = 'pressure_bc_point'
+    value = 0
+	preset = false
+  []
+[]
+
+
+[Preconditioning]
+  [SMP]
+    type = SMP
+    full = true
+    solve_type = 'NEWTON'
+  []
 []
 
 [Executioner]
@@ -209,18 +232,14 @@ dt_val = ${fparse right_disp_val/100}
   solve_type = 'NEWTON'
   line_search = 'none'
   
-  #petsc_options_iname = '-pc_type'
-  #petsc_options_value = 'lu'
-  
-  petsc_options_iname = '-pc_type -ksp_type'
-  petsc_options_value = 'gamg cg'
-
+  petsc_options_iname = '-pc_type'
+  petsc_options_value = 'lu'
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8
   l_tol = 1e-5
   l_max_its = 300
-  nl_max_its = 20
+  nl_max_its = 50
   
   automatic_scaling = true
   

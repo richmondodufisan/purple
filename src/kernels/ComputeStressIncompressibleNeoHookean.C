@@ -11,6 +11,7 @@ ComputeStressIncompressibleNeoHookean::validParams()
   params.addClassDescription("Collect material properties required and calculate the strain energy, stress, and tangent for an incompressible Neo-Hookean solid");
 
   params.addRequiredParam<Real>("mu", "the shear modulus");
+  // params.addRequiredParam<Real>("kappa", "the bulk modulus");
   
   params.addRequiredCoupledVar("pressure", "the pressure variable");
 
@@ -22,6 +23,7 @@ ComputeStressIncompressibleNeoHookean::ComputeStressIncompressibleNeoHookean(con
   
   
 	_user_mu(getParam<Real>("mu")),
+	// _user_kappa(getParam<Real>("kappa")),
 	
 	_pressure(coupledValue("pressure"))
 
@@ -68,7 +70,7 @@ RankTwoTensor ComputeStressIncompressibleNeoHookean::computePiolaKStress2(const 
 	
 	Real J_min_23 = std::pow(J, (-2.0/3.0));
 	
-	RankTwoTensor S = (mu * J_min_23 * (I  -   ((1.0/3.0) * I_1) * C_inv)) -  (p * J * C_inv);
+	RankTwoTensor S = (mu * J_min_23 * (I  -   ((1.0/3.0) * I_1) * C_inv)) + (p * C_inv);
 	
 	return S;
 }
@@ -109,11 +111,12 @@ RankFourTensor ComputeStressIncompressibleNeoHookean::compute_dSdE(const Real &m
 					
 					Real term4 = -(mu/3.0) * J_min_23 * C_inv(k, l) * I(i, j);
 					
-					Real term5 = p * J * C_inv(i, k) * C_inv(l, j);
 					
-					Real term6 = -((p * J)/2.0) * C_inv(i, j) * C_inv(k, l);
+					// Incompressibility
+					Real term5 = -p * C_inv(i, k) * C_inv(l, j);			
 					
-					dSdE(i, j, k, l) = 2 * (term1 + term2 + term3 + term4 + term5 + term6);
+					
+					dSdE(i, j, k, l) = 2 * (term1 + term2 + term3 + term4 + term5);
 				}
 			}
         }

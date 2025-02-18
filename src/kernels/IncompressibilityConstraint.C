@@ -23,8 +23,6 @@ IncompressibilityConstraint::validParams()
 
   params.addParam<std::string>("base_name", "Material property base name");
   
-  // params.addRequiredParam<Real>("kappa", "stabilizing term");
-  
 
   return params;
 }
@@ -36,8 +34,6 @@ IncompressibilityConstraint::IncompressibilityConstraint(const InputParameters &
     _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
 
     _deformation_gradient(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient"))
-	
-	// _user_kappa(getParam<Real>("kappa"))
 {
 }
 

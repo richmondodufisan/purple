@@ -5,25 +5,24 @@ import sys
 gmsh.initialize()
 gmsh.model.add("cornea_rectangle")
 
-newMeshName = "cornea_rectangle.msh"
+newMeshName = "rectangular_plate.msh"
 
 # quad elements
-gmsh.option.setNumber("Mesh.Algorithm", 8);
+gmsh.option.setNumber("Mesh.Algorithm", 8)
 
 ylen = 0.001
-
 xlen = 30 * ylen
-
-mesh_refine = 0.00025/4
+mesh_refine = 0.00025 / 4
 
 # Adding points 
 p1 = gmsh.model.occ.addPoint(0, 0, 0, mesh_refine)
 p2 = gmsh.model.occ.addPoint(xlen, 0, 0, mesh_refine)
 p3 = gmsh.model.occ.addPoint(xlen, ylen, 0, mesh_refine)
 p4 = gmsh.model.occ.addPoint(0, ylen, 0, mesh_refine)
-p5 = gmsh.model.occ.addPoint((xlen/10), ylen, 0, mesh_refine)
+p5 = gmsh.model.occ.addPoint(xlen / 10, ylen, 0, mesh_refine)
 
-p6 = gmsh.model.occ.addPoint(xlen/2, ylen/2, 0, mesh_refine)
+# Pressure boundary condition point (embedding required)
+p6 = gmsh.model.occ.addPoint(xlen / 2, ylen / 2, 0, mesh_refine)
 
 # Adding lines 
 c1 = gmsh.model.occ.addLine(p4, p1)
@@ -38,14 +37,17 @@ s1 = gmsh.model.occ.addPlaneSurface([cloop1])
 
 gmsh.model.occ.synchronize()
 
+# Embed the pressure BC point into the surface mesh
+gmsh.model.mesh.embed(0, [p6], 2, s1)
+
 # Add physical groups
-gmsh.model.addPhysicalGroup(1, [c4, c5], name = "top")
-gmsh.model.addPhysicalGroup(1, [c2], name = "bottom")
-gmsh.model.addPhysicalGroup(1, [c1], name = "left")
-gmsh.model.addPhysicalGroup(1, [c3], name = "right")
-gmsh.model.addPhysicalGroup(0, [p4], name = "loading_point")
-gmsh.model.addPhysicalGroup(0, [p5], name = "data_point")
-gmsh.model.addPhysicalGroup(0, [p1], name = "pressure_bc_point")
+gmsh.model.addPhysicalGroup(1, [c4, c5], name="top")
+gmsh.model.addPhysicalGroup(1, [c2], name="bottom")
+gmsh.model.addPhysicalGroup(1, [c1], name="left")
+gmsh.model.addPhysicalGroup(1, [c3], name="right")
+gmsh.model.addPhysicalGroup(0, [p4], name="loading_point")
+gmsh.model.addPhysicalGroup(0, [p5], name="data_point")
+gmsh.model.addPhysicalGroup(0, [p6], name="pressure_bc_point")
 
 gmsh.option.setNumber("Mesh.RecombineAll", 1)
 gmsh.model.occ.synchronize()
@@ -56,7 +58,6 @@ gmsh.model.mesh.generate(2)
 # gmsh.fltk.run()
 
 gmsh.option.setNumber("Mesh.SaveAll", 1)
-
 gmsh.write(newMeshName)
 
-
+gmsh.finalize()
