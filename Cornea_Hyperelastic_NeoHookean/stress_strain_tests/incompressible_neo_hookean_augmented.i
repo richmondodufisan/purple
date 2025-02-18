@@ -1,8 +1,8 @@
 #Global Parameters
 shear_modulus_val = 100000
-poissons_ratio_val = 0.49
+#poissons_ratio_val = 0.49
 
-bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
+#bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
 
 stretch_ratio = 5.0
 l_plate = 0.02
@@ -21,7 +21,7 @@ dt_val = ${fparse right_disp_val/100}
   
   [sample_mesh]
     type = FileMeshGenerator
-    file = rectangular_plate.msh
+    file = cornea_rectangle.msh
   []
 []
 
@@ -37,6 +37,11 @@ dt_val = ${fparse right_disp_val/100}
   [pressure]
     order = FIRST
     family = LAGRANGE
+  []
+  
+  [lambda]
+    family = SCALAR
+    order = FIRST
   []
 []
 
@@ -59,8 +64,15 @@ dt_val = ${fparse right_disp_val/100}
   [incompressibility]
     type = IncompressibilityConstraint
     variable = pressure
-	
-	kappa = ${bulk_modulus_val}
+  []
+[]
+
+[ScalarKernels]
+  [constraint]
+    type = AverageValueConstraint
+    variable = lambda
+    pp_name = total_pressure
+    value = 0.0
   []
 []
 
@@ -82,9 +94,20 @@ dt_val = ${fparse right_disp_val/100}
     order = CONSTANT
     family = MONOMIAL
   []
+  
+  [j]
+    order = CONSTANT
+    family = MONOMIAL
+  []
 []
 
 [AuxKernels]
+  [jacobian]
+    type = RankTwoScalarAux
+    rank_two_tensor = deformation_gradient
+    variable = j
+	scalar_type = ThirdInvariant
+  []
   [stress_xx]
     type = RankTwoAux
     rank_two_tensor = cauchy_stress
@@ -127,11 +150,16 @@ dt_val = ${fparse right_disp_val/100}
     variable = stress_xx
     point = '${l_plate} 0.001 0'
   []
+  [total_pressure]
+    type = ElementIntegralVariablePostprocessor
+    variable = pressure
+	execute_on = linear
+  []
 []
 
 [Materials]
   [stress]
-    type = ComputeStressIncompressibleNeoHookean
+    type = ComputeStressIncompressibleNeoHookeanAugmented
     mu = ${shear_modulus_val}
 	
 	pressure = pressure
@@ -181,8 +209,12 @@ dt_val = ${fparse right_disp_val/100}
   solve_type = 'NEWTON'
   line_search = 'none'
   
-  petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
+  #petsc_options_iname = '-pc_type'
+  #petsc_options_value = 'lu'
+  
+  petsc_options_iname = '-pc_type -ksp_type'
+  petsc_options_value = 'gamg cg'
+
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8

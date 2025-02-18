@@ -23,5 +23,5 @@ class IncompressibilityConstraint : public DerivativeMaterialInterface<ADKernel>
 
 	const MaterialProperty<RankTwoTensor> & _deformation_gradient;
 	
-    const Real _user_kappa;
+    // const Real _user_kappa;
 };
