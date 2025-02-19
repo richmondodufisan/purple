@@ -46,5 +46,7 @@ IncompressibilityConstraint::computeQpResidual()
   
   auto residual = std::log(J) * _test[_i][_qp];
   
+  // std::cout << "Initial Pressure at qp " << _qp << " is " << _u[_qp] << std::endl;
+  
   return  residual;
 }

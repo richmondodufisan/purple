@@ -53,6 +53,8 @@ ComputeStressIncompressibleNeoHookean::computeQpPK2Stress()
 	_S[_qp] = computePiolaKStress2(_user_mu, C, F, p);
 	
 	_C[_qp] = compute_dSdE(_user_mu, C, F, p);
+	
+	// std::cout << "Pressure at qp " << _qp << " is " << p << std::endl;
 }
 
 
@@ -71,6 +73,10 @@ RankTwoTensor ComputeStressIncompressibleNeoHookean::computePiolaKStress2(const 
 	Real J_min_23 = std::pow(J, (-2.0/3.0));
 	
 	RankTwoTensor S = (mu * J_min_23 * (I  -   ((1.0/3.0) * I_1) * C_inv)) + (p * C_inv);
+	
+	// std::cout << "J = " << J << ", p = " << p << ", C_inv = " << C_inv << std::endl;
+	
+	// std::cout << "Initial Pressure at qp " << _qp << " is " << p << std::endl;
 	
 	return S;
 }
