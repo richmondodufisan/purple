@@ -11,7 +11,6 @@ ComputeStressIncompressibleNeoHookean::validParams()
   params.addClassDescription("Collect material properties required and calculate the strain energy, stress, and tangent for an incompressible Neo-Hookean solid");
 
   params.addRequiredParam<Real>("mu", "the shear modulus");
-  // params.addRequiredParam<Real>("kappa", "the bulk modulus");
   
   params.addRequiredCoupledVar("pressure", "the pressure variable");
 
@@ -23,7 +22,6 @@ ComputeStressIncompressibleNeoHookean::ComputeStressIncompressibleNeoHookean(con
   
   
 	_user_mu(getParam<Real>("mu")),
-	// _user_kappa(getParam<Real>("kappa")),
 	
 	_pressure(coupledValue("pressure"))
 
@@ -54,7 +52,6 @@ ComputeStressIncompressibleNeoHookean::computeQpPK2Stress()
 	
 	_C[_qp] = compute_dSdE(_user_mu, C, F, p);
 	
-	// std::cout << "Pressure at qp " << _qp << " is " << p << std::endl;
 }
 
 
@@ -73,10 +70,6 @@ RankTwoTensor ComputeStressIncompressibleNeoHookean::computePiolaKStress2(const 
 	Real J_min_23 = std::pow(J, (-2.0/3.0));
 	
 	RankTwoTensor S = (mu * J_min_23 * (I  -   ((1.0/3.0) * I_1) * C_inv)) + (p * C_inv);
-	
-	// std::cout << "J = " << J << ", p = " << p << ", C_inv = " << C_inv << std::endl;
-	
-	// std::cout << "Initial Pressure at qp " << _qp << " is " << p << std::endl;
 	
 	return S;
 }

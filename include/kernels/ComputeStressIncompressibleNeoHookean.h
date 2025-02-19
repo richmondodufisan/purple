@@ -18,7 +18,6 @@ protected:
 
 protected:
   const Real _user_mu;
-  // const Real _user_kappa;
   
   const VariableValue & _pressure;
 };

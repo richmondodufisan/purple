@@ -158,7 +158,7 @@ dt_val = ${fparse right_disp_val/100}
   [pressure_integral]
     type = ElementIntegralVariablePostprocessor
     variable = pressure
-	execute_on = timestep_begin
+	execute_on = 'initial timestep_begin linear'
   []
 []
 
@@ -173,7 +173,7 @@ dt_val = ${fparse right_disp_val/100}
   [strain]
     type = ComputeLagrangianStrain
 	displacements = 'disp_x disp_y'
-  []
+  []	
 []
 
 [BCs]
@@ -206,14 +206,6 @@ dt_val = ${fparse right_disp_val/100}
     boundary = 'right'
     value = 0
 	preset = false
-  []
-[]
-
-[ICs]
-  [initial_pressure]
-    type = ConstantIC
-    variable = pressure
-    value = 1.0
   []
 []
 

@@ -39,11 +39,6 @@ dt_val = ${fparse right_disp_val/100}
     order = FIRST
     family = LAGRANGE
   []
-  
-  [lambda]
-    family = SCALAR
-    order = FIRST
-  []
 []
 
 
@@ -65,20 +60,6 @@ dt_val = ${fparse right_disp_val/100}
   [incompressibility]
     type = IncompressibilityConstraint
     variable = pressure
-  []
-  [sk_lm]
-    type = ScalarLagrangeMultiplier
-    variable = pressure
-    lambda = lambda
-  []
-[]
-
-[ScalarKernels]
-  [constraint]
-    type = AverageValueConstraint
-    variable = lambda
-    pp_name = pressure_integral
-    value = 0.0
   []
 []
 
@@ -169,8 +150,7 @@ dt_val = ${fparse right_disp_val/100}
     mu = ${shear_modulus_val}
 	
 	pressure = pressure
-  []
-  
+  [] 
   [strain]
     type = ComputeLagrangianStrain
 	displacements = 'disp_x disp_y'

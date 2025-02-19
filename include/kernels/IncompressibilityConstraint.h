@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ADKernel.h"
+#include "Kernel.h"
 #include "DerivativeMaterialInterface.h"
 #include "RankTwoTensor.h"
 #include "RankFourTensor.h"
@@ -9,14 +9,14 @@
 #include "Eigen/Dense"
 #include <unsupported/Eigen/CXX11/Tensor>
 
-class IncompressibilityConstraint : public DerivativeMaterialInterface<ADKernel>
+class IncompressibilityConstraint : public DerivativeMaterialInterface<Kernel>
 {
   public:
     static InputParameters validParams();
     IncompressibilityConstraint(const InputParameters & parameters);
 
   protected:
-    virtual ADReal computeQpResidual() override;
+    virtual Real computeQpResidual() override;
 
     /// Base name of the material system that this kernel applies to
     const std::string _base_name;

@@ -1,20 +1,17 @@
 #Global Parameters
 shear_modulus_val = 100000
-#poissons_ratio_val = 0.49
+poissons_ratio_val = 0.4999
 
-#bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
+bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
 
-stretch_ratio = 5.0
+stretch_ratio = 1.1
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
-
-dt_val = ${fparse right_disp_val/100}
 
 #observation_point = ${fparse l_plate/10}
 
 [GlobalParams]
   large_kinematics = true
-  use_displaced_mesh = true
 []
 
 [Mesh]
@@ -28,57 +25,29 @@ dt_val = ${fparse right_disp_val/100}
 
 [Variables]
   [disp_x]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
   []
   [disp_y]
-    order = SECOND
-    family = LAGRANGE
-  []
-  [pressure]
     order = FIRST
     family = LAGRANGE
-  []
-  
-  [lambda]
-    family = SCALAR
-    order = FIRST
   []
 []
 
 
 [Kernels]
   [div_sig_x]
-    type = ADStressDivergenceTensors
+    type = TotalLagrangianStressDivergence
 	component = 0
 	displacements = 'disp_x disp_y'
     variable = disp_x
   []
   
   [div_sig_y]
-    type = ADStressDivergenceTensors
+    type = TotalLagrangianStressDivergence
 	component = 1
 	displacements = 'disp_x disp_y'
     variable = disp_y
-  []
-  
-  [incompressibility]
-    type = IncompressibilityConstraint
-    variable = pressure
-  []
-  [sk_lm]
-    type = ScalarLagrangeMultiplier
-    variable = pressure
-    lambda = lambda
-  []
-[]
-
-[ScalarKernels]
-  [constraint]
-    type = AverageValueConstraint
-    variable = lambda
-    pp_name = pressure_integral
-    value = 0.0
   []
 []
 
@@ -100,30 +69,19 @@ dt_val = ${fparse right_disp_val/100}
     order = CONSTANT
     family = MONOMIAL
   []
-  
-  [j]
-    order = CONSTANT
-    family = MONOMIAL
-  []
 []
 
 [AuxKernels]
-  [jacobian]
-    type = RankTwoScalarAux
-    rank_two_tensor = deformation_gradient
-    variable = j
-	scalar_type = ThirdInvariant
-  []
   [stress_xx]
-    type = ADRankTwoAux
-    rank_two_tensor = ad_cauchy_stress
+    type = RankTwoAux
+    rank_two_tensor = cauchy_stress
     variable = stress_xx
     index_i = 0
     index_j = 0
   []
   [stress_yy]
-    type = ADRankTwoAux
-    rank_two_tensor = ad_cauchy_stress
+    type = RankTwoAux
+    rank_two_tensor = cauchy_stress
     variable = stress_yy
     index_i = 1
     index_j = 1
@@ -156,28 +114,18 @@ dt_val = ${fparse right_disp_val/100}
     variable = stress_xx
     point = '${l_plate} 0.001 0'
   []
-  [pressure_integral]
-    type = ElementIntegralVariablePostprocessor
-    variable = pressure
-	execute_on = 'initial timestep_begin linear'
-  []
 []
 
 [Materials]
   [stress]
-    type = ADComputeStressIncompressibleNeoHookean
+    type = ComputeStressNearlyIncompressibleNeoHookean
     mu = ${shear_modulus_val}
-	
-	pressure = pressure
+	kappa = ${bulk_modulus_val}
   []
   
   [strain]
     type = ComputeLagrangianStrain
 	displacements = 'disp_x disp_y'
-  []	
-  
-  [wrapper]
-    type = ADCauchyStressWrapper
   []
 []
 
@@ -199,10 +147,10 @@ dt_val = ${fparse right_disp_val/100}
   
   
   [right_x]
-    type = ADFunctionDirichletBC
+    type = ADDirichletBC
     variable = disp_x
     boundary = 'right'
-    function = 't'
+    value = ${right_disp_val}
 	preset = false
   []
   [right_y]
@@ -214,17 +162,8 @@ dt_val = ${fparse right_disp_val/100}
   []
 []
 
-
-[Preconditioning]
-  [SMP]
-    type = SMP
-    full = true
-    solve_type = 'NEWTON'
-  []
-[]
-
 [Executioner]
-  type = Transient
+  type = Steady
   solve_type = 'NEWTON'
   line_search = 'none'
   
@@ -235,17 +174,9 @@ dt_val = ${fparse right_disp_val/100}
   nl_abs_tol = 1e-8
   l_tol = 1e-5
   l_max_its = 300
-  nl_max_its = 50
+  nl_max_its = 20
   
   automatic_scaling = true
-  
-  start_time = 0.0
-  end_time = ${right_disp_val}
-   
-  [TimeStepper]
-    type = ConstantDT
-    dt = ${dt_val}
-  []
 []
 
 [Outputs]
