@@ -18,7 +18,7 @@ registerMooseObject("purpleApp", IncompressibilityConstraint);
 InputParameters
 IncompressibilityConstraint::validParams()
 {
-  InputParameters params = Kernel::validParams();
+  InputParameters params = ADKernel::validParams();
   params.addClassDescription("Kernel that calculates the value of p and enforces incompressibility");
 
   params.addParam<std::string>("base_name", "Material property base name");
@@ -29,22 +29,24 @@ IncompressibilityConstraint::validParams()
 
 
 IncompressibilityConstraint::IncompressibilityConstraint(const InputParameters & parameters)
-  : DerivativeMaterialInterface<Kernel>(parameters),
+  : DerivativeMaterialInterface<ADKernel>(parameters),
 
     _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
 
-    _deformation_gradient(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient"))
+    _deformation_gradient(getADMaterialPropertyByName<RankTwoTensor>(_base_name + "ad_deformation_gradient"))
 {
 }
 
-Real
+ADReal
 IncompressibilityConstraint::computeQpResidual()
 {
   auto F = _deformation_gradient[_qp];
   
   auto J = F.det();
   
-  auto residual = std::log(J) * _test[_i][_qp];
+  ADReal eps = 1e-8;
+  
+  auto residual = std::log(J + eps) * _test[_i][_qp];
   
   return  residual;
 }

@@ -193,13 +193,13 @@ dt_val = ${fparse right_disp_val/100}
 	preset = false
   []
   
-  [pressure_bc]
-    type = ADDirichletBC
-    variable = pressure
-    boundary = 'pressure_bc_point'
-    value = 0
-	preset = false
-  []
+ # [pressure_bc]
+  #  type = ADDirichletBC
+   # variable = pressure
+    #boundary = 'pressure_bc_point'
+    #value = 0
+	#preset = false
+#  []
 []
 
 
@@ -217,7 +217,9 @@ dt_val = ${fparse right_disp_val/100}
   line_search = 'none'
   
   petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
+  #petsc_options_value = 'lu'
+  
+  petsc_options_value = 'gamg'
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8
