@@ -179,12 +179,6 @@ dt_val = ${fparse right_disp_val/100}
   [wrapper]
     type = ADCauchyStressWrapper
   []
-  
-  [ad_deformation]
-    type = MaterialADConverter
-    reg_props_in = deformation_gradient
-    ad_props_out = ad_deformation_gradient
-  []
 []
 
 [BCs]
@@ -235,9 +229,10 @@ dt_val = ${fparse right_disp_val/100}
   line_search = 'none'
   
   petsc_options_iname = '-pc_type'
-  #petsc_options_value = 'lu'
   
-  petsc_options_value = 'gamg'
+  #petsc_options_value = 'lu'
+  #petsc_options_value = 'gamg'
+  petsc_options_value = 'jacobi'
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8

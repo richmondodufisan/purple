@@ -33,7 +33,7 @@ IncompressibilityConstraint::IncompressibilityConstraint(const InputParameters &
 
     _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
 
-    _deformation_gradient(getADMaterialPropertyByName<RankTwoTensor>(_base_name + "ad_deformation_gradient"))
+    _deformation_gradient(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient"))
 {
 }
 
@@ -44,9 +44,7 @@ IncompressibilityConstraint::computeQpResidual()
   
   auto J = F.det();
   
-  ADReal eps = 1e-8;
-  
-  auto residual = std::log(J + eps) * _test[_i][_qp];
+  auto residual = std::log(J) * _test[_i][_qp];
   
   return  residual;
 }

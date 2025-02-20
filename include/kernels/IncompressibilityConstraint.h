@@ -21,5 +21,5 @@ class IncompressibilityConstraint : public DerivativeMaterialInterface<ADKernel>
     /// Base name of the material system that this kernel applies to
     const std::string _base_name;
 
-	const ADMaterialProperty<RankTwoTensor> & _deformation_gradient;
+	const MaterialProperty<RankTwoTensor> & _deformation_gradient;
 };
