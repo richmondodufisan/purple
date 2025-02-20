@@ -29,6 +29,7 @@ ADComputeStressIncompressibleNeoHookean::ADComputeStressIncompressibleNeoHookean
 	_deformation_gradient(getMaterialPropertyByName<RankTwoTensor>("deformation_gradient")),
 
 	// Declare material properties
+	
 	_ad_cauchy_stress(declareADProperty<RankTwoTensor>("ad_cauchy_stress"))
 
 
