@@ -192,6 +192,14 @@ dt_val = ${fparse right_disp_val/100}
     value = 0
 	preset = false
   []
+  
+  [pressure_bc]
+    type = ADDirichletBC
+    variable = pressure
+    boundary = 'pressure_bc_point'
+    value = 0
+	preset = false
+  []
 []
 
 
