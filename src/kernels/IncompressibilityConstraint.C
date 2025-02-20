@@ -44,6 +44,16 @@ IncompressibilityConstraint::computeQpResidual()
   
   auto J = F.det();
   
+  // auto residual = std::log(J) * _test[_i][_qp];
+
+  if (J <= 0.0) {
+	  
+	  std::cout << "F = " << F << " at location: " << _q_point[_qp] << std::endl;
+	  
+	  std::cout << "negative jacobian!!! J = " << J << "  at location: " << _q_point[_qp] << std::endl;
+      // J = eps;  // Prevent NaN by ensuring J is never zero or negative
+  }
+
   auto residual = std::log(J) * _test[_i][_qp];
   
   return  residual;
