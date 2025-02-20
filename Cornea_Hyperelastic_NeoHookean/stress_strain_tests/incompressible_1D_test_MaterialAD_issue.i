@@ -48,7 +48,7 @@ right_disp_val = 0.002  # Applied displacement
     pressure = pressure
   []
   [ad_convert]
-    type = MaterialADConverter
+    type = RankTwoTensorMaterialADConverter
 	reg_props_in = 'deformation_gradient'
 	ad_props_out = 'ad_deformation_gradient'
   []

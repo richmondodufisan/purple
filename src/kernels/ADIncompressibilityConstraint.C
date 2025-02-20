@@ -33,7 +33,7 @@ ADIncompressibilityConstraint::ADIncompressibilityConstraint(const InputParamete
 
     _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
 
-    _deformation_gradient(getMaterialPropertyByName<RankTwoTensor>(_base_name + "ad_deformation_gradient"))
+    _deformation_gradient(getADMaterialPropertyByName<RankTwoTensor>(_base_name + "ad_deformation_gradient"))
 {
 }
 
@@ -48,9 +48,9 @@ ADIncompressibilityConstraint::computeQpResidual()
 
   if (J <= 0.0) {
 	  
-	  std::cout << "F = " << F << " at location: " << _q_point[_qp] << std::endl;
+	  // std::cout << "F = " << F << " at location: " << _q_point[_qp] << std::endl;
 	  
-	  std::cout << "negative jacobian!!! J = " << J << "  at location: " << _q_point[_qp] << std::endl;
+	  // std::cout << "negative jacobian!!! J = " << J << "  at location: " << _q_point[_qp] << std::endl;
       // J = eps;  // Prevent NaN by ensuring J is never zero or negative
   }
 
