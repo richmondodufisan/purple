@@ -1,5 +1,7 @@
 #include "TotalLagrangianStressDivergenceOriginal.h"
 
+registerMooseObject("purpleApp", TotalLagrangianStressDivergenceOriginal);
+
 InputParameters
 TotalLagrangianStressDivergenceOriginal::validParams()
 {
