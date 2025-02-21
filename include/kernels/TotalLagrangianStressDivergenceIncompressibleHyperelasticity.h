@@ -1,38 +1,42 @@
-/// Custom kernel enforcing stress equilibrium with pressure dependency
-///
-/// Implements a total Lagrangian formulation where the First Piola-Kirchhoff (PK1)
-/// stress depends on both the deformation gradient \( F \) and a coupled pressure
-/// variable \( p \).
-
-
-
-
-
 #pragma once
 
-#include "LagrangianStressDivergenceBase.h"
+#include "Kernel.h"
+#include "DerivativeMaterialInterface.h"
+#include "JvarMapInterface.h"
+#include "StabilizationUtils.h"
 #include "GradientOperator.h"
 
 
-
-/////////////////// MOOSE STUFF /////////////////////////////
-template <class G>
-class TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase : public LagrangianStressDivergenceBase, public G
+/// Base class of the "Lagrangian" kernel system
+///
+/// This class provides a common structure for the "new" tensor_mechanics
+/// kernel system.  The goals for this new system are
+///   1) Always-correct jacobians
+///   2) A cleaner material interface
+///
+/// This class provides common input properties and helper methods,
+/// most of the math has to be done in the subclasses
+///
+class TotalLagrangianStressDivergenceIncompressibleHyperelasticity
+  : public JvarMapKernelInterface<DerivativeMaterialInterface<Kernel>>, public G
 {
-public:  
-  static InputParameters baseParams()
-  {
-    InputParameters params = LagrangianStressDivergenceBase::validParams();
-    return params;
-  }
+public:
   static InputParameters validParams();
-  TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase(const InputParameters & parameters);
-  
-  virtual void initialSetup() override;
+  TotalLagrangianStressDivergenceIncompressibleHyperelasticity(const InputParameters & parameters);
 
 protected:
-  virtual RankTwoTensor gradTest(unsigned int component) override;
-  virtual RankTwoTensor gradTrial(unsigned int component) override;
+  // Helper function to return the test function gradient which may depend on kinematics and
+  // stabilization
+  virtual RankTwoTensor gradTest(unsigned int component) = 0;
+
+  // Helper function to return the trial function gradient which may depend on kinematics and
+  // stabilization
+  virtual RankTwoTensor gradTrial(unsigned int component) = 0;
+  
+  RankTwoTensor gradTrialUnstabilized(unsigned int component);
+  RankTwoTensor gradTrialStabilized(unsigned int component);
+
+
 
   virtual Real computeQpResidual() override;
   virtual Real computeQpJacobian() override;
@@ -40,25 +44,48 @@ protected:
   
   
   
-  
-  
+  virtual void initialSetup() override;
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////IRRELEVANT, ignore //////////////////////////////////////////////////////////////////////
-  virtual void precalculateJacobianDisplacement(unsigned int component) override;
-  virtual Real computeQpJacobianDisplacement(unsigned int alpha, unsigned int beta) override;
-  virtual Real computeQpJacobianTemperature(unsigned int cvar) override;
-  virtual Real computeQpJacobianOutOfPlaneStrain() override;
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
-  
-  
+
+protected:
+  /// If true use large deformation kinematics
+  const bool _large_kinematics;
+
+  /// If true calculate the deformation gradient derivatives for F_bar
+  const bool _stabilize_strain;
+
+  /// Prepend to the material properties
+  const std::string _base_name;
+
+  /// Which component of the vector residual this kernel is responsible for
+  const unsigned int _alpha;
+
+  /// Total number of displacements/size of residual vector
+  const unsigned int _ndisp;
+
+  /// The displacement numbers
+  std::vector<unsigned int> _disp_nums;
+
+  // Averaged trial function gradients for each displacement component
+  // i.e. _avg_grad_trial[a][j] returns the average gradient of trial function associated with
+  // node j with respect to displacement component a.
+  std::vector<std::vector<RankTwoTensor>> _avg_grad_trial;
+
+  /// The unmodified deformation gradient
+  const MaterialProperty<RankTwoTensor> & _F_ust;
+
+  /// The element-average deformation gradient
+  const MaterialProperty<RankTwoTensor> & _F_avg;
+
+  /// The inverse increment deformation gradient
+  const MaterialProperty<RankTwoTensor> & _f_inv;
+
+  /// The inverse deformation gradient
+  const MaterialProperty<RankTwoTensor> & _F_inv;
+
+  /// The actual (stabilized) deformation gradient
+  const MaterialProperty<RankTwoTensor> & _F;
   
   /// The 1st Piola-Kirchhoff stress
   const MaterialProperty<RankTwoTensor> & _pk1;
@@ -66,6 +93,8 @@ protected:
   /// The derivative of the PK1 stress with respect to the
   /// deformation gradient
   const MaterialProperty<RankFourTensor> & _dpk1;
+  
+  
   
   
   
@@ -81,62 +110,4 @@ protected:
   const VariableValue & _p;
   
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
-  
-  
-  
-  
-  
-  
-
-private:
-  /// The unstabilized trial function gradient
-  virtual RankTwoTensor gradTrialUnstabilized(unsigned int component);
-
-  /// The stabilized trial function gradient
-  virtual RankTwoTensor gradTrialStabilized(unsigned int component);
-  
-};  
-  
-  
-  
-  
-  
-  
-template <>
-inline InputParameters
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>::validParams()
-{
-  InputParameters params = TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase::baseParams();
-  
-  // This kernel requires use_displaced_mesh to be off
-  params.suppressParameter<bool>("use_displaced_mesh");
-  
-  
-  
-  
-  
-  ////////////////////////// ADDED STUFF ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  params.addClassDescription("Enforce equilibrium with a total Lagrangian formulation in Cartesian coordinates.");
-  params.addRequiredParam<Real>("mu", "Shear modulus");
-  params.addRequiredCoupledVar("pressure", "Pressure variable (coupled)");
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
-  
-  
-  
-  
-  return params;
-}
-
-template <>
-inline void
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>::initialSetup()
-{
-  if (getBlockCoordSystem() != Moose::COORD_XYZ)
-    mooseError("This kernel should only act in Cartesian coordinates.");
-}
-
-typedef TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>
-    TotalLagrangianStressDivergenceIncompressibleHyperelasticity;
-
+};

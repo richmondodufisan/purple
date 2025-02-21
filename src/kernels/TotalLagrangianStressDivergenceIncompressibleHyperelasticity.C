@@ -1,14 +1,66 @@
+//* This file is part of the MOOSE framework
+//* https://www.mooseframework.org
+//*
+//* All rights reserved, see COPYRIGHT for full restrictions
+//* https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//*
+//* Licensed under LGPL 2.1, please see LICENSE for details
+//* https://www.gnu.org/licenses/lgpl-2.1.html
+
 #include "TotalLagrangianStressDivergenceIncompressibleHyperelasticity.h"
 
-registerMooseObject("purpleApp", TotalLagrangianStressDivergenceIncompressibleHyperelasticity);
+InputParameters
+TotalLagrangianStressDivergenceIncompressibleHyperelasticity::validParams()
+{
+  InputParameters params = Kernel::validParams();
+
+  params.addRequiredParam<unsigned int>("component", "Which direction this kernel acts in");
+  params.addRequiredCoupledVar("displacements", "The displacement components");
+
+  params.addParam<bool>("large_kinematics", false, "Use large displacement kinematics");
+  params.addParam<bool>("stabilize_strain", false, "Average the volumetric strains");
+  
+  // This kernel requires use_displaced_mesh to be off
+  params.suppressParameter<bool>("use_displaced_mesh");
+
+  params.addParam<std::string>("base_name", "Material property base name");
+  
+  
+  
+  
+  
+  ////////////////////////// ADDED STUFF ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  params.addClassDescription("Enforce equilibrium with a total Lagrangian formulation in Cartesian coordinates.");
+  params.addRequiredParam<Real>("mu", "Shear modulus");
+  params.addRequiredCoupledVar("pressure", "Pressure variable (coupled)");
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-template <class G>
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase(
-    const InputParameters & parameters)
-  : LagrangianStressDivergenceBase(parameters),
-    _pk1(getMaterialPropertyByName<RankTwoTensor>(_base_name + "pk1_stress")),
+
+
+  return params;
+}
+
+TotalLagrangianStressDivergenceIncompressibleHyperelasticity::TotalLagrangianStressDivergenceIncompressibleHyperelasticity(const InputParameters & parameters)
+  : JvarMapKernelInterface<DerivativeMaterialInterface<Kernel>>(parameters),
+    _large_kinematics(getParam<bool>("large_kinematics")),
+    _stabilize_strain(getParam<bool>("stabilize_strain")),
+    _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
+    _alpha(getParam<unsigned int>("component")),
+    _ndisp(coupledComponents("displacements")),
+    _disp_nums(_ndisp),
+    _avg_grad_trial(_ndisp),
+    _F_ust(
+        getMaterialPropertyByName<RankTwoTensor>(_base_name + "unstabilized_deformation_gradient")),
+    _F_avg(getMaterialPropertyByName<RankTwoTensor>(_base_name + "average_deformation_gradient")),
+    _f_inv(getMaterialPropertyByName<RankTwoTensor>(_base_name +
+                                                    "inverse_incremental_deformation_gradient")),
+    _F_inv(getMaterialPropertyByName<RankTwoTensor>(_base_name + "inverse_deformation_gradient")),
+    _F(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient")),
+	
+	
+	_pk1(getMaterialPropertyByName<RankTwoTensor>(_base_name + "pk1_stress")),
     _dpk1(getMaterialPropertyByName<RankFourTensor>(_base_name + "pk1_jacobian")),
 	
 	
@@ -24,40 +76,61 @@ TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::TotalLagran
 	
 	
 	
-	
-	
-	
-	
-	
+
+
 {
+  // Do the vector coupling of the displacements
+  for (unsigned int i = 0; i < _ndisp; i++)
+    _disp_nums[i] = coupled("displacements", i);
+
+  // We need to use identical discretizations for all displacement components
+  auto order_x = getVar("displacements", 0)->order();
+  for (unsigned int i = 1; i < _ndisp; i++)
+  {
+    if (getVar("displacements", i)->order() != order_x)
+      mooseError("The Lagrangian StressDivergence kernels require equal "
+                 "order interpolation for all displacements.");
+  }
+
+
 }
 
-template <class G>
+
+
+
+void
+TotalLagrangianStressDivergenceIncompressibleHyperelasticity::initialSetup()
+{
+  if (getBlockCoordSystem() != Moose::COORD_XYZ)
+    mooseError("This kernel should only act in Cartesian coordinates.");
+}
+
+
+
+
+
 RankTwoTensor
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::gradTest(unsigned int component)
+TotalLagrangianStressDivergenceIncompressibleHyperelasticity::gradTest(unsigned int component)
 {
   // F-bar doesn't modify the test function
   return G::gradOp(component, _grad_test[_i][_qp], _test[_i][_qp], _q_point[_qp]);
 }
 
-template <class G>
 RankTwoTensor
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::gradTrial(unsigned int component)
+TotalLagrangianStressDivergenceIncompressibleHyperelasticity::gradTrial(unsigned int component)
 {
   return _stabilize_strain ? gradTrialStabilized(component) : gradTrialUnstabilized(component);
 }
 
-template <class G>
 RankTwoTensor
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::gradTrialUnstabilized(unsigned int component)
+TotalLagrangianStressDivergenceIncompressibleHyperelasticity::gradTrialUnstabilized(unsigned int component)
 {
   // Without F-bar stabilization, simply return the gradient of the trial functions
   return G::gradOp(component, _grad_phi[_j][_qp], _phi[_j][_qp], _q_point[_qp]);
 }
 
-template <class G>
 RankTwoTensor
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::gradTrialStabilized(unsigned int component)
+TotalLagrangianStressDivergenceIncompressibleHyperelasticity::gradTrialStabilized(unsigned int component)
 {
   // The base unstabilized trial function gradient
   const auto Gb = G::gradOp(component, _grad_phi[_j][_qp], _phi[_j][_qp], _q_point[_qp]);
@@ -88,101 +161,13 @@ TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::gradTrialSt
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////IRRELEVANT, ignore //////////////////////////////////////////////////////////////////////
-
-template <class G>
-void
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::precalculateJacobianDisplacement(unsigned int component)
-{
-  // For total Lagrangian, the averaging is taken on the reference frame regardless of geometric
-  // nonlinearity. Convenient!
-  for (auto j : make_range(_phi.size()))
-    _avg_grad_trial[component][j] = StabilizationUtils::elementAverage(
-        [this, component, j](unsigned int qp)
-        { return G::gradOp(component, _grad_phi[j][qp], _phi[j][qp], _q_point[qp]); },
-        _JxW,
-        _coord);
-}
-
-template <class G>
-Real
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpResidual()
-{
-  return gradTest(_alpha).doubleContraction(_pk1[_qp]);
-}
-
-template <class G>
-Real
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpJacobianDisplacement(unsigned int alpha,
-                                                                      unsigned int beta)
-{
-  // J_{alpha beta} = phi^alpha_{i, J} T_{iJkL} G^beta_{kL}
-  return gradTest(alpha).doubleContraction(_dpk1[_qp] * gradTrial(beta));
-}
-
-template <class G>
-Real
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpJacobianTemperature(unsigned int cvar)
-{
-  usingTensorIndices(i_, j_, k_, l_);
-  // Multiple eigenstrains may depend on the same coupled var
-  RankTwoTensor total_deigen;
-  for (const auto deigen_darg : _deigenstrain_dargs[cvar])
-    total_deigen += (*deigen_darg)[_qp];
-
-  const auto A = _f_inv[_qp].inverse();
-  const auto B = _F_inv[_qp].inverse();
-  const auto U = 0.5 * (A.template times<i_, k_, l_, j_>(B) + A.template times<i_, l_, k_, j_>(B));
-
-  return -(_dpk1[_qp] * U * total_deigen).doubleContraction(gradTest(_alpha)) *
-         _temperature->phi()[_j][_qp];
-}
-
-template <class G>
-Real
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpJacobianOutOfPlaneStrain()
-{
-  return _dpk1[_qp].contractionKl(2, 2, gradTest(_alpha)) * _out_of_plane_strain->phi()[_j][_qp];
-}
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 ////////////////////////// ADDED STUFF ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// **Residual computation**
 Real
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpResidual()
+TotalLagrangianStressDivergenceIncompressibleHyperelasticity::computeQpResidual()
 {
   RankTwoTensor F_inv_T = _F_inv[_qp].transpose();
   Real J = _F[_qp].det();
@@ -197,14 +182,14 @@ TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpRe
 
 /// **Jacobian computation**
 Real
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpJacobian()
+TotalLagrangianStressDivergenceIncompressibleHyperelasticity::computeQpJacobian()
 {
   return gradTest(_alpha).doubleContraction(_dpk1[_qp] * gradTrial(_alpha));
 }
 
 /// **Off-diagonal Jacobian computation**
 Real
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpOffDiagJacobian(unsigned int jvar)
+TotalLagrangianStressDivergenceIncompressibleHyperelasticity::computeQpOffDiagJacobian(unsigned int jvar)
 {
   // If jvar corresponds to pressure, compute the off-diagonal Jacobian
   if (jvar == _p_var)
@@ -227,25 +212,3 @@ TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpOf
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-template class TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>;
