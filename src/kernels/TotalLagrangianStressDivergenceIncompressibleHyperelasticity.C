@@ -2,66 +2,56 @@
 
 registerMooseObject("purpleApp", TotalLagrangianStressDivergenceIncompressibleHyperelasticity);
 
-
-InputParameters
-TotalLagrangianStressDivergenceIncompressibleHyperelasticity::validParams()
-{
-  InputParameters params = TotalLagrangianStressDivergenceIncompressibleHyperelasticity::validParams();
-  params.addClassDescription("Enforce equilibrium with a total Lagrangian formulation in Cartesian coordinates.");
-  params.addRequiredParam<Real>("mu", "Shear modulus");
-  params.addRequiredCoupledVar("pressure", "Pressure variable (coupled)");
-  return params;
-}
-
-
-/// **Constructor**
 template <class G>
-TotalLagrangianStressDivergenceIncompressibleHyperelasticity::TotalLagrangianStressDivergenceIncompressibleHyperelasticity(
+TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase(
     const InputParameters & parameters)
   : TotalLagrangianStressDivergenceBase<G>(parameters),
-    _mu(getParam<Real>("mu")),    
-    _p_var(coupled("pressure")),          
-    _p(coupledValue("pressure"))          
+    _mu(this->template getParam<Real>("mu")),    // FIXED: Added "template" keyword
+    _p_var(this->coupled("pressure")),           // "this->" needed
+    _p(this->coupledValue("pressure"))           // "this->" needed
 {
 }
 
-/// **Residual computation**
+template <class G>
 Real
-TotalLagrangianStressDivergenceIncompressibleHyperelasticity::computeQpResidual()
+TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpResidual()
 {
-  RankTwoTensor F_inv_T = _F_inv[_qp].transpose();
-  Real J = _F[_qp].det();
-  Real p_val = _p[_qp];
+  RankTwoTensor F_inv_T = this->_F_inv[this->_qp].transpose();
+  Real J = this->_F[this->_qp].det();
+  Real p_val = this->_p[this->_qp];
 
   // Compute modified PK1 stress
-  RankTwoTensor P_custom = _mu * (_F[_qp] - F_inv_T) - p_val * J * F_inv_T;
+  RankTwoTensor P_custom = this->_mu * (this->_F[this->_qp] - F_inv_T) - p_val * J * F_inv_T;
 
   // Compute residual using MOOSE’s gradTest
-  return gradTest(_alpha).doubleContraction(P_custom);
+  return this->gradTest(this->_alpha).doubleContraction(P_custom);
 }
 
-/// **Jacobian computation**
+template <class G>
 Real
-TotalLagrangianStressDivergenceIncompressibleHyperelasticity::computeQpJacobian()
+TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpJacobian()
 {
-  return gradTest(_alpha).doubleContraction(_dpk1[_qp] * gradTrial(_alpha));
+  return this->gradTest(this->_alpha).doubleContraction(this->_dpk1[this->_qp] * this->gradTrial(this->_alpha));
 }
 
-/// **Off-diagonal Jacobian computation**
+template <class G>
 Real
-TotalLagrangianStressDivergenceIncompressibleHyperelasticity::computeQpOffDiagJacobian(unsigned int jvar)
+TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpOffDiagJacobian(unsigned int jvar)
 {
   // If jvar corresponds to pressure, compute the off-diagonal Jacobian
-  if (jvar == _p_var)
+  if (jvar == this->_p_var)
   {
-    RankTwoTensor dP_dp = -_F[_qp].det() * _F_inv[_qp].transpose();
-    return gradTest(_alpha).doubleContraction(dP_dp);
+    RankTwoTensor dP_dp = -this->_F[this->_qp].det() * this->_F_inv[this->_qp].transpose();
+    return this->gradTest(this->_alpha).doubleContraction(dP_dp);
   }
 
   // If jvar corresponds to displacement, use MOOSE's structure for displacement coupling
-  for (unsigned int beta = 0; beta < _ndisp; beta++)
-    if (jvar == _disp_nums[beta])
-      return gradTest(_alpha).doubleContraction(_dpk1[_qp] * gradTrial(beta));
+  for (unsigned int beta = 0; beta < this->_ndisp; beta++)
+    if (jvar == this->_disp_nums[beta])
+      return this->gradTest(this->_alpha).doubleContraction(this->_dpk1[this->_qp] * this->gradTrial(beta));
 
   return 0;
 }
+
+// Explicit template instantiation
+template class TotalLagrangianStressDivergenceBase<GradientOperatorCartesian>;
