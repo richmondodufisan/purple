@@ -3,8 +3,6 @@
 #include "Kernel.h"
 #include "DerivativeMaterialInterface.h"
 #include "JvarMapInterface.h"
-#include "GradientOperator.h"
-#include "GradientOperatorHelper.h"
 
 /// Base class of the "Lagrangian" kernel system
 ///
