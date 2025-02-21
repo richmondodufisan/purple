@@ -17,12 +17,6 @@ template <class G>
 class TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase : public TotalLagrangianStressDivergenceBase<G>
 {
 public:
-  
-  static InputParameters baseParams()
-  {
-    InputParameters params = TotalLagrangianStressDivergenceBase<G>::validParams();
-    return params;
-  }
   static InputParameters validParams();
   TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase(const InputParameters & parameters);
   
@@ -47,28 +41,6 @@ protected:
   /// Coupled pressure field at quadrature points
   const VariableValue & _p;
 };
-
-/// Template specialization for Cartesian coordinates
-template <>
-inline InputParameters
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>::validParams()
-{
-  InputParameters params = TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>::validParams();
-  params.addClassDescription("Enforce equilibrium with a total Lagrangian formulation in Cartesian coordinates.");
-  params.addRequiredParam<Real>("mu", "Shear modulus");
-  params.addRequiredCoupledVar("pressure", "Pressure variable (coupled)");
-  return params;
-}
-
-
-template <>
-inline void
-TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>::initialSetup()
-{
-  if (getBlockCoordSystem() != Moose::COORD_XYZ)
-    mooseError("This kernel should only act in Cartesian coordinates.");
-}
-
 
 /// Enforce equilibrium with a total Lagrangian formulation in Cartesian coordinates.
 typedef TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>

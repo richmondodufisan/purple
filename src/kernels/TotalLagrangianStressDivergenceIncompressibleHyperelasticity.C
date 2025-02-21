@@ -2,16 +2,39 @@
 
 registerMooseObject("purpleApp", TotalLagrangianStressDivergenceIncompressibleHyperelasticity);
 
+/// **ValidParams specialization for Cartesian coordinates**
+template <>
+InputParameters
+TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>::validParams()
+{
+  InputParameters params = TotalLagrangianStressDivergenceBase<GradientOperatorCartesian>::validParams();
+  params.addClassDescription("Enforce equilibrium with a total Lagrangian formulation in Cartesian coordinates.");
+  params.addRequiredParam<Real>("mu", "Shear modulus");
+  params.addRequiredCoupledVar("pressure", "Pressure variable (coupled)");
+  return params;
+}
+
+/// **initialSetup() specialization for Cartesian coordinates**
+template <>
+void
+TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>::initialSetup()
+{
+  if (this->getBlockCoordSystem() != Moose::COORD_XYZ)
+    mooseError("This kernel should only act in Cartesian coordinates.");
+}
+
+/// **Constructor**
 template <class G>
 TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase(
     const InputParameters & parameters)
   : TotalLagrangianStressDivergenceBase<G>(parameters),
-    _mu(this->template getParam<Real>("mu")),    // FIXED: Added "template" keyword
-    _p_var(this->coupled("pressure")),           // "this->" needed
-    _p(this->coupledValue("pressure"))           // "this->" needed
+    _mu(this->template getParam<Real>("mu")),    
+    _p_var(this->coupled("pressure")),          
+    _p(this->coupledValue("pressure"))          
 {
 }
 
+/// **Residual computation**
 template <class G>
 Real
 TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpResidual()
@@ -27,6 +50,7 @@ TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpRe
   return this->gradTest(this->_alpha).doubleContraction(P_custom);
 }
 
+/// **Jacobian computation**
 template <class G>
 Real
 TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpJacobian()
@@ -34,6 +58,7 @@ TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpJa
   return this->gradTest(this->_alpha).doubleContraction(this->_dpk1[this->_qp] * this->gradTrial(this->_alpha));
 }
 
+/// **Off-diagonal Jacobian computation**
 template <class G>
 Real
 TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpOffDiagJacobian(unsigned int jvar)
@@ -53,5 +78,5 @@ TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpOf
   return 0;
 }
 
-// Explicit template instantiation
+/// **Explicit template instantiation**
 template class TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>;
