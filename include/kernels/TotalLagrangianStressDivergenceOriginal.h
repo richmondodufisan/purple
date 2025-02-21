@@ -3,7 +3,6 @@
 #include "Kernel.h"
 #include "DerivativeMaterialInterface.h"
 #include "JvarMapInterface.h"
-#include "StabilizationUtils.h"
 #include "GradientOperator.h"
 #include "GradientOperatorHelper.h"
 
@@ -25,18 +24,6 @@ public:
   TotalLagrangianStressDivergenceOriginal(const InputParameters & parameters);
 
 protected:
-  // Helper function to return the test function gradient which may depend on kinematics and
-  // stabilization
-  virtual RankTwoTensor gradTest(unsigned int component) = 0;
-
-  // Helper function to return the trial function gradient which may depend on kinematics and
-  // stabilization
-  virtual RankTwoTensor gradTrial(unsigned int component) = 0;
-  
-  RankTwoTensor gradTrialUnstabilized(unsigned int component);
-  RankTwoTensor gradTrialStabilized(unsigned int component);
-
-
 
   virtual Real computeQpResidual() override;
   virtual Real computeQpJacobian() override;
@@ -51,9 +38,6 @@ protected:
 protected:
   /// If true use large deformation kinematics
   const bool _large_kinematics;
-
-  /// If true calculate the deformation gradient derivatives for F_bar
-  const bool _stabilize_strain;
 
   /// Prepend to the material properties
   const std::string _base_name;

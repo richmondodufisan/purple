@@ -18,7 +18,6 @@ TotalLagrangianStressDivergenceOriginal::validParams()
   params.addRequiredCoupledVar("displacements", "The displacement components");
 
   params.addParam<bool>("large_kinematics", false, "Use large displacement kinematics");
-  params.addParam<bool>("stabilize_strain", false, "Average the volumetric strains");
   
   // This kernel requires use_displaced_mesh to be off
   params.suppressParameter<bool>("use_displaced_mesh");
@@ -45,7 +44,6 @@ TotalLagrangianStressDivergenceOriginal::validParams()
 TotalLagrangianStressDivergenceOriginal::TotalLagrangianStressDivergenceOriginal(const InputParameters & parameters)
   : JvarMapKernelInterface<DerivativeMaterialInterface<Kernel>>(parameters),
     _large_kinematics(getParam<bool>("large_kinematics")),
-    _stabilize_strain(getParam<bool>("stabilize_strain")),
     _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
     _alpha(getParam<unsigned int>("component")),
     _ndisp(coupledComponents("displacements")),
@@ -104,64 +102,6 @@ TotalLagrangianStressDivergenceOriginal::initialSetup()
   if (getBlockCoordSystem() != Moose::COORD_XYZ)
     mooseError("This kernel should only act in Cartesian coordinates.");
 }
-
-
-
-
-
-RankTwoTensor
-TotalLagrangianStressDivergenceOriginal::gradTest(unsigned int component)
-{
-  // F-bar doesn't modify the test function
-  GradientOperatorHelper grad_operator;
-  return grad_operator.gradOp(component, _grad_test[_i][_qp], _test[_i][_qp], _q_point[_qp]);
-}
-
-RankTwoTensor
-TotalLagrangianStressDivergenceOriginal::gradTrial(unsigned int component)
-{
-  return _stabilize_strain ? gradTrialStabilized(component) : gradTrialUnstabilized(component);
-}
-
-RankTwoTensor
-TotalLagrangianStressDivergenceOriginal::gradTrialUnstabilized(unsigned int component)
-{
-  // Without F-bar stabilization, simply return the gradient of the trial functions
-  GradientOperatorHelper grad_operator;
-  return grad_operator.gradOp(component, _grad_phi[_j][_qp], _phi[_j][_qp], _q_point[_qp]);
-}
-
-RankTwoTensor
-TotalLagrangianStressDivergenceOriginal::gradTrialStabilized(unsigned int component)
-{
-  // The base unstabilized trial function gradient
-  GradientOperatorHelper grad_operator;
-  const auto Gb = grad_operator.gradOp(component, _grad_phi[_j][_qp], _phi[_j][_qp], _q_point[_qp]);
-  // The average trial function gradient
-  const auto Ga = _avg_grad_trial[component][_j];
-
-  // The F-bar stabilization depends on kinematics
-  if (_large_kinematics)
-  {
-    // Horrible thing, see the documentation for how we get here
-    const Real dratio = std::pow(_F_avg[_qp].det() / _F_ust[_qp].det(), 1.0 / 3.0);
-    const Real fact = (_F_avg[_qp].inverse().transpose().doubleContraction(Ga) -
-                       _F_ust[_qp].inverse().transpose().doubleContraction(Gb)) /
-                      3.0;
-    return dratio * (Gb + fact * _F_ust[_qp]);
-  }
-
-  // The small kinematics modification is linear
-  return Gb + (Ga.trace() - Gb.trace()) / 3.0 * RankTwoTensor::Identity();
-}
-
-
-
-
-
-
-
-
 
 
 
