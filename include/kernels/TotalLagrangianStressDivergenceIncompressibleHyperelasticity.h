@@ -13,14 +13,14 @@
 /// - Residual: \(\frac{\partial v_{\alpha}}{\partial X_J} P_{\alpha J}\),
 /// - Displacement Jacobian: \(\frac{\partial P_{\alpha J}}{\partial F_{kL}}\),
 /// - Off-diagonal pressure Jacobian: \(\frac{\partial P_{\alpha J}}{\partial p}\).
-template <class G>
-class TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase : public TotalLagrangianStressDivergenceBase<G>
+
+
+class TotalLagrangianStressDivergenceIncompressibleHyperelasticity : public TotalLagrangianStressDivergence
 {
 public:
   static InputParameters validParams();
-  TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase(const InputParameters & parameters);
+  TotalLagrangianStressDivergenceIncompressibleHyperelasticity(const InputParameters & parameters);
   
-  virtual void initialSetup() override;
 
 protected:
   /// Computes the residual contribution for stress equilibrium
@@ -41,7 +41,3 @@ protected:
   /// Coupled pressure field at quadrature points
   const VariableValue & _p;
 };
-
-/// Enforce equilibrium with a total Lagrangian formulation in Cartesian coordinates.
-typedef TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>
-    TotalLagrangianStressDivergenceIncompressibleHyperelasticity;
