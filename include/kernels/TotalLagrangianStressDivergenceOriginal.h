@@ -7,7 +7,6 @@
 #include "GradientOperator.h"
 #include "GradientOperatorHelper.h"
 
-
 /// Base class of the "Lagrangian" kernel system
 ///
 /// This class provides a common structure for the "new" tensor_mechanics
@@ -18,12 +17,12 @@
 /// This class provides common input properties and helper methods,
 /// most of the math has to be done in the subclasses
 ///
-class TotalLagrangianStressDivergenceIncompressibleHyperelasticity
+class TotalLagrangianStressDivergenceOriginal
   : public JvarMapKernelInterface<DerivativeMaterialInterface<Kernel>>
 {
 public:
   static InputParameters validParams();
-  TotalLagrangianStressDivergenceIncompressibleHyperelasticity(const InputParameters & parameters);
+  TotalLagrangianStressDivergenceOriginal(const InputParameters & parameters);
 
 protected:
   // Helper function to return the test function gradient which may depend on kinematics and
@@ -101,14 +100,14 @@ protected:
   
   ////////////////////////// ADDED STUFF ////////////////////////////////////////////////////////////////////////////////////////////////////////
   
-  // Material parameter (shear modulus)
-  const Real _mu;
+  // // Material parameter (shear modulus)
+  // const Real _mu;
 
-  /// Coupled pressure variable index
-  const unsigned int _p_var;
+  // /// Coupled pressure variable index
+  // const unsigned int _p_var;
 
-  /// Coupled pressure field at quadrature points
-  const VariableValue & _p;
+  // /// Coupled pressure field at quadrature points
+  // const VariableValue & _p;
   
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 };
