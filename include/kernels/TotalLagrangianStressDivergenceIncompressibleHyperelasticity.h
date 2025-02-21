@@ -7,6 +7,13 @@
 #include "GradientOperator.h"
 
 
+class GradientOperatorHelper : public GradientOperator<GradientOperatorCartesian>
+{
+public:
+  using GradientOperator<GradientOperatorCartesian>::gradOp;
+};
+
+
 /// Base class of the "Lagrangian" kernel system
 ///
 /// This class provides a common structure for the "new" tensor_mechanics
@@ -18,7 +25,7 @@
 /// most of the math has to be done in the subclasses
 ///
 class TotalLagrangianStressDivergenceIncompressibleHyperelasticity
-  : public JvarMapKernelInterface<DerivativeMaterialInterface<Kernel>>, public G
+  : public JvarMapKernelInterface<DerivativeMaterialInterface<Kernel>>
 {
 public:
   static InputParameters validParams();

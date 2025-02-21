@@ -113,7 +113,8 @@ RankTwoTensor
 TotalLagrangianStressDivergenceIncompressibleHyperelasticity::gradTest(unsigned int component)
 {
   // F-bar doesn't modify the test function
-  return G::gradOp(component, _grad_test[_i][_qp], _test[_i][_qp], _q_point[_qp]);
+  GradientOperatorHelper grad_operator;
+  return grad_operator.gradOp(component, _grad_test[_i][_qp], _test[_i][_qp], _q_point[_qp]);
 }
 
 RankTwoTensor
@@ -126,14 +127,16 @@ RankTwoTensor
 TotalLagrangianStressDivergenceIncompressibleHyperelasticity::gradTrialUnstabilized(unsigned int component)
 {
   // Without F-bar stabilization, simply return the gradient of the trial functions
-  return G::gradOp(component, _grad_phi[_j][_qp], _phi[_j][_qp], _q_point[_qp]);
+  GradientOperatorHelper grad_operator;
+  return grad_operator.gradOp(component, _grad_phi[_j][_qp], _phi[_j][_qp], _q_point[_qp]);
 }
 
 RankTwoTensor
 TotalLagrangianStressDivergenceIncompressibleHyperelasticity::gradTrialStabilized(unsigned int component)
 {
   // The base unstabilized trial function gradient
-  const auto Gb = G::gradOp(component, _grad_phi[_j][_qp], _phi[_j][_qp], _q_point[_qp]);
+  GradientOperatorHelper grad_operator;
+  const auto Gb = grad_operator.gradOp(component, _grad_phi[_j][_qp], _phi[_j][_qp], _q_point[_qp]);
   // The average trial function gradient
   const auto Ga = _avg_grad_trial[component][_j];
 
