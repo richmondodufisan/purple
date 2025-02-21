@@ -14,7 +14,7 @@
 /// - Displacement Jacobian: \(\frac{\partial P_{\alpha J}}{\partial F_{kL}}\),
 /// - Off-diagonal pressure Jacobian: \(\frac{\partial P_{\alpha J}}{\partial p}\).
 template <class G>
-class TotalLagrangianStressDivergenceIncompressibleHyperelasticity : public TotalLagrangianStressDivergenceBase<G>
+class TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase : public TotalLagrangianStressDivergenceBase<G>
 {
 public:
   
@@ -24,7 +24,7 @@ public:
     return params;
   }
   static InputParameters validParams();
-  TotalLagrangianStressDivergenceIncompressibleHyperelasticity(const InputParameters & parameters);
+  TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase(const InputParameters & parameters);
   
   virtual void initialSetup() override;
 
@@ -51,9 +51,9 @@ protected:
 /// Template specialization for Cartesian coordinates
 template <>
 inline InputParameters
-TotalLagrangianStressDivergenceIncompressibleHyperelasticity<GradientOperatorCartesian>::validParams()
+TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>::validParams()
 {
-  InputParameters params = TotalLagrangianStressDivergenceBase<GradientOperatorCartesian>::validParams();
+  InputParameters params = TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>::validParams();
   params.addClassDescription("Enforce equilibrium with a total Lagrangian formulation in Cartesian coordinates.");
   params.addRequiredParam<Real>("mu", "Shear modulus");
   params.addRequiredCoupledVar("pressure", "Pressure variable (coupled)");
@@ -63,7 +63,7 @@ TotalLagrangianStressDivergenceIncompressibleHyperelasticity<GradientOperatorCar
 
 template <>
 inline void
-TotalLagrangianStressDivergenceIncompressibleHyperelasticity<GradientOperatorCartesian>::initialSetup()
+TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>::initialSetup()
 {
   if (getBlockCoordSystem() != Moose::COORD_XYZ)
     mooseError("This kernel should only act in Cartesian coordinates.");
@@ -71,5 +71,5 @@ TotalLagrangianStressDivergenceIncompressibleHyperelasticity<GradientOperatorCar
 
 
 /// Enforce equilibrium with a total Lagrangian formulation in Cartesian coordinates.
-typedef TotalLagrangianStressDivergenceIncompressibleHyperelasticity<GradientOperatorCartesian>
-    TotalLagrangianStressDivergenceIncompressibleHyperelasticityCartesian;
+typedef TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>
+    TotalLagrangianStressDivergenceIncompressibleHyperelasticity;

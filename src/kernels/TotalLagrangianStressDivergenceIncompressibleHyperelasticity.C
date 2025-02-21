@@ -1,9 +1,9 @@
 #include "TotalLagrangianStressDivergenceIncompressibleHyperelasticity.h"
 
-registerMooseObject("purpleApp", TotalLagrangianStressDivergenceIncompressibleHyperelasticityCartesian);
+registerMooseObject("purpleApp", TotalLagrangianStressDivergenceIncompressibleHyperelasticity);
 
 template <class G>
-TotalLagrangianStressDivergenceIncompressibleHyperelasticity<G>::TotalLagrangianStressDivergenceIncompressibleHyperelasticity(
+TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase(
     const InputParameters & parameters)
   : TotalLagrangianStressDivergenceBase<G>(parameters),
     _mu(this->template getParam<Real>("mu")),    // FIXED: Added "template" keyword
@@ -14,7 +14,7 @@ TotalLagrangianStressDivergenceIncompressibleHyperelasticity<G>::TotalLagrangian
 
 template <class G>
 Real
-TotalLagrangianStressDivergenceIncompressibleHyperelasticity<G>::computeQpResidual()
+TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpResidual()
 {
   RankTwoTensor F_inv_T = this->_F_inv[this->_qp].transpose();
   Real J = this->_F[this->_qp].det();
@@ -29,14 +29,14 @@ TotalLagrangianStressDivergenceIncompressibleHyperelasticity<G>::computeQpResidu
 
 template <class G>
 Real
-TotalLagrangianStressDivergenceIncompressibleHyperelasticity<G>::computeQpJacobian()
+TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpJacobian()
 {
   return this->gradTest(this->_alpha).doubleContraction(this->_dpk1[this->_qp] * this->gradTrial(this->_alpha));
 }
 
 template <class G>
 Real
-TotalLagrangianStressDivergenceIncompressibleHyperelasticity<G>::computeQpOffDiagJacobian(unsigned int jvar)
+TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<G>::computeQpOffDiagJacobian(unsigned int jvar)
 {
   // If jvar corresponds to pressure, compute the off-diagonal Jacobian
   if (jvar == this->_p_var)
@@ -54,6 +54,4 @@ TotalLagrangianStressDivergenceIncompressibleHyperelasticity<G>::computeQpOffDia
 }
 
 // Explicit template instantiation
-template class TotalLagrangianStressDivergenceBase<GradientOperatorCartesian>;
-template class TotalLagrangianStressDivergenceBase<GradientOperatorAxisymmetricCylindrical>;
-template class TotalLagrangianStressDivergenceBase<GradientOperatorCentrosymmetricSpherical>;
+template class TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>;
