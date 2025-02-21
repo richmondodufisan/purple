@@ -1,26 +1,28 @@
-#pragma once
-
-#include "TotalLagrangianStressDivergenceBase.h"
-#include "GradientOperator.h"
-
 /// Custom kernel enforcing stress equilibrium with pressure dependency
 ///
 /// Implements a total Lagrangian formulation where the First Piola-Kirchhoff (PK1)
 /// stress depends on both the deformation gradient \( F \) and a coupled pressure
 /// variable \( p \).
-///
-/// This kernel computes:
-/// - Residual: \(\frac{\partial v_{\alpha}}{\partial X_J} P_{\alpha J}\),
-/// - Displacement Jacobian: \(\frac{\partial P_{\alpha J}}{\partial F_{kL}}\),
-/// - Off-diagonal pressure Jacobian: \(\frac{\partial P_{\alpha J}}{\partial p}\).
+
+
+
+
+
+#pragma once
+
+#include "LagrangianStressDivergenceBase.h"
+#include "GradientOperator.h"
+
+
+
+/////////////////// MOOSE STUFF /////////////////////////////
 template <class G>
-class TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase : public TotalLagrangianStressDivergenceBase<G>
+class TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase : public LagrangianStressDivergenceBase, public G
 {
-public:
-  
+public:  
   static InputParameters baseParams()
   {
-    InputParameters params = TotalLagrangianStressDivergenceBase<G>::validParams();
+    InputParameters params = LagrangianStressDivergenceBase::validParams();
     return params;
   }
   static InputParameters validParams();
@@ -29,16 +31,47 @@ public:
   virtual void initialSetup() override;
 
 protected:
-  /// Computes the residual contribution for stress equilibrium
+  virtual RankTwoTensor gradTest(unsigned int component) override;
+  virtual RankTwoTensor gradTrial(unsigned int component) override;
+
   virtual Real computeQpResidual() override;
-
-  /// Computes the diagonal Jacobian contribution (displacement terms)
   virtual Real computeQpJacobian() override;
-
-  /// Computes the off-diagonal Jacobian contribution (pressure coupling)
   virtual Real computeQpOffDiagJacobian(unsigned int jvar) override;
+  
+  
+  
+  
+  
 
-  /// Material parameter (shear modulus)
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////IRRELEVANT, ignore //////////////////////////////////////////////////////////////////////
+  virtual void precalculateJacobianDisplacement(unsigned int component) override;
+  virtual Real computeQpJacobianDisplacement(unsigned int alpha, unsigned int beta) override;
+  virtual Real computeQpJacobianTemperature(unsigned int cvar) override;
+  virtual Real computeQpJacobianOutOfPlaneStrain() override;
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  
+  
+  
+  /// The 1st Piola-Kirchhoff stress
+  const MaterialProperty<RankTwoTensor> & _pk1;
+
+  /// The derivative of the PK1 stress with respect to the
+  /// deformation gradient
+  const MaterialProperty<RankFourTensor> & _dpk1;
+  
+  
+  
+  ////////////////////////// ADDED STUFF ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  // Material parameter (shear modulus)
   const Real _mu;
 
   /// Coupled pressure variable index
@@ -46,20 +79,55 @@ protected:
 
   /// Coupled pressure field at quadrature points
   const VariableValue & _p;
-};
+  
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  
+  
+  
+  
+  
+  
 
-/// Template specialization for Cartesian coordinates
+private:
+  /// The unstabilized trial function gradient
+  virtual RankTwoTensor gradTrialUnstabilized(unsigned int component);
+
+  /// The stabilized trial function gradient
+  virtual RankTwoTensor gradTrialStabilized(unsigned int component);
+  
+};  
+  
+  
+  
+  
+  
+  
 template <>
 inline InputParameters
 TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>::validParams()
 {
-  InputParameters params = TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>::validParams();
+  InputParameters params = TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase::baseParams();
+  
+  // This kernel requires use_displaced_mesh to be off
+  params.suppressParameter<bool>("use_displaced_mesh");
+  
+  
+  
+  
+  
+  ////////////////////////// ADDED STUFF ////////////////////////////////////////////////////////////////////////////////////////////////////////
   params.addClassDescription("Enforce equilibrium with a total Lagrangian formulation in Cartesian coordinates.");
   params.addRequiredParam<Real>("mu", "Shear modulus");
   params.addRequiredCoupledVar("pressure", "Pressure variable (coupled)");
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  
+  
+  
+  
   return params;
 }
-
 
 template <>
 inline void
@@ -69,7 +137,6 @@ TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperato
     mooseError("This kernel should only act in Cartesian coordinates.");
 }
 
-
-/// Enforce equilibrium with a total Lagrangian formulation in Cartesian coordinates.
 typedef TotalLagrangianStressDivergenceIncompressibleHyperelasticityBase<GradientOperatorCartesian>
     TotalLagrangianStressDivergenceIncompressibleHyperelasticity;
+
