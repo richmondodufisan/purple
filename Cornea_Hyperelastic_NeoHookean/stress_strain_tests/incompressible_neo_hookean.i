@@ -227,14 +227,17 @@ dt_val = ${fparse right_disp_val/100}
   solve_type = 'NEWTON'
   line_search = 'none'
   
-  petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
+  #petsc_options_iname = '-pc_type'
+  #petsc_options_value = 'jacobi'
+  
+  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
+  petsc_options_value = 'ilu nonzero 1e-8'
 
-  nl_rel_tol = 1e-8
-  nl_abs_tol = 1e-8
+  nl_rel_tol = 2e-8
+  nl_abs_tol = 2e-8
   l_tol = 1e-5
   l_max_its = 300
-  nl_max_its = 50
+  nl_max_its = 200
   
   automatic_scaling = true
   
@@ -251,4 +254,5 @@ dt_val = ${fparse right_disp_val/100}
   csv = true
   exodus = true
   perf_graph = true
+  print_linear_residuals = false
 []
