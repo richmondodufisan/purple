@@ -34,10 +34,12 @@ right_disp_val = 0.002  # Applied displacement
     component = 0
     displacements = 'disp_x'
     variable = disp_x
+	pressure = pressure
   []
   [incompressibility]
     type = TLIncompressibilityPressure
     variable = pressure
+    displacements = 'disp_x'
   []
 []
 
@@ -66,12 +68,12 @@ right_disp_val = 0.002  # Applied displacement
     boundary = 'right'
     value = ${right_disp_val}
   []
-#  [pressure_fix]
-#    type = ADDirichletBC
- #   variable = pressure
- #   boundary = 'right'
- #   value = 0.0
- # []
+  [pressure_fix]
+    type = ADDirichletBC
+    variable = pressure
+    boundary = 'right'
+    value = 0.0
+  []
 []
 
 [Executioner]

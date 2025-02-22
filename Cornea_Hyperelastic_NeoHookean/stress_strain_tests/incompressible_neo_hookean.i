@@ -48,22 +48,25 @@ dt_val = ${fparse right_disp_val/100}
 
 [Kernels]
   [div_sig_x]
-    type = TotalLagrangianStressDivergence
+    type = TLStressDivergenceIncompressible
 	component = 0
 	displacements = 'disp_x disp_y'
     variable = disp_x
+	pressure = pressure
   []
   
   [div_sig_y]
-    type = TotalLagrangianStressDivergence
+    type = TLStressDivergenceIncompressible
 	component = 1
 	displacements = 'disp_x disp_y'
     variable = disp_y
+	pressure = pressure
   []
   
   [incompressibility]
-    type = IncompressibilityConstraint
+    type = TLIncompressibilityPressure
     variable = pressure
+	displacements = 'disp_x disp_y'
   []
   [sk_lm]
     type = ScalarLagrangeMultiplier

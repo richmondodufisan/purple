@@ -119,8 +119,8 @@ TLStressDivergenceIncompressible::computeQpOffDiagJacobian(unsigned int jvar)
     if (jvar == _disp_var[j])
       return computeQpJacobianDisplacement(_component, j);
 
-  // if (jvar == _p_var)
-    // return computeQpJacobianPressure(_component);
+  if (jvar == _p_var)
+    return computeQpJacobianPressure(_component);
 
   mooseError("Jacobian for unknown variable requested");
   return 0.0;
