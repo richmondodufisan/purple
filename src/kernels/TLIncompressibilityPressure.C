@@ -74,7 +74,7 @@ TLIncompressibilityPressure::computeQpResidual()
   // Real residual_A = (1 - Jac) * NA;
   
   // Incompressibility (1 - J) with p/kappa stabilization
-  Real residual_A = ((1 - Jac) * NA) - (p/kappa);
+  Real residual_A = ((1 - Jac - (p/kappa)) * NA) ;
 
   return residual_A;
 }
@@ -149,7 +149,7 @@ TLIncompressibilityPressure::computeQpJacobianPressure()
   // Real dResidual_A_dPressure_B = 0.0;
   
   // Incompressibility (1 - J) with p/kappa stabilization
-  Real dResidual_A_dPressure_B = -(NB/kappa);
+  Real dResidual_A_dPressure_B = -(NB/kappa) * NA;
 
   return dResidual_A_dPressure_B;
 }
