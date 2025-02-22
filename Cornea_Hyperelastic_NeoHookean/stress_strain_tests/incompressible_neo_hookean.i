@@ -228,7 +228,7 @@ dt_val = ${fparse right_disp_val/100}
   line_search = 'none'
   
   petsc_options_iname = '-pc_type'
-  petsc_options_value = 'jacobi'
+  petsc_options_value = 'lu'
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8

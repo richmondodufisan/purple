@@ -183,7 +183,7 @@ TLStressDivergenceIncompressible::computeQpJacobianPressure(unsigned int comp_i)
   
   for (int J = 0;  J < _ndisp; ++J)
   {
-    dResidual_Ai_dPressure_B += F_inv(J, i) * dNA_dX(J);
+    dResidual_Ai_dPressure_B += NB * F_inv(J, i) * dNA_dX(J);
   }  
 
   return dResidual_Ai_dPressure_B;
