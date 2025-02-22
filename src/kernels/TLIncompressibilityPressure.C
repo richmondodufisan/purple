@@ -54,8 +54,8 @@ Real
 TLIncompressibilityPressure::computeQpResidual()
 {
   // Implement residual here
-  const auto & dNA_dX = _grad_test[_i][_qp];	// gradient of pressure shape function
-  const auto & NA = _test[_i][_qp];				// pressure shape function
+  const auto & dNA_dX = _grad_test[_i][_qp];	// gradient of pressure test shape function
+  const auto & NA = _test[_i][_qp];				// pressure test shape function
   
   
   const auto & F = _F[_qp];
@@ -115,7 +115,7 @@ Real
 TLIncompressibilityPressure::computeQpJacobianPressure()
 {
 
-  Real dResidual_dPressure = 1e-8;
+  Real dResidual_dPressure = 1e-6;
 
   return dResidual_dPressure;
 }
