@@ -1,10 +1,10 @@
-#include "TLStressDivergence.h"
+#include "TLStressDivergenceIncompressible.h"
 #include "DerivativeMaterialInterface.h"
 
-registerMooseObject("purpleApp", TLStressDivergence);
+registerMooseObject("purpleApp", TLStressDivergenceIncompressible);
 
 InputParameters
-TLStressDivergence::validParams()
+TLStressDivergenceIncompressible::validParams()
 {
   InputParameters params = Kernel::validParams();
   params.addClassDescription("Divergence of stress tensor");
@@ -21,14 +21,13 @@ TLStressDivergence::validParams()
 
 
   ////////////////////////// ADDED STUFF ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // params.addRequiredParam<Real>("mu", "Shear modulus");
-  // params.addRequiredCoupledVar("pressure", "Pressure variable (coupled)");
+  params.addRequiredCoupledVar("pressure", "Pressure variable (coupled)");
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   return params;
 }
 
-TLStressDivergence::TLStressDivergence(const InputParameters & parameters)
+TLStressDivergenceIncompressible::TLStressDivergenceIncompressible(const InputParameters & parameters)
   : DerivativeMaterialInterface<Kernel>(parameters),
   
   
@@ -36,21 +35,20 @@ TLStressDivergence::TLStressDivergence(const InputParameters & parameters)
 	
 	
 	
-    _P(getMaterialPropertyByName<RankTwoTensor>(_base_name + "pk1_stress")),
-    _dP_dF(getMaterialPropertyByName<RankFourTensor>(_base_name + "pk1_jacobian")),
+    _P_hat(getMaterialPropertyByName<RankTwoTensor>(_base_name + "pk1_stress")),
+    _dP_hat_dF(getMaterialPropertyByName<RankFourTensor>(_base_name + "pk1_jacobian")),
 	_F(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient")),
 
 
 
     _component(getParam<unsigned int>("component")),
     _ndisp(coupledComponents("displacements")),
-    _disp_var(_ndisp)
+    _disp_var(_ndisp),
 	
 	
-	////////////////////////// ADDED STUFF ////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// _mu(getParam<Real>("mu")),    
-    // _p_var(coupled("pressure")),           
-    // _pressure(coupledValue("pressure"))    
+	////////////////////////// ADDED STUFF //////////////////////////////////////////////////////////////////////////////////////////////////////// 
+    _p_var(coupled("pressure")),           
+    _pressure(coupledValue("pressure"))    
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -72,7 +70,7 @@ TLStressDivergence::TLStressDivergence(const InputParameters & parameters)
 }
 
 Real
-TLStressDivergence::computeQpResidual()
+TLStressDivergenceIncompressible::computeQpResidual()
 {
   // We abandon MOOSE's 'creative' naming scheme here:
   //
@@ -85,7 +83,7 @@ TLStressDivergence::computeQpResidual()
   const auto & i = _component;
   
   
-  const auto & P = _P[_qp];
+  const auto & P_hat = _P_hat[_qp];
   
   
   
@@ -93,7 +91,7 @@ TLStressDivergence::computeQpResidual()
   
   for (int J = 0;  J < _ndisp; ++J)
   {
-    residual_Ai += P(i, J) * dNA_dX(J);
+    residual_Ai += P_hat(i, J) * dNA_dX(J);
   }  
 
 
@@ -102,7 +100,7 @@ TLStressDivergence::computeQpResidual()
 }
 
 Real
-TLStressDivergence::computeQpJacobian()
+TLStressDivergenceIncompressible::computeQpJacobian()
 {
   const auto ivar = _var.number();
 
@@ -115,7 +113,7 @@ TLStressDivergence::computeQpJacobian()
 }
 
 Real
-TLStressDivergence::computeQpOffDiagJacobian(unsigned int jvar)
+TLStressDivergenceIncompressible::computeQpOffDiagJacobian(unsigned int jvar)
 {
   for (unsigned int j = 0; j < _ndisp; ++j)
     if (jvar == _disp_var[j])
@@ -129,7 +127,7 @@ TLStressDivergence::computeQpOffDiagJacobian(unsigned int jvar)
 }
 
 Real
-TLStressDivergence::computeQpJacobianDisplacement(unsigned int comp_i, unsigned int comp_k)
+TLStressDivergenceIncompressible::computeQpJacobianDisplacement(unsigned int comp_i, unsigned int comp_k)
 {
 
   const auto & dNA_dX = _grad_test[_i][_qp];
@@ -139,8 +137,8 @@ TLStressDivergence::computeQpJacobianDisplacement(unsigned int comp_i, unsigned 
   const auto & i = comp_i;
   const auto & k = comp_k;
   
-  const auto & P = _P[_qp];
-  const auto & dP_dF = _dP_dF[_qp];
+  const auto & P_hat = _P_hat[_qp];
+  const auto & dP_hat_dF = _dP_hat_dF[_qp];
 
 
 
@@ -151,7 +149,7 @@ TLStressDivergence::computeQpJacobianDisplacement(unsigned int comp_i, unsigned 
   {
     for (int L = 0; L < _ndisp; L++)
 	{
-      dResidual_Ai_dNodeDisplacement_Bk += dNA_dX(J) * dP_dF(i, J, k, L) * dNB_dX(L);
+      dResidual_Ai_dNodeDisplacement_Bk += dNA_dX(J) * dP_hat_dF(i, J, k, L) * dNB_dX(L);
 	}
   }
 
@@ -163,22 +161,30 @@ TLStressDivergence::computeQpJacobianDisplacement(unsigned int comp_i, unsigned 
 
 
 
-// Real
-// TLStressDivergence::computeQpJacobianPressure(unsigned int comp_i)
-// {
+Real
+TLStressDivergenceIncompressible::computeQpJacobianPressure(unsigned int comp_i)
+{
   
-  // const auto & dNA_dX = _grad_test[_i][_qp];
-  // const auto & NA = _test[_i][_qp]
-  // const auto & NB = _phi[_j][_qp];
-  // const auto & i = comp_i;
+  const auto & dNA_dX = _grad_test[_i][_qp];
+  const auto & NA = _test[_i][_qp];
+  const auto & dNB_dX = _grad_phi[_j][_qp];
+  const auto & NB = _phi[_j][_qp];
+  const auto & i = comp_i;
   
-  // const auto & P = _P[_qp];
-  // const auto & dP_dF = _dP_dF[_qp];
+  const auto & P_hat = _P_hat[_qp];
+  const auto & dP_hat_dF = _dP_hat_dF[_qp];
   
-  // const auto & pressure = _pressure[_qp]
-  // const auto & mu = _mu;
+  const auto & pressure = _pressure[_qp];
+  
+  const auto & F = _F[_qp];
+  const auto & F_inv = F.inverse();
 
-  // dResidual_Ai_dPressure = 0.0;
+  Real dResidual_Ai_dPressure_B = 0.0;
+  
+  for (int J = 0;  J < _ndisp; ++J)
+  {
+    dResidual_Ai_dPressure_B += F_inv(J, i) * dNA_dX(J);
+  }  
 
-  // return dResidual_Ai_dPressure;
-// }
+  return dResidual_Ai_dPressure_B;
+}

@@ -7,12 +7,12 @@
  * Computes the divergence of 2.order stress tensors
  */
 
-class TLStressDivergence : public DerivativeMaterialInterface<Kernel>
+class TLStressDivergenceIncompressible : public DerivativeMaterialInterface<Kernel>
 {
 public:
   static InputParameters validParams();
 
-  TLStressDivergence(const InputParameters & parameters);
+  TLStressDivergenceIncompressible(const InputParameters & parameters);
 
 protected:
   virtual Real computeQpResidual() override;
@@ -27,12 +27,12 @@ protected:
 
 
   /// The tensor
-  const MaterialProperty<RankTwoTensor> & _P;
+  const MaterialProperty<RankTwoTensor> & _P_hat;
 
   /// Derivatives of the w.r.t. strain increment
-  const MaterialProperty<RankFourTensor> & _dP_dF;
+  const MaterialProperty<RankFourTensor> & _dP_hat_dF;
   
-  /// The actual deformation gradient
+  /// The deformation gradient
   const MaterialProperty<RankTwoTensor> & _F;
 
 
@@ -50,18 +50,15 @@ protected:
 
   
   ////////////////////////// ADDED STUFF ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
-  // // Material parameter (shear modulus)
-  // const Real _mu;
 
-  // /// Coupled pressure variable index
-  // const unsigned int _p_var;
+  /// Coupled pressure variable index
+  const unsigned int _p_var;
 
-  // /// Coupled pressure field at quadrature points
-  // const VariableValue & _pressure;
+  /// Coupled pressure field at quadrature points
+  const VariableValue & _pressure;
   
   
-  // Real computeQpJacobianPressure(unsigned int comp_i);
+  Real computeQpJacobianPressure(unsigned int comp_i);
   
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 };

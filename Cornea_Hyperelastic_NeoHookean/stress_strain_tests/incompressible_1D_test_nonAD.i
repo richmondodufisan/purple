@@ -30,13 +30,13 @@ right_disp_val = 0.002  # Applied displacement
 
 [Kernels]
   [div_stress_x]
-    type = TotalLagrangianStressDivergence
+    type = TLStressDivergenceIncompressible
     component = 0
     displacements = 'disp_x'
     variable = disp_x
   []
   [incompressibility]
-    type = IncompressibilityConstraint
+    type = TLIncompressibilityPressure
     variable = pressure
   []
 []
@@ -66,12 +66,12 @@ right_disp_val = 0.002  # Applied displacement
     boundary = 'right'
     value = ${right_disp_val}
   []
-  [pressure_fix]
-    type = ADDirichletBC
-    variable = pressure
-    boundary = 'right'
-    value = 0.0
-  []
+#  [pressure_fix]
+#    type = ADDirichletBC
+ #   variable = pressure
+ #   boundary = 'right'
+ #   value = 0.0
+ # []
 []
 
 [Executioner]
