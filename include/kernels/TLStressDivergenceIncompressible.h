@@ -27,10 +27,10 @@ protected:
 
 
   /// The tensor
-  const MaterialProperty<RankTwoTensor> & _P_hat;
+  const MaterialProperty<RankTwoTensor> & _P;
 
   /// Derivatives of the w.r.t. strain increment
-  const MaterialProperty<RankFourTensor> & _dP_hat_dF;
+  const MaterialProperty<RankFourTensor> & _dP_dF;
   
   /// The deformation gradient
   const MaterialProperty<RankTwoTensor> & _F;

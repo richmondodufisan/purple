@@ -69,7 +69,10 @@ RankTwoTensor ComputeStressIncompressibleNeoHookean::computePiolaKStress2(const 
 	
 	Real J_min_23 = std::pow(J, (-2.0/3.0));
 	
-	RankTwoTensor S = (mu * J_min_23 * (I  -   ((1.0/3.0) * I_1) * C_inv)) + (p * C_inv);
+	// RankTwoTensor S = (mu * J_min_23 * (I  -   ((1.0/3.0) * I_1) * C_inv)) + (p * C_inv);
+	
+	// Handle pressure part separately in Kernel
+	RankTwoTensor S = (mu * J_min_23 * (I  -   ((1.0/3.0) * I_1) * C_inv));
 	
 	return S;
 }
@@ -112,10 +115,12 @@ RankFourTensor ComputeStressIncompressibleNeoHookean::compute_dSdE(const Real &m
 					
 					
 					// Incompressibility
-					Real term5 = -p * C_inv(i, k) * C_inv(l, j);			
+					// Real term5 = -p * C_inv(i, k) * C_inv(l, j);	
+
+					// Handle pressure part separately in kernel
 					
 					
-					dSdE(i, j, k, l) = 2 * (term1 + term2 + term3 + term4 + term5);
+					dSdE(i, j, k, l) = 2 * (term1 + term2 + term3 + term4);
 				}
 			}
         }

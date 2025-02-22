@@ -60,12 +60,16 @@ TLIncompressibilityPressure::computeQpResidual()
   
   
   const auto & F = _F[_qp];
-  const auto & J = F.det();
+  const auto & F_inv = F.inverse();
+  const auto & Jac = F.det();
   
   
   
-  // Real residual_A = std::log(J) * NA * (-p/1e6);
-  Real residual_A = std::log(J) * NA;
+  // Incompressibility ln(J)
+  // Real residual_A = std::log(Jac) * NA;
+  
+  // Incompressibility (1 - J)
+  Real residual_A = (1 - Jac) * NA;
 
   return residual_A;
 }
@@ -99,6 +103,7 @@ TLIncompressibilityPressure::computeQpJacobianDisplacement(unsigned int comp_k)
 
   const auto & F = _F[_qp];
   const auto & F_inv = F.inverse();
+  const auto & Jac = F.det();
 
   const auto k = comp_k;
 
@@ -107,10 +112,13 @@ TLIncompressibilityPressure::computeQpJacobianDisplacement(unsigned int comp_k)
   
   for (int L = 0;  L < _ndisp; ++L)
   {
-    dResidual_A_dNodeDisplacement_Bk += dNB_dX(L) * F_inv(L, k) * NA;
+	// Incompressibility ln(J)
+    // dResidual_A_dNodeDisplacement_Bk += dNB_dX(L) * F_inv(L, k) * NA;
+	
+	// Incompressibility (1 - J)
+    dResidual_A_dNodeDisplacement_Bk += -dNB_dX(L) * Jac * F_inv(L, k) * NA;
   }  
 
-  std::cout << "Jacobian dR_p/dU[" << _i << "][" << _j << "] = " << dResidual_A_dNodeDisplacement_Bk << std::endl;
 
   return dResidual_A_dNodeDisplacement_Bk;
 }
@@ -118,22 +126,21 @@ TLIncompressibilityPressure::computeQpJacobianDisplacement(unsigned int comp_k)
 Real
 TLIncompressibilityPressure::computeQpJacobianPressure()
 {
-  const auto & dNA_dX = _grad_test[_i][_qp];	// gradient of pressure test shape function
-  const auto & NA = _test[_i][_qp];				// pressure test shape function
-  const auto & dNB_dX = _grad_phi[_j][_qp];
-  const auto & NB = _phi[_j][_qp];
-  const auto & p = _u[_qp];						// pressure
+  // const auto & dNA_dX = _grad_test[_i][_qp];	// gradient of pressure test shape function
+  // const auto & NA = _test[_i][_qp];				// pressure test shape function
+  // const auto & dNB_dX = _grad_phi[_j][_qp];
+  // const auto & NB = _phi[_j][_qp];
+  // const auto & p = _u[_qp];						// pressure
   
-
-
+ 
   
-  
-  const auto & F = _F[_qp];
-  const auto & J = F.det();
+  // const auto & F = _F[_qp];
+  // const auto & F_inv = F.inverse();
+  // const auto & Jac = F.det();
 
 
-  // Real dResidual_dPressure = -1e-6 * std::log(J) * NA * NB;
-  Real dResidual_dPressure = 0.0;
+  // Residual has no p dependence
+  Real dResidual_A_dPressure_B = 0.0;
 
-  return dResidual_dPressure;
+  return dResidual_A_dPressure_B;
 }
