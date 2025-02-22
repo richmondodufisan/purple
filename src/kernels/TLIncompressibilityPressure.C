@@ -63,7 +63,7 @@ TLIncompressibilityPressure::computeQpResidual()
   const auto & F_inv = F.inverse();
   const auto & Jac = F.det();
   
-  auto kappa = 1e9;
+  auto kappa = 1e15;
   
   
   
@@ -138,7 +138,7 @@ TLIncompressibilityPressure::computeQpJacobianPressure()
   const auto & p = _u[_qp];						// pressure
   
 
-  auto kappa = 1e9;
+  auto kappa = 1e15;
   
   // const auto & F = _F[_qp];
   // const auto & F_inv = F.inverse();
