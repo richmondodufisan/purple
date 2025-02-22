@@ -74,38 +74,28 @@ right_disp_val = 0.002  # Applied displacement in x
 []
 
 [BCs]
-  # Fix the left boundary in the x-direction
-  [left_fixed]
+  [left_fixed_x]
     type = ADDirichletBC
     variable = disp_x
     boundary = 'left'
     value = 0.0
   []
-  # Fix the bottom boundary in the y-direction
-  [bottom_fixed]
+  [left_fixed_y]
     type = ADDirichletBC
     variable = disp_y
-    boundary = 'bottom'
+    boundary = 'left'
     value = 0.0
   []
-  # Apply a small displacement on the right boundary in x
-  [right_disp]
+  [right_disp_x]
     type = ADDirichletBC
     variable = disp_x
     boundary = 'right'
     value = ${right_disp_val}
   []
-  # Optionally, pin the pressure on the right boundary
   [pressure_fix]
     type = ADDirichletBC
     variable = pressure
     boundary = 'right'
-    value = 0.0
-  []
-  [pressure_fix_2]
-    type = ADDirichletBC
-    variable = pressure
-    boundary = 'left'
     value = 0.0
   []
 []
@@ -122,7 +112,7 @@ right_disp_val = 0.002  # Applied displacement in x
   type = Steady
   solve_type = 'NEWTON'
   petsc_options_iname = '-pc_type'
-  petsc_options_value = 'jacobi'
+  petsc_options_value = 'lu'
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8
   l_tol = 1e-5

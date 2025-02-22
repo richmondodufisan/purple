@@ -39,10 +39,10 @@ dt_val = ${fparse right_disp_val/100}
     family = LAGRANGE
   []
   
-  [lambda]
-    family = SCALAR
-    order = FIRST
-  []
+#  [lambda]
+#    family = SCALAR
+#    order = FIRST
+#  []
 []
 
 
@@ -68,21 +68,21 @@ dt_val = ${fparse right_disp_val/100}
     variable = pressure
 	displacements = 'disp_x disp_y'
   []
-  [sk_lm]
-    type = ScalarLagrangeMultiplier
-    variable = pressure
-    lambda = lambda
-  []
+#  [sk_lm]
+#    type = ScalarLagrangeMultiplier
+#    variable = pressure
+#    lambda = lambda
+#  []
 []
 
-[ScalarKernels]
-  [constraint]
-    type = AverageValueConstraint
-    variable = lambda
-    pp_name = pressure_integral
-    value = 0.0
-  []
-[]
+#[ScalarKernels]
+#  [constraint]
+#    type = AverageValueConstraint
+#    variable = lambda
+#    pp_name = pressure_integral
+#    value = 0.0
+#  []
+#[]
 
 [AuxVariables]
   [strain_xx]
@@ -207,6 +207,14 @@ dt_val = ${fparse right_disp_val/100}
     type = ADDirichletBC
     variable = disp_y
     boundary = 'right'
+    value = 0
+	preset = false
+  []
+  
+  [pressure_bc]
+    type = ADDirichletBC
+    variable = pressure
+    boundary = 'pressure_bc_point'
     value = 0
 	preset = false
   []
