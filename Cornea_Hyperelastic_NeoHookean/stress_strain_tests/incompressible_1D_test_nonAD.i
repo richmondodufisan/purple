@@ -26,6 +26,10 @@ right_disp_val = 0.002  # Applied displacement
     order = FIRST
     family = LAGRANGE
   []
+  #[lambda]
+   # family = SCALAR
+   # order = FIRST
+ # []
 []
 
 [Kernels]
@@ -41,7 +45,21 @@ right_disp_val = 0.002  # Applied displacement
     variable = pressure
     displacements = 'disp_x'
   []
+  #[sk_lm]
+   # type = ScalarLagrangeMultiplier
+   # variable = pressure
+   # lambda = lambda
+ # []
 []
+
+#[ScalarKernels]
+  #[constraint]
+   # type = AverageValueConstraint
+   # variable = lambda
+   # pp_name = pressure_integral
+   # value = 0.0
+  #[]
+#[]
 
 [Materials]
   [stress]
@@ -73,6 +91,14 @@ right_disp_val = 0.002  # Applied displacement
     variable = pressure
     boundary = 'right'
     value = 0.0
+  []
+[]
+
+[Postprocessors]
+  [pressure_integral]
+    type = ElementIntegralVariablePostprocessor
+    variable = pressure
+	execute_on = 'initial timestep_begin linear'
   []
 []
 

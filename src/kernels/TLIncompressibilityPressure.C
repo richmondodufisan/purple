@@ -110,6 +110,8 @@ TLIncompressibilityPressure::computeQpJacobianDisplacement(unsigned int comp_k)
     dResidual_A_dNodeDisplacement_Bk += dNB_dX(L) * F_inv(L, k) * NA;
   }  
 
+  std::cout << "Jacobian dR_p/dU[" << _i << "][" << _j << "] = " << dResidual_A_dNodeDisplacement_Bk << std::endl;
+
   return dResidual_A_dNodeDisplacement_Bk;
 }
 
