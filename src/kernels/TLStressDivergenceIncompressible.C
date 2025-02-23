@@ -99,10 +99,10 @@ TLStressDivergenceIncompressible::computeQpResidual()
 	// residual_Ai += P(i, J) * dNA_dX(J);
 	
 	// Incompressibility ln(J)
-	// residual_Ai += (P(i, J) + (pressure * F_inv(J, i))) * dNA_dX(J);
+	residual_Ai += (P(i, J) + (pressure * F_inv(J, i))) * dNA_dX(J);
 	
 	// Incompressibility (1 -J)
-	residual_Ai += (P(i, J) - (pressure * Jac * F_inv(J, i))) * dNA_dX(J);
+	// residual_Ai += (P(i, J) - (pressure * Jac * F_inv(J, i))) * dNA_dX(J);
   }  
 
 
@@ -166,12 +166,22 @@ TLStressDivergenceIncompressible::computeQpJacobianDisplacement(unsigned int com
   {
     for (int L = 0; L < _ndisp; L++)
 	{
-      // dResidual_Ai_dNodeDisplacement_Bk += dNA_dX(J) * dP_hat_dF(i, J, k, L) * dNB_dX(L);
-	  
-	  // Incompressibility (1 -J)
-	  auto term2 = (dP_dF(i, J, k, L) - (pressure * (  (F_inv(J, i) * Jac * F_inv(L, k))  - (Jac * F_inv(J, k) * F_inv(L, i))  )));
+      // No incompressibility enforced
+	  // dResidual_Ai_dNodeDisplacement_Bk += dNA_dX(J) * dP_dF(i, J, k, L) * dNB_dX(L);
+	
+	
+	
+	  // Incompressibility ln(J)
+	  auto term2 = ( dP_dF(i, J, k, L) - (pressure * (Jac * F_inv(J, k) * F_inv(L, i))) );
 	  
 	  dResidual_Ai_dNodeDisplacement_Bk += dNB_dX(L) * term2 * dNA_dX(J);
+	  
+	  
+	  
+	  // Incompressibility (1 - J)
+	  // auto term2 = (dP_dF(i, J, k, L) - (pressure * (  (F_inv(J, i) * Jac * F_inv(L, k))  - (Jac * F_inv(J, k) * F_inv(L, i))  )));
+	  
+	  // dResidual_Ai_dNodeDisplacement_Bk += dNB_dX(L) * term2 * dNA_dX(J);
 	}
   }
 
@@ -207,7 +217,11 @@ TLStressDivergenceIncompressible::computeQpJacobianPressure(unsigned int comp_i)
   
   for (int J = 0;  J < _ndisp; ++J)
   {
-    dResidual_Ai_dPressure_B += -Jac * NB * F_inv(J, i) * dNA_dX(J);
+    // Incompressibility ln(J)
+	dResidual_Ai_dPressure_B += NB * F_inv(J, i) * dNA_dX(J);
+	
+	// Incompressibility (1 - J)
+	// dResidual_Ai_dPressure_B += -Jac * NB * F_inv(J, i) * dNA_dX(J);
   }  
 
   return dResidual_Ai_dPressure_B;
