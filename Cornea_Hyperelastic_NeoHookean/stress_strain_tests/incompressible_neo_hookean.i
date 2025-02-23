@@ -216,7 +216,7 @@ dt_val = ${fparse right_disp_val/100}
     variable = pressure
     boundary = 'pressure_bc_point'
     value = 0
-	preset = false
+    preset = false
   []
   
 []
@@ -235,11 +235,12 @@ dt_val = ${fparse right_disp_val/100}
   solve_type = 'NEWTON'
   line_search = 'none'
   
-  #petsc_options_iname = '-pc_type'
-  #petsc_options_value = 'jacobi'
+  petsc_options_iname = '-pc_type'
+  #petsc_options_value = 'lu'
+  petsc_options_value = 'jacobi'
   
-  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
-  petsc_options_value = 'ilu nonzero 1e-8'
+  #petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
+  #petsc_options_value = 'ilu nonzero 1e-8'
 
   nl_rel_tol = 2e-8
   nl_abs_tol = 2e-8

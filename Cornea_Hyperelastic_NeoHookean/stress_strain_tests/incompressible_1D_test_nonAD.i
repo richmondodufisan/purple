@@ -86,12 +86,12 @@ right_disp_val = 0.002  # Applied displacement
     boundary = 'right'
     value = ${right_disp_val}
   []
-  [pressure_fix]
-    type = ADDirichletBC
-    variable = pressure
-    boundary = 'right'
-    value = 0.0
-  []
+#  [pressure_fix]
+#    type = ADDirichletBC
+#    variable = pressure
+#    boundary = 'right'
+#    value = 0.0
+# []
 []
 
 [Postprocessors]
