@@ -21,7 +21,7 @@ dt_val = ${fparse right_disp_val/100}
   
   [sample_mesh]
     type = FileMeshGenerator
-    file = rectangular_plate_fine.msh
+    file = rectangular_plate.msh
   []
 []
 
