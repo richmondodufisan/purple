@@ -1,3 +1,6 @@
+# I doubt there is a solution in 1D
+# But this enables me to see if the Jacobian is constructed right
+
 # Global Parameters
 shear_modulus_val = 100000
 l_bar = 0.1  # Length of the 1D bar
@@ -23,8 +26,8 @@ right_disp_val = 0.002  # Applied displacement
     family = LAGRANGE
   []
   [pressure]
-    order = FIRST
-    family = LAGRANGE
+    order = CONSTANT
+    family = MONOMIAL
   []
   #[lambda]
    # family = SCALAR
@@ -108,13 +111,14 @@ right_disp_val = 0.002  # Applied displacement
 
 
   petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
+  #petsc_options_value = 'lu'
+  petsc_options_value = 'jacobi'
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8
   l_tol = 1e-5
-  l_max_its = 3
-  nl_max_its = 3
+  l_max_its = 20
+  nl_max_its = 100
 []
 
 [Outputs]
