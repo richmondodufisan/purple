@@ -243,8 +243,8 @@ dt_val = ${fparse right_disp_val/100}
   petsc_options_value = 'ilu nonzero 1e-8'
 
   nl_rel_tol = 1e-12
-  nl_abs_tol = 2e-8
-  l_tol = 1e-5
+  nl_abs_tol = 1e-12
+  l_tol = 1e-8
   l_max_its = 300
   nl_max_its = 200
   
