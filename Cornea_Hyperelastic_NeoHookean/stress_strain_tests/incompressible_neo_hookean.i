@@ -11,6 +11,8 @@ right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
 dt_val = ${fparse right_disp_val/10000}
 
+dt_min = ${fparse dt_val/100}
+
 #observation_point = ${fparse l_plate/10}
 
 [GlobalParams]
@@ -192,60 +194,8 @@ dt_val = ${fparse right_disp_val/10000}
     boundary = 'right'
     value = 0
 	preset = false
-  []
-  
-#  [pressure_bc_right]
-#    type = ADDirichletBC
-#    variable = pressure
-#    boundary = 'right'
-#    value = 0
-#    preset = false
-#  []
-  
-#  [pressure_bc_left]
-#    type = ADDirichletBC
-#    variable = pressure
-#    boundary = 'left'
-#    value = 0
-#    preset = false
-#  []
-  
-#  [pressure_bc_top]
-#    type = ADDirichletBC
-#    variable = pressure
-#    boundary = 'top'
-#    value = 0
-#    preset = false
-#  []
-  
-#  [pressure_bc_bottom]
-#    type = ADDirichletBC
-#    variable = pressure
-#    boundary = 'bottom'
-#    value = 0
-#    preset = false
-#  []
-  
+  [] 
 []
-
-
-#[ICs]
-#  [pressure_ic]
-#    type = ConstantIC
-#    variable = 'pressure'
-#    value = 0.0
-#  []
-#  [disp_x_ic]
-#    type = ConstantIC
-#    variable = 'disp_x'
-#    value = 0.0
-#  []
-#  [disp_y_ic]
-#    type = ConstantIC
-#    variable = 'disp_y'
-#    value = 0.0
-#  []
-#[]
 
 
 #[Preconditioning]
@@ -288,6 +238,8 @@ dt_val = ${fparse right_disp_val/10000}
     type = ConstantDT
     dt = ${dt_val}
   []
+  
+  dtmin = ${dt_min}
 []
 
 [Outputs]
