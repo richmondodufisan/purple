@@ -18,6 +18,8 @@ TLIncompressibilityPressure::validParams()
   params.addRequiredCoupledVar("displacements",
                                "The string of displacements suitable for the problem statement");
 							   
+  params.addRequiredParam<Real>("kappa", "the bluk modulus");
+							   
   return params;
 }
 
@@ -32,6 +34,7 @@ TLIncompressibilityPressure::TLIncompressibilityPressure(const InputParameters &
     _ndisp(coupledComponents("displacements")),
     _disp_var(_ndisp),
 	
+	_kappa(getParam<Real>("kappa")),
 	_F(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient"))        
 	
 	
@@ -63,9 +66,7 @@ TLIncompressibilityPressure::computeQpResidual()
   const auto & F_inv = F.inverse();
   const auto & Jac = F.det();
   
-  auto kappa = ((2 * 100000) * (1 + 0.49))/(3 * (1 - (2 * 0.49)));
-  
-  // auto kappa = 1e9;
+  auto kappa = _kappa;
   
   
   
@@ -147,9 +148,7 @@ TLIncompressibilityPressure::computeQpJacobianPressure()
   const auto & F_inv = F.inverse();
   const auto & Jac = F.det();
 
-  auto kappa = ((2 * 100000) * (1 + 0.49))/(3 * (1 - (2 * 0.49)));
-  
-  // auto kappa = 1e9;
+  auto kappa = _kappa;
   
   // const auto & F = _F[_qp];
   // const auto & F_inv = F.inverse();

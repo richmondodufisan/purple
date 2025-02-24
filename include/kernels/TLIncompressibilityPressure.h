@@ -29,4 +29,7 @@ protected:
   
   /// The deformation gradient
   const MaterialProperty<RankTwoTensor> & _F;
+  
+  /// The bulk modulus (for pressure stabilization)
+  const Real _kappa;
 };

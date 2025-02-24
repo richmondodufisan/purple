@@ -1,14 +1,15 @@
 #Global Parameters
 
 shear_modulus_val = 100000
-#poissons_ratio_val = 0.49
-#bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
 
-stretch_ratio = 1.001
+poissons_ratio_val = 0.49
+bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
+
+stretch_ratio = 5.0
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
-dt_val = ${fparse right_disp_val/100}
+dt_val = ${fparse right_disp_val/10000}
 
 #observation_point = ${fparse l_plate/10}
 
@@ -38,11 +39,6 @@ dt_val = ${fparse right_disp_val/100}
     order = CONSTANT
     family = MONOMIAL
   []
-  
-#  [lambda]
-#    family = SCALAR
-#    order = FIRST
-#  []
 []
 
 
@@ -67,22 +63,9 @@ dt_val = ${fparse right_disp_val/100}
     type = TLIncompressibilityPressure
     variable = pressure
 	displacements = 'disp_x disp_y'
+	kappa = ${bulk_modulus_val}
   []
-#  [sk_lm]
-#    type = ScalarLagrangeMultiplier
-#    variable = pressure
-#    lambda = lambda
-#  []
 []
-
-#[ScalarKernels]
-#  [constraint]
-#    type = AverageValueConstraint
-#    variable = lambda
-#    pp_name = pressure_integral
-#    value = 0.0
-#  []
-#[]
 
 [AuxVariables]
   [strain_xx]
@@ -291,7 +274,7 @@ dt_val = ${fparse right_disp_val/100}
 
   nl_rel_tol = 5e-8
   nl_abs_tol = 5e-8
-  l_tol = 1e-8
+  l_tol = 1e-5
   l_max_its = 300
   nl_max_its = 200
   
