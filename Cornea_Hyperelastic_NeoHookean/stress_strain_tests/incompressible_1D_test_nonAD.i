@@ -3,6 +3,10 @@ shear_modulus_val = 100000
 l_bar = 0.1  # Length of the 1D bar
 right_disp_val = 0.002  # Applied displacement
 
+#poissons_ratio_val = 0.49
+
+#bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
+
 [GlobalParams]
   large_kinematics = true
   use_displaced_mesh = true
@@ -26,10 +30,10 @@ right_disp_val = 0.002  # Applied displacement
     order = FIRST
     family = LAGRANGE
   []
-  #[lambda]
-   # family = SCALAR
-   # order = FIRST
- # []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
 []
 
 [Kernels]
@@ -45,21 +49,21 @@ right_disp_val = 0.002  # Applied displacement
     variable = pressure
     displacements = 'disp_x'
   []
-  #[sk_lm]
-   # type = ScalarLagrangeMultiplier
-   # variable = pressure
-   # lambda = lambda
- # []
+  [sk_lm]
+    type = ScalarLagrangeMultiplier
+    variable = pressure
+    lambda = lambda
+  []
 []
 
-#[ScalarKernels]
-  #[constraint]
-   # type = AverageValueConstraint
-   # variable = lambda
-   # pp_name = pressure_integral
-   # value = 0.0
-  #[]
-#[]
+[ScalarKernels]
+  [constraint]
+    type = AverageValueConstraint
+    variable = lambda
+    pp_name = pressure_integral
+    value = 0.0
+  []
+[]
 
 
 [AuxVariables]
@@ -130,6 +134,7 @@ right_disp_val = 0.002  # Applied displacement
   [stress]
     type = ComputeStressIncompressibleNeoHookean
     mu = ${shear_modulus_val}
+	#kappa = ${bulk_modulus_val}
     pressure = pressure
   []
   [strain]

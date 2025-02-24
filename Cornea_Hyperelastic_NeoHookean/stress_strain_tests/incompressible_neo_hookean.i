@@ -1,8 +1,8 @@
 #Global Parameters
 shear_modulus_val = 100000
-#poissons_ratio_val = 0.49
+poissons_ratio_val = 0.49
 
-#bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
+bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
 
 stretch_ratio = 5.0
 l_plate = 0.02
@@ -39,10 +39,10 @@ dt_val = ${fparse right_disp_val/100}
     family = LAGRANGE
   []
   
-#  [lambda]
-#    family = SCALAR
-#    order = FIRST
-#  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
 []
 
 
@@ -68,21 +68,21 @@ dt_val = ${fparse right_disp_val/100}
     variable = pressure
 	displacements = 'disp_x disp_y'
   []
-#  [sk_lm]
-#    type = ScalarLagrangeMultiplier
-#    variable = pressure
-#    lambda = lambda
-#  []
+  [sk_lm]
+    type = ScalarLagrangeMultiplier
+    variable = pressure
+    lambda = lambda
+  []
 []
 
-#[ScalarKernels]
-#  [constraint]
-#    type = AverageValueConstraint
-#    variable = lambda
-#    pp_name = pressure_integral
-#    value = 0.0
-#  []
-#[]
+[ScalarKernels]
+  [constraint]
+    type = AverageValueConstraint
+    variable = lambda
+    pp_name = pressure_integral
+    value = 0.0
+  []
+[]
 
 [AuxVariables]
   [strain_xx]
@@ -166,11 +166,17 @@ dt_val = ${fparse right_disp_val/100}
 []
 
 [Materials]
+#  [stress]
+#    type = ComputeStressIncompressibleNeoHookean
+#    mu = ${shear_modulus_val}
+#	
+#	pressure = pressure
+#  []
+  
   [stress]
-    type = ComputeStressIncompressibleNeoHookean
+    type = ComputeStressNearlyIncompressibleNeoHookean
     mu = ${shear_modulus_val}
-	
-	pressure = pressure
+	kappa = ${bulk_modulus_val}
   []
   
   [strain]
@@ -246,23 +252,23 @@ dt_val = ${fparse right_disp_val/100}
 []
 
 
-[ICs]
-  [pressure_ic]
-    type = ConstantIC
-    variable = 'pressure'
-    value = 1.0
-  []
-  [disp_x_ic]
-    type = ConstantIC
-    variable = 'disp_x'
-    value = 0.0
-  []
-  [disp_y_ic]
-    type = ConstantIC
-    variable = 'disp_y'
-    value = 0.0
-  []
-[]
+#[ICs]
+#  [pressure_ic]
+#    type = ConstantIC
+#    variable = 'pressure'
+#    value = 0.0
+#  []
+#  [disp_x_ic]
+#    type = ConstantIC
+#    variable = 'disp_x'
+#    value = 0.0
+#  []
+#  [disp_y_ic]
+#    type = ConstantIC
+#    variable = 'disp_y'
+#    value = 0.0
+#  []
+#[]
 
 
 [Preconditioning]
@@ -272,9 +278,9 @@ dt_val = ${fparse right_disp_val/100}
   #  solve_type = 'NEWTON'
   #[]
   
-  [FDP]
-    type = FDP
-  []
+  #[FDP]
+  #  type = FDP
+  #[]
 []
 
 [Executioner]
@@ -282,12 +288,12 @@ dt_val = ${fparse right_disp_val/100}
   solve_type = 'NEWTON'
   line_search = 'none'
   
-  #petsc_options_iname = '-pc_type'
+  petsc_options_iname = '-pc_type'
   #petsc_options_value = 'lu'
-  #petsc_options_value = 'jacobi'
+  petsc_options_value = 'jacobi'
   
-  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
-  petsc_options_value = 'ilu nonzero 1e-8'
+  #petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
+  #petsc_options_value = 'ilu nonzero 1e-8'
 
   nl_rel_tol = 2e-8
   nl_abs_tol = 2e-8
