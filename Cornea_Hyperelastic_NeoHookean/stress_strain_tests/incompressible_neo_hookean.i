@@ -27,16 +27,16 @@ dt_val = ${fparse right_disp_val/100}
 
 [Variables]
   [disp_x]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
   []
   [disp_y]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE
   []
   [pressure]
-    order = SECOND
-    family = LAGRANGE
+    order = CONSTANT
+    family = MONOMIAL
   []
   
 #  [lambda]
