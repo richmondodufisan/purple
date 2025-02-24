@@ -4,7 +4,7 @@ shear_modulus_val = 100000
 #poissons_ratio_val = 0.49
 #bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
 
-stretch_ratio = 5.0
+stretch_ratio = 1.001
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
@@ -39,10 +39,10 @@ dt_val = ${fparse right_disp_val/100}
     family = LAGRANGE
   []
   
-  [lambda]
-    family = SCALAR
-    order = FIRST
-  []
+#  [lambda]
+#    family = SCALAR
+#    order = FIRST
+#  []
 []
 
 
@@ -68,21 +68,21 @@ dt_val = ${fparse right_disp_val/100}
     variable = pressure
 	displacements = 'disp_x disp_y'
   []
-  [sk_lm]
-    type = ScalarLagrangeMultiplier
-    variable = pressure
-    lambda = lambda
-  []
+#  [sk_lm]
+#    type = ScalarLagrangeMultiplier
+#    variable = pressure
+#    lambda = lambda
+#  []
 []
 
-[ScalarKernels]
-  [constraint]
-    type = AverageValueConstraint
-    variable = lambda
-    pp_name = pressure_integral
-    value = 0.0
-  []
-[]
+#[ScalarKernels]
+#  [constraint]
+#    type = AverageValueConstraint
+#    variable = lambda
+#    pp_name = pressure_integral
+#    value = 0.0
+#  []
+#[]
 
 [AuxVariables]
   [strain_xx]
@@ -289,8 +289,8 @@ dt_val = ${fparse right_disp_val/100}
   #petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
   #petsc_options_value = 'ilu nonzero 1e-8'
 
-  nl_rel_tol = 2e-8
-  nl_abs_tol = 2e-8
+  nl_rel_tol = 5e-8
+  nl_abs_tol = 5e-8
   l_tol = 1e-8
   l_max_its = 300
   nl_max_its = 200
