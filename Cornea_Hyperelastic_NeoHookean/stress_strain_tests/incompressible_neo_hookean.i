@@ -27,22 +27,22 @@ dt_val = ${fparse right_disp_val/100}
 
 [Variables]
   [disp_x]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
   [disp_y]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
   [pressure]
-    order = CONSTANT
-    family = MONOMIAL
+    order = FIRST
+    family = LAGRANGE
   []
   
-  [lambda]
-    family = SCALAR
-    order = FIRST
-  []
+#  [lambda]
+#    family = SCALAR
+#    order = FIRST
+#  []
 []
 
 
@@ -68,21 +68,21 @@ dt_val = ${fparse right_disp_val/100}
     variable = pressure
 	displacements = 'disp_x disp_y'
   []
-  [sk_lm]
-    type = ScalarLagrangeMultiplier
-    variable = pressure
-    lambda = lambda
-  []
+#  [sk_lm]
+#    type = ScalarLagrangeMultiplier
+#    variable = pressure
+#    lambda = lambda
+#  []
 []
 
-[ScalarKernels]
-  [constraint]
-    type = AverageValueConstraint
-    variable = lambda
-    pp_name = pressure_integral
-    value = 0.0
-  []
-[]
+#[ScalarKernels]
+#  [constraint]
+#    type = AverageValueConstraint
+#    variable = lambda
+#    pp_name = pressure_integral
+#    value = 0.0
+#  []
+#[]
 
 [AuxVariables]
   [strain_xx]
@@ -161,7 +161,7 @@ dt_val = ${fparse right_disp_val/100}
   [pressure_integral]
     type = ElementIntegralVariablePostprocessor
     variable = pressure
-	execute_on = 'initial timestep_begin linear'
+	execute_on = 'initial timestep_begin'
   []
 []
 
@@ -211,10 +211,34 @@ dt_val = ${fparse right_disp_val/100}
 	preset = false
   []
   
-#  [pressure_bc]
+#  [pressure_bc_right]
 #    type = ADDirichletBC
 #    variable = pressure
-#    boundary = 'pressure_bc_point'
+#    boundary = 'right'
+#    value = 0
+#    preset = false
+#  []
+  
+#  [pressure_bc_left]
+#    type = ADDirichletBC
+#    variable = pressure
+#    boundary = 'left'
+#    value = 0
+#    preset = false
+#  []
+  
+#  [pressure_bc_top]
+#    type = ADDirichletBC
+#    variable = pressure
+#    boundary = 'top'
+#    value = 0
+#    preset = false
+#  []
+  
+#  [pressure_bc_bottom]
+#    type = ADDirichletBC
+#    variable = pressure
+#    boundary = 'bottom'
 #    value = 0
 #    preset = false
 #  []
@@ -222,11 +246,34 @@ dt_val = ${fparse right_disp_val/100}
 []
 
 
+[ICs]
+  [pressure_ic]
+    type = ConstantIC
+    variable = 'pressure'
+    value = 1.0
+  []
+  [disp_x_ic]
+    type = ConstantIC
+    variable = 'disp_x'
+    value = 0.0
+  []
+  [disp_y_ic]
+    type = ConstantIC
+    variable = 'disp_y'
+    value = 0.0
+  []
+[]
+
+
 [Preconditioning]
-  [SMP]
-    type = SMP
-    full = true
-    solve_type = 'NEWTON'
+  #[SMP]
+  #  type = SMP
+  #  full = true
+  #  solve_type = 'NEWTON'
+  #[]
+  
+  [FDP]
+    type = FDP
   []
 []
 
@@ -235,15 +282,15 @@ dt_val = ${fparse right_disp_val/100}
   solve_type = 'NEWTON'
   line_search = 'none'
   
-  petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
+  #petsc_options_iname = '-pc_type'
+  #petsc_options_value = 'lu'
   #petsc_options_value = 'jacobi'
   
-  #petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
-  #petsc_options_value = 'ilu nonzero 1e-8'
+  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
+  petsc_options_value = 'ilu nonzero 1e-8'
 
-  nl_rel_tol = 1e-10
-  nl_abs_tol = 1e-10
+  nl_rel_tol = 2e-8
+  nl_abs_tol = 2e-8
   l_tol = 1e-8
   l_max_its = 300
   nl_max_its = 200
@@ -264,4 +311,8 @@ dt_val = ${fparse right_disp_val/100}
   exodus = true
   perf_graph = true
   print_linear_residuals = false
+[]
+
+[Debug]
+  show_material_props = true
 []
