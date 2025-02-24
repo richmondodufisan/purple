@@ -33,10 +33,10 @@ right_disp_val = 0.002  # Applied displacement in x direction
     order = FIRST
     family = LAGRANGE
   []
-  [lambda]
-    family = SCALAR
-    order = FIRST
-  []
+#  [lambda]
+#    family = SCALAR
+#    order = FIRST
+#  []
 []
 
 [Kernels]
@@ -59,21 +59,21 @@ right_disp_val = 0.002  # Applied displacement in x direction
     variable = pressure
     displacements = 'disp_x disp_y'
   []
-  [sk_lm]
-    type = ScalarLagrangeMultiplier
-    variable = pressure
-    lambda = lambda
-  []
+#  [sk_lm]
+#    type = ScalarLagrangeMultiplier
+#    variable = pressure
+#    lambda = lambda
+#  []
 []
 
-[ScalarKernels]
-  [constraint]
-    type = AverageValueConstraint
-    variable = lambda
-    pp_name = pressure_integral
-    value = 0.0
-  []
-[]
+#[ScalarKernels]
+#  [constraint]
+#    type = AverageValueConstraint
+#    variable = lambda
+#    pp_name = pressure_integral
+#    value = 0.0
+#  []
+#[]
 
 [AuxVariables]
   [strain_xx]
@@ -181,6 +181,18 @@ right_disp_val = 0.002  # Applied displacement in x direction
     execute_on = 'initial timestep_begin linear'
   []
 []
+
+#[Preconditioning]
+  #[SMP]
+  #  type = SMP
+  #  full = true
+  #  solve_type = 'NEWTON'
+  #[]
+  
+  #[FDP]
+  #  type = FDP
+  #[]
+#[]
 
 [Executioner]
   type = Steady

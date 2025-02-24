@@ -64,6 +64,7 @@ TLIncompressibilityPressure::computeQpResidual()
   const auto & Jac = F.det();
   
   auto kappa = ((2 * 100000) * (1 + 0.49))/(3 * (1 - (2 * 0.49)));
+  
   // auto kappa = 1e9;
   
   
@@ -122,7 +123,7 @@ TLIncompressibilityPressure::computeQpJacobianDisplacement(unsigned int comp_k)
   for (int L = 0;  L < _ndisp; ++L)
   {
 	// Incompressibility ln(J)
-    // dResidual_A_dNodeDisplacement_Bk += dNB_dX(L) * F_inv(k, L) * NA;
+    dResidual_A_dNodeDisplacement_Bk += dNB_dX(L) * F_inv(L, k) * NA;
 	
 	// Incompressibility (1 - J)
     // dResidual_A_dNodeDisplacement_Bk += -dNB_dX(L) * Jac * F_inv(L, k) * NA;
@@ -147,6 +148,7 @@ TLIncompressibilityPressure::computeQpJacobianPressure()
   const auto & Jac = F.det();
 
   auto kappa = ((2 * 100000) * (1 + 0.49))/(3 * (1 - (2 * 0.49)));
+  
   // auto kappa = 1e9;
   
   // const auto & F = _F[_qp];
@@ -158,7 +160,7 @@ TLIncompressibilityPressure::computeQpJacobianPressure()
   // Real dResidual_A_dPressure_B = 0.0;
   
   // Incompressibility (1 - J) & ln(J) with p/kappa stabilization
-  Real dResidual_A_dPressure_B = +(NB/kappa) * NA;
+  Real dResidual_A_dPressure_B = +NB * (1.0/kappa) * NA;
 
   return dResidual_A_dPressure_B;
 }

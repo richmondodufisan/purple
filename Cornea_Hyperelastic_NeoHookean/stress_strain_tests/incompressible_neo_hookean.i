@@ -35,7 +35,7 @@ dt_val = ${fparse right_disp_val/100}
     family = LAGRANGE
   []
   [pressure]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
   []
   
@@ -296,6 +296,7 @@ dt_val = ${fparse right_disp_val/100}
   nl_max_its = 200
   
   automatic_scaling = true
+  scaling_group_variables = 'disp_x disp_y'
   
   start_time = 0.0
   end_time = ${right_disp_val}
