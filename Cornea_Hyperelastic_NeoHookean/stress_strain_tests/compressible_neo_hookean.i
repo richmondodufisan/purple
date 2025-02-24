@@ -105,12 +105,12 @@ dt_val = ${fparse right_disp_val/100}
 []
 
 [Postprocessors]
-  [displace_x]
+  [axial_strain]
     type = PointValue
     variable = strain_xx
     point = '${l_plate} 0.001 0'
   []
-  [react_x]
+  [axial_stress]
     type = PointValue
     variable = stress_xx
     point = '${l_plate} 0.001 0'
@@ -171,9 +171,9 @@ dt_val = ${fparse right_disp_val/100}
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
 
-  nl_rel_tol = 1e-10
-  nl_abs_tol = 1e-10
-  l_tol = 1e-5
+  nl_rel_tol = 1e-12
+  nl_abs_tol = 1e-12
+  l_tol = 1e-8
   l_max_its = 300
   nl_max_its = 20
   

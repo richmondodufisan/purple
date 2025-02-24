@@ -9,9 +9,7 @@ stretch_ratio = 5.0
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
 
-dt_val = ${fparse right_disp_val/10000}
-
-dt_min = ${fparse dt_val/100}
+dt_val = ${fparse right_disp_val/100}
 
 #observation_point = ${fparse l_plate/10}
 
@@ -133,12 +131,12 @@ dt_min = ${fparse dt_val/100}
 []
 
 [Postprocessors]
-  [displace_x]
+  [axial_strain]
     type = PointValue
     variable = strain_xx
     point = '${l_plate} 0.001 0'
   []
-  [react_x]
+  [axial_stress]
     type = PointValue
     variable = stress_xx
     point = '${l_plate} 0.001 0'
@@ -198,35 +196,32 @@ dt_min = ${fparse dt_val/100}
 []
 
 
-#[Preconditioning]
-  #[SMP]
-  #  type = SMP
-  #  full = true
-  #  solve_type = 'NEWTON'
-  #[]
-  
-  #[FDP]
-  #  type = FDP
-  #[]
-#[]
+[Preconditioning]
+  [vcp]
+    type = VCP
+    full = true
+    lm_variable = 'pressure'
+    primary_variable = 'disp_x'
+    preconditioner = 'AMG'
+    is_lm_coupling_diagonal = false
+    adaptive_condensation = false
+  []
+[]
+
 
 [Executioner]
   type = Transient
   solve_type = 'NEWTON'
   line_search = 'none'
   
-  petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
-  #petsc_options_value = 'jacobi'
-  
-  #petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
-  #petsc_options_value = 'ilu nonzero 1e-8'
+  petsc_options_iname = '-pc_type -ksp_type -pc_factor_mat_solver_type'
+  petsc_options_value = 'lu       gmres     superlu_dist'
 
-  nl_rel_tol = 1e-7
-  nl_abs_tol = 1e-7
-  l_tol = 1e-5
+  nl_rel_tol = 1e-12
+  nl_abs_tol = 1e-12
+  l_tol = 1e-8
   l_max_its = 300
-  nl_max_its = 200
+  nl_max_its = 20
   
   automatic_scaling = true
   scaling_group_variables = 'disp_x disp_y'
@@ -238,8 +233,6 @@ dt_min = ${fparse dt_val/100}
     type = ConstantDT
     dt = ${dt_val}
   []
-  
-  dtmin = ${dt_min}
 []
 
 [Outputs]
@@ -247,8 +240,4 @@ dt_min = ${fparse dt_val/100}
   exodus = true
   perf_graph = true
   print_linear_residuals = false
-[]
-
-[Debug]
-  show_material_props = true
 []

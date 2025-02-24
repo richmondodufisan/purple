@@ -18,7 +18,6 @@ TLIncompressibilityPressure::validParams()
   params.addRequiredCoupledVar("displacements",
                                "The string of displacements suitable for the problem statement");
 							   
-  params.addRequiredParam<Real>("kappa", "the bluk modulus");
 							   
   return params;
 }
@@ -34,7 +33,6 @@ TLIncompressibilityPressure::TLIncompressibilityPressure(const InputParameters &
     _ndisp(coupledComponents("displacements")),
     _disp_var(_ndisp),
 	
-	_kappa(getParam<Real>("kappa")),
 	_F(getMaterialPropertyByName<RankTwoTensor>(_base_name + "deformation_gradient"))        
 	
 	
@@ -66,21 +64,13 @@ TLIncompressibilityPressure::computeQpResidual()
   const auto & F_inv = F.inverse();
   const auto & Jac = F.det();
   
-  auto kappa = _kappa;
-  
   
   
   // Incompressibility ln(J)
-  // Real residual_A = std::log(Jac) * NA;
-  
-  // Incompressibility ln(J) with p/kappa stabilization
-  Real residual_A = ((std::log(Jac) + (p/kappa)) * NA) ;
+  Real residual_A = std::log(Jac) * NA;
   
   // Incompressibility (1 - J)
   // Real residual_A = (1 - Jac) * NA;
-  
-  // Incompressibility (1 - J) with p/kappa stabilization
-  // Real residual_A = ((1 - Jac - (p/kappa)) * NA) ;
 
   return residual_A;
 }
@@ -137,29 +127,10 @@ TLIncompressibilityPressure::computeQpJacobianDisplacement(unsigned int comp_k)
 Real
 TLIncompressibilityPressure::computeQpJacobianPressure()
 {
-  const auto & dNA_dX = _grad_test[_i][_qp];	// gradient of pressure test shape function
-  const auto & NA = _test[_i][_qp];				// pressure test shape function
-  const auto & dNB_dX = _grad_phi[_j][_qp];
-  const auto & NB = _phi[_j][_qp];
-  const auto & p = _u[_qp];						// pressure
-  
-
-  const auto & F = _F[_qp];
-  const auto & F_inv = F.inverse();
-  const auto & Jac = F.det();
-
-  auto kappa = _kappa;
-  
-  // const auto & F = _F[_qp];
-  // const auto & F_inv = F.inverse();
-  // const auto & Jac = F.det();
-
 
   // Residual has no p dependence
-  // Real dResidual_A_dPressure_B = 0.0;
+  Real dResidual_A_dPressure_B = 0.0;
   
-  // Incompressibility (1 - J) & ln(J) with p/kappa stabilization
-  Real dResidual_A_dPressure_B = +NB * (1.0/kappa) * NA;
 
   return dResidual_A_dPressure_B;
 }
