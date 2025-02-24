@@ -222,8 +222,8 @@ dt_min = ${fparse dt_val/100}
   #petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
   #petsc_options_value = 'ilu nonzero 1e-8'
 
-  nl_rel_tol = 5e-8
-  nl_abs_tol = 5e-8
+  nl_rel_tol = 1e-7
+  nl_abs_tol = 1e-7
   l_tol = 1e-5
   l_max_its = 300
   nl_max_its = 200
