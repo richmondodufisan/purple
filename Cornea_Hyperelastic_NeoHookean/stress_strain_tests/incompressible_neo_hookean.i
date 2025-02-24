@@ -1,8 +1,8 @@
 #Global Parameters
-shear_modulus_val = 100000
-poissons_ratio_val = 0.49
 
-bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
+shear_modulus_val = 100000
+#poissons_ratio_val = 0.49
+#bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
 
 stretch_ratio = 5.0
 l_plate = 0.02
@@ -166,17 +166,11 @@ dt_val = ${fparse right_disp_val/100}
 []
 
 [Materials]
-#  [stress]
-#    type = ComputeStressIncompressibleNeoHookean
-#    mu = ${shear_modulus_val}
-#	
-#	pressure = pressure
-#  []
-  
   [stress]
-    type = ComputeStressNearlyIncompressibleNeoHookean
+    type = ComputeStressIncompressibleNeoHookean
     mu = ${shear_modulus_val}
-	kappa = ${bulk_modulus_val}
+	
+	pressure = pressure
   []
   
   [strain]
@@ -271,7 +265,7 @@ dt_val = ${fparse right_disp_val/100}
 #[]
 
 
-[Preconditioning]
+#[Preconditioning]
   #[SMP]
   #  type = SMP
   #  full = true
@@ -281,7 +275,7 @@ dt_val = ${fparse right_disp_val/100}
   #[FDP]
   #  type = FDP
   #[]
-[]
+#[]
 
 [Executioner]
   type = Transient
@@ -289,8 +283,8 @@ dt_val = ${fparse right_disp_val/100}
   line_search = 'none'
   
   petsc_options_iname = '-pc_type'
-  #petsc_options_value = 'lu'
-  petsc_options_value = 'jacobi'
+  petsc_options_value = 'lu'
+  #petsc_options_value = 'jacobi'
   
   #petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
   #petsc_options_value = 'ilu nonzero 1e-8'

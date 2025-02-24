@@ -1,11 +1,8 @@
 # Global Parameters
 shear_modulus_val = 100000
-l_bar = 0.1  # Length of the 1D bar
-right_disp_val = 0.002  # Applied displacement
-
-#poissons_ratio_val = 0.49
-
-#bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
+l_bar = 0.1        # Length of the bar (x direction)
+h_bar = 0.01       # Height (thickness in y direction)
+right_disp_val = 0.002  # Applied displacement in x direction
 
 [GlobalParams]
   large_kinematics = true
@@ -13,15 +10,22 @@ right_disp_val = 0.002  # Applied displacement
 
 [Mesh]
   type = GeneratedMesh
-  dim = 1
-  nx = 10  # 10 elements in 1D
+  dim = 2
+  nx = 10          # Number of elements along x
+  ny = 2           # Number of elements along y
   xmin = 0.0
   xmax = ${l_bar}
+  ymin = 0.0
+  ymax = ${h_bar}
   second_order = true
 []
 
 [Variables]
   [disp_x]
+    order = SECOND
+    family = LAGRANGE
+  []
+  [disp_y]
     order = SECOND
     family = LAGRANGE
   []
@@ -39,14 +43,21 @@ right_disp_val = 0.002  # Applied displacement
   [div_stress_x]
     type = TLStressDivergenceIncompressible
     component = 0
-    displacements = 'disp_x'
+    displacements = 'disp_x disp_y'
     variable = disp_x
-	pressure = pressure
+    pressure = pressure
+  []
+  [div_stress_y]
+    type = TLStressDivergenceIncompressible
+    component = 1
+    displacements = 'disp_x disp_y'
+    variable = disp_y
+    pressure = pressure
   []
   [incompressibility]
     type = TLIncompressibilityPressure
     variable = pressure
-    displacements = 'disp_x'
+    displacements = 'disp_x disp_y'
   []
   [sk_lm]
     type = ScalarLagrangeMultiplier
@@ -64,7 +75,6 @@ right_disp_val = 0.002  # Applied displacement
   []
 []
 
-
 [AuxVariables]
   [strain_xx]
     order = CONSTANT
@@ -74,7 +84,6 @@ right_disp_val = 0.002  # Applied displacement
     order = CONSTANT
     family = MONOMIAL
   []
-
   [stress_xx]
     order = CONSTANT
     family = MONOMIAL
@@ -83,7 +92,6 @@ right_disp_val = 0.002  # Applied displacement
     order = CONSTANT
     family = MONOMIAL
   []
-  
   [j]
     order = CONSTANT
     family = MONOMIAL
@@ -95,7 +103,7 @@ right_disp_val = 0.002  # Applied displacement
     type = RankTwoScalarAux
     rank_two_tensor = deformation_gradient
     variable = j
-	scalar_type = ThirdInvariant
+    scalar_type = ThirdInvariant
   []
   [stress_xx]
     type = RankTwoAux
@@ -111,7 +119,6 @@ right_disp_val = 0.002  # Applied displacement
     index_i = 1
     index_j = 1
   []
-
   [strain_xx]
     type = RankTwoAux
     rank_two_tensor = total_strain
@@ -128,26 +135,30 @@ right_disp_val = 0.002  # Applied displacement
   []
 []
 
-
 [Materials]
   [stress]
     type = ComputeStressIncompressibleNeoHookean
     mu = ${shear_modulus_val}
-	#kappa = ${bulk_modulus_val}
     pressure = pressure
   []
   [strain]
     type = ComputeLagrangianStrain
-    displacements = 'disp_x'
+    displacements = 'disp_x disp_y'
   []
 []
 
 [BCs]
-  [left_fixed]
+  [left_fixed_x]
     type = ADDirichletBC
     variable = disp_x
     boundary = 'left'
-    value = 0
+    value = 0.0
+  []
+  [left_fixed_y]
+    type = ADDirichletBC
+    variable = disp_y
+    boundary = 'left'
+    value = 0.0
   []
   [right_disp]
     type = ADDirichletBC
@@ -155,19 +166,19 @@ right_disp_val = 0.002  # Applied displacement
     boundary = 'right'
     value = ${right_disp_val}
   []
-#  [pressure_fix]
-#    type = ADDirichletBC
-#    variable = pressure
-#    boundary = 'right'
-#    value = 0.0
-#  []
+  [right_fixed_y]
+    type = ADDirichletBC
+    variable = disp_y
+    boundary = 'right'
+    value = 0.0
+  []
 []
 
 [Postprocessors]
   [pressure_integral]
     type = ElementIntegralVariablePostprocessor
     variable = pressure
-	execute_on = 'initial timestep_begin linear'
+    execute_on = 'initial timestep_begin linear'
   []
 []
 
@@ -175,9 +186,15 @@ right_disp_val = 0.002  # Applied displacement
   type = Steady
   solve_type = 'NEWTON'
 
-
+  #petsc_options_iname = '-pc_type'
+  #petsc_options_value = 'lu'
+  
+  petsc_options = '-pc_svd_monitor'
   petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
+  petsc_options_value = 'svd'
+  
+  #automatic_scaling = true
+  #scaling_group_variables = 'disp_x disp_y'
 
   nl_rel_tol = 1e-12
   nl_abs_tol = 1e-12

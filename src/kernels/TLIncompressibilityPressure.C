@@ -72,7 +72,7 @@ TLIncompressibilityPressure::computeQpResidual()
   // Real residual_A = std::log(Jac) * NA;
   
   // Incompressibility ln(J) with p/kappa stabilization
-  Real residual_A = ((std::log(Jac) - (p/kappa)) * NA) ;
+  Real residual_A = ((std::log(Jac) + (p/kappa)) * NA) ;
   
   // Incompressibility (1 - J)
   // Real residual_A = (1 - Jac) * NA;
@@ -122,7 +122,7 @@ TLIncompressibilityPressure::computeQpJacobianDisplacement(unsigned int comp_k)
   for (int L = 0;  L < _ndisp; ++L)
   {
 	// Incompressibility ln(J)
-    dResidual_A_dNodeDisplacement_Bk += dNB_dX(L) * F_inv(L, k) * NA;
+    // dResidual_A_dNodeDisplacement_Bk += dNB_dX(L) * F_inv(k, L) * NA;
 	
 	// Incompressibility (1 - J)
     // dResidual_A_dNodeDisplacement_Bk += -dNB_dX(L) * Jac * F_inv(L, k) * NA;
@@ -158,7 +158,7 @@ TLIncompressibilityPressure::computeQpJacobianPressure()
   // Real dResidual_A_dPressure_B = 0.0;
   
   // Incompressibility (1 - J) & ln(J) with p/kappa stabilization
-  Real dResidual_A_dPressure_B = -(NB/kappa) * NA;
+  Real dResidual_A_dPressure_B = +(NB/kappa) * NA;
 
   return dResidual_A_dPressure_B;
 }
