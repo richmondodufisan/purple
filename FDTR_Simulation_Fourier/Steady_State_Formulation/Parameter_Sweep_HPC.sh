@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Original file name
-# og_filename="FDTR_input_GibbsExcess_StepFunction_BesselRing"
-# extension=".i"
+og_filename="FDTR_input_GibbsExcess_StepFunction_BesselRing"
+extension=".i"
 
 og_mesh_script="FDTR_mesh"
 og_mesh_ext=".py"
