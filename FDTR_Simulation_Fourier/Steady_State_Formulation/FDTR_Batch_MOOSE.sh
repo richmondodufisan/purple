@@ -19,6 +19,6 @@ module load mpi/mpich-4.0.2-gcc-10.4.0
 
 IFS=$'\n' read -d '' -r -a lines < SteadyStateFourier.txt
 
-mpiexec -np ${SLURM_NTASKS} singularity exec -B /projects:/projects -B /scratch:/scratch -B /projects/p32089/moose:/opt/moose /projects/p32089/moose-dev_e930b1d.sif /projects/p32089/MOOSE_Applications/purple/purple-opt -i ${lines[$SLURM_ARRAY_TASK_ID]}
+mpiexec -np ${SLURM_NTASKS} singularity exec -B /projects:/projects -B /scratch:/scratch -B /projects/p32089/moose:/opt/moose /projects/p32089/moose-dev_e930b1d.sif /projects/p32089/purple/purple-opt -i ${lines[$SLURM_ARRAY_TASK_ID]}
 
 
