@@ -1,7 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from Layered_Heat_Conduction import calc_thermal_response
+# from Layered_Heat_Conduction import calc_thermal_response
+from Layered_Heat_Conduction_BesselRing import calc_thermal_response
 from scipy.optimize import curve_fit
 from scipy.integrate import trapz
 import pdb
@@ -11,7 +12,7 @@ import math
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Read the CSV files into pandas DataFrames
-FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_StepFunction_out_theta_80.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_StepFunction_BesselRing_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
 theta_angle = "0" # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -61,7 +62,7 @@ for x0 in FDTR_x0_vals:
         
     FDTR_phase_data[x0] = phase_vals
 
-
+pdb.set_trace()
 # Make a phase plot
 # First, regroup phases by frequency
 phase_by_freq = []
@@ -108,17 +109,21 @@ def fit_function_FDTR(freqs, k_Si_z, k_Si_r):
     for freq in freqs:
         # Define other parameters required by calc_thermal_response function
         N_layers = 2
-        layer2 = [40e-6, k_Si_z, k_Si_r, 2329, 689.1]
+        layer2 = [40e-6, kappa, kappa, 2329, 689.1]
         layer1 = [9e-8, 215, 215, 19300, 128.7]
         layer_props = np.array([layer2, layer1])
-        interface_props = [3e7]
+        interface_props = [conductance]
         w_probe = 1.34e-6
         w_pump = 1.53e-6
         pump_power = 0.01
+        offset = 3e-6
         freq = freq * 1e6
 
         # Calculate analytical phase 
-        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
+        # phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
+        
+        phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
+        
         phases.append(phase)
         
     return np.array(phases)
