@@ -251,13 +251,13 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 
 [Functions]
   [grain_boundary_function]
-    type = ADParsedFunction
+    type = ParsedFunction
 	expression = 'if ( (x<((-gb_width/(2*cos(theta)))+(abs(z)*tan(theta)))) | (x>((gb_width/(2*cos(theta)))+(abs(z)*tan(theta)))), k_bulk, k_gb)'
 	symbol_names = 'gb_width theta k_bulk k_gb'
 	symbol_values = '${gb_width_val} ${theta_rad} ${kappa_bulk_si} ${kappa_gb_si}'
   []
   [angular_frequency]
-	type = ADParsedFunction
+	type = ParsedFunction
 	expression = '2 * pi * freq'
 	symbol_names = 'freq'
     symbol_values = '${freq_val}'

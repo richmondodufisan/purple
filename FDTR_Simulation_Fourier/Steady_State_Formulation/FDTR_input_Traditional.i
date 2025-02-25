@@ -282,13 +282,13 @@ block_2_val = ${fparse -si_distance-gb_thickness}
 
 [Functions]
   [heat_source_function]
-    type = ADParsedFunction
+    type = ParsedFunction
     expression = '-((Q0*absorbance)/(pi*(Rpump^2)))*exp((-((x-x0)^2+(y-y0)^2))/(Rpump^2))'
     symbol_names = 'x0 y0 Rpump Q0 absorbance'
     symbol_values = '${x0_val} ${y0_val} ${pump_radius} ${pump_power} ${pump_absorbance}'
   []
   [angular_frequency]
-	type = ADParsedFunction
+	type = ParsedFunction
 	expression = '2 * pi * freq'
 	symbol_names = 'freq'
     symbol_values = '${freq_val}'
