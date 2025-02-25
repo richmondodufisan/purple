@@ -32,7 +32,7 @@ def FDTR_function(freqs, kappa_z, kappa_r, G):
         pump_power = 0.01
         freq = freq * 1e6
         
-        offset = 4e-6
+        offset = 5e-6
 
         # Calculate analytical phase 
         phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
@@ -86,13 +86,13 @@ plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
 
 # Set title and legend font size
-plt.title('Sensitivity Plot for 90nm Au on Si, 4 micron offset', fontsize=16)
+plt.title('Sensitivity Plot for 90nm Au on Si, 5 micron offset', fontsize=16)
 # plt.title('Sensitivity Plot for 90nm Au on Si, concentric beams', fontsize=16)
 plt.legend(fontsize=14)
 
 # Display and save plot
-# plt.savefig('sensitivity_offset.png')
-plt.savefig('sensitivity_concentric.png')
+plt.savefig('sensitivity_offset_5um.png')
+# plt.savefig('sensitivity_concentric.png')
 plt.show()
 
 
