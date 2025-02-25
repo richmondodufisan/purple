@@ -341,14 +341,8 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 []
 
 [Outputs]
-  interval = 1
-  #execute_on = 'initial timestep_end'
   print_linear_residuals = false
   csv = true
-  exodus = true
-  [pgraph]
-    type = PerfGraphOutput
-    execute_on = 'final'  # Default is "final"
-    level = 1             # Default is 1
-  []
+  exodus = false
 []
+

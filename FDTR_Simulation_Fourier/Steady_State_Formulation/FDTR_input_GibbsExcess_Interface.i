@@ -467,14 +467,8 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
 []
 
 [Outputs]
-  interval = 1
-  #execute_on = 'initial timestep_end'
   print_linear_residuals = false
   csv = true
   exodus = false
-  [pgraph]
-    type = PerfGraphOutput
-    execute_on = 'final'  # Default is "final"
-    level = 1             # Default is 1
-  []
 []
+

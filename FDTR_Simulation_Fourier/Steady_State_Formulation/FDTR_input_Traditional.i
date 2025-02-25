@@ -368,14 +368,8 @@ block_2_val = ${fparse -si_distance-gb_thickness}
 []
 
 [Outputs]
-  interval = 1
-  #execute_on = 'initial timestep_end'
   print_linear_residuals = false
   csv = true
   exodus = false
-  [pgraph]
-    type = PerfGraphOutput
-    execute_on = 'final'  # Default is "final"
-    level = 1             # Default is 1
-  []
 []
+
