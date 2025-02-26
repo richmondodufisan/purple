@@ -1,8 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from Layered_Heat_Conduction_BesselRing import calc_thermal_response
-# from Layered_Heat_Conduction import calc_thermal_response
+# from Layered_Heat_Conduction_BesselRing import calc_thermal_response
+from Layered_Heat_Conduction import calc_thermal_response
 import pdb
 import csv
 import math
@@ -32,11 +32,11 @@ def FDTR_function(freqs, kappa_z, kappa_r, G):
         pump_power = 0.01
         freq = freq * 1e6
         
-        offset = 5e-6
+        offset = 6e-6
 
         # Calculate analytical phase 
-        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
-        # phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
+        # phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
+        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
         
         # phase = phase * (180/np.pi)   # Toggle to plot sensitivity in degrees instead of radians
         phases.append(phase)
@@ -45,25 +45,28 @@ def FDTR_function(freqs, kappa_z, kappa_r, G):
     
     
 # Calculate conductance sensitivity
+factor1 = 0.9
+factor2 = 1.1
 
-phase_G_1 = FDTR_function(freq_range, kappa_z, kappa_r, G*0.9)
-phase_G_2 = FDTR_function(freq_range, kappa_z, kappa_r, G*1.1)
 
-Sensitivity_G = (phase_G_2 - phase_G_1)/(np.log(G * 1.1) - np.log(G * 0.9))
+phase_G_1 = FDTR_function(freq_range, kappa_z, kappa_r, G*factor1)
+phase_G_2 = FDTR_function(freq_range, kappa_z, kappa_r, G*factor2)
+
+Sensitivity_G = (phase_G_2 - phase_G_1)/(np.log(G * factor2) - np.log(G * factor1))
 
 # Calculate z kappa sensitivity
 
-phase_kappa_z_1 = FDTR_function(freq_range, kappa_z*0.9, kappa_r, G)
-phase_kappa_z_2 = FDTR_function(freq_range, kappa_z*1.1, kappa_r, G)
+phase_kappa_z_1 = FDTR_function(freq_range, kappa_z*factor1, kappa_r, G)
+phase_kappa_z_2 = FDTR_function(freq_range, kappa_z*factor2, kappa_r, G)
 
-Sensitivity_kappa_z = (phase_kappa_z_2 - phase_kappa_z_1)/(np.log(kappa_z * 1.1) - np.log(kappa_z * 0.9))
+Sensitivity_kappa_z = (phase_kappa_z_2 - phase_kappa_z_1)/(np.log(kappa_z * factor2) - np.log(kappa_z * factor1))
 
 # Calculate r kappa sensitivity
 
-phase_kappa_r_1 = FDTR_function(freq_range, kappa_z, kappa_r*0.9, G)
-phase_kappa_r_2 = FDTR_function(freq_range, kappa_z, kappa_r*1.1, G)
+phase_kappa_r_1 = FDTR_function(freq_range, kappa_z, kappa_r*factor1, G)
+phase_kappa_r_2 = FDTR_function(freq_range, kappa_z, kappa_r*factor2, G)
 
-Sensitivity_kappa_r = (phase_kappa_r_2 - phase_kappa_r_1)/(np.log(kappa_r * 1.1) - np.log(kappa_r * 0.9))
+Sensitivity_kappa_r = (phase_kappa_r_2 - phase_kappa_r_1)/(np.log(kappa_r * factor2) - np.log(kappa_r * factor1))
 
 
 
@@ -86,13 +89,13 @@ plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
 
 # Set title and legend font size
-plt.title('Sensitivity Plot for 90nm Au on Si, 5 micron offset', fontsize=16)
-# plt.title('Sensitivity Plot for 90nm Au on Si, concentric beams', fontsize=16)
+# plt.title('Sensitivity Plot for 90nm Au on Si, 6 micron offset', fontsize=16)
+plt.title('Sensitivity Plot for 90nm Au on Si, concentric beams', fontsize=16)
 plt.legend(fontsize=14)
 
 # Display and save plot
-plt.savefig('sensitivity_offset_5um.png')
-# plt.savefig('sensitivity_concentric.png')
+# plt.savefig('sensitivity_offset_6um.png')
+plt.savefig('sensitivity_concentric.png')
 plt.show()
 
 

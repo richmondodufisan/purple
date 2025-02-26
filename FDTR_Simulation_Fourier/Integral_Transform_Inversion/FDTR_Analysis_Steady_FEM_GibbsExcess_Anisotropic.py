@@ -29,6 +29,38 @@ FDTR_x0_vals = FDTR_data['x0'].unique().tolist()
 
 
 
+############################################# PLOT RAW DATA FOR INSPECTION #############################################
+# Plot imag_part and real_part grouped by frequency
+plt.figure(figsize=(10, 5))
+for freq in FDTR_freq_vals:
+    subset = FDTR_data[FDTR_data['frequency'] == freq]
+    plt.plot(subset['x0'], subset['imag_part'], marker='o', linestyle='-', label=f"{freq} MHz")
+
+plt.xlabel('Pump/Probe Position')
+plt.ylabel('Imaginary Part')
+plt.title('Imaginary Part vs Position (Grouped by Frequency)')
+plt.legend(title='Frequencies', loc='upper right')
+plt.grid(True)
+plt.show()
+
+plt.figure(figsize=(10, 5))
+for freq in FDTR_freq_vals:
+    subset = FDTR_data[FDTR_data['frequency'] == freq]
+    plt.plot(subset['x0'], subset['real_part'], marker='o', linestyle='-', label=f"{freq} MHz")
+
+plt.xlabel('Pump/Probe Position')
+plt.ylabel('Real Part')
+plt.title('Real Part vs Position (Grouped by Frequency)')
+plt.legend(title='Frequencies', loc='upper right')
+plt.grid(True)
+plt.show()
+
+############################################# END PLOT RAW DATA FOR INSPECTION #############################################
+
+
+
+
+
 
 
 ############################################# CALCULATING PHASE VALUES FROM DATA #############################################
@@ -56,13 +88,20 @@ for x0 in FDTR_x0_vals:
             phase = math.atan2(imag_val, real_val)
         
             amplitude = math.sqrt(imag_val**2 + real_val**2)
+            
+            # Wrapping phase values for consistency with model
+            phase = phase % (2 * np.pi)  # Wrap to [0, 2π]
+            if phase > 0:  
+                phase -= 2 * np.pi  # Shift to [-2π, 0] range
         
             # Save phase values
             phase_vals.append(phase)
+            
+            pdb.set_trace()
         
     FDTR_phase_data[x0] = phase_vals
 
-pdb.set_trace()
+# pdb.set_trace()
 # Make a phase plot
 # First, regroup phases by frequency
 phase_by_freq = []
@@ -103,16 +142,16 @@ plt.show()
 ############################################# FITTING THERMAL CONDUCTIVITY FROM ACTUAL DATA #############################################
 
 # Define wrapper function and material properties for fitting actual data
-def fit_function_FDTR(freqs, k_Si_z, k_Si_r):
+def fit_function_FDTR(freqs, kappa_z, kappa_r):
     phases = []
 
     for freq in freqs:
         # Define other parameters required by calc_thermal_response function
         N_layers = 2
-        layer2 = [40e-6, kappa, kappa, 2329, 689.1]
+        layer2 = [40e-6, kappa_z, kappa_r, 2329, 689.1]
         layer1 = [9e-8, 215, 215, 19300, 128.7]
         layer_props = np.array([layer2, layer1])
-        interface_props = [conductance]
+        interface_props = [30e6]
         w_probe = 1.34e-6
         w_pump = 1.53e-6
         pump_power = 0.01
@@ -124,8 +163,18 @@ def fit_function_FDTR(freqs, k_Si_z, k_Si_r):
         
         phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
         
-        phases.append(phase)
+        # Ensure model-generated phase is also wrapped within [-2*pi, 0]
+        phase = phase % (2 * np.pi)  # Wrap to [0, 2π]
+        if phase > 0:  
+            phase -= 2 * np.pi  # Shift to [-2π, 0] range
         
+        phases.append(phase)
+    
+    phases = np.array(phases)
+    
+    # Ensure phase values are smooth/continuous
+    phases = np.unwrap(phases)
+    
     return np.array(phases)
 
 
@@ -140,6 +189,10 @@ counter = 0
 for x0 in FDTR_x0_vals:
 
     FDTR_phase = np.array(FDTR_phase_data[x0])
+    
+    # Unwrap phase to prevent discontinuities
+    FDTR_phase = np.unwrap(FDTR_phase)
+    
     #pdb.set_trace()
     # popt = optimized params (kappa), pcov = covariance (not needed, except maybe for debugging)
     popt, pcov = curve_fit(
@@ -147,7 +200,7 @@ for x0 in FDTR_x0_vals:
         FDTR_freq,   # Frequency data
         FDTR_phase,  # Phase data
         p0=(130, 130), # Initial guesses
-        bounds=([100, 100], [200, 200]),  # Set bounds for k_Si and conductance
+        bounds=([0, 0], [300, 300]),  # Set bounds for the radial and transverse conductivities
         method='trf',  # Use Trust Region Reflective algorithm
         maxfev=10000,  # Maximum number of function evaluations
         ftol=1e-12,   # Set the tolerance on the relative error in the function values
@@ -155,13 +208,13 @@ for x0 in FDTR_x0_vals:
         gtol=1e-12    # Set the tolerance on the norm of the gradient
     )
     
-    k_Si_opt_z = popt[0]
-    k_Si_opt_r = popt[1]
+    kappa_z_opt = popt[0]
+    kappa_r_opt = popt[1]
     
     # pdb.set_trace()
     # Plot phase/frequency fit for one location
     if (counter == 0):
-        fitted_phase_vals = fit_function_FDTR(FDTR_freq, k_Si_opt_z, k_Si_opt_r)
+        fitted_phase_vals = fit_function_FDTR(FDTR_freq, kappa_z_opt, kappa_r_opt)
         
         plt.figure()
         plt.plot(FDTR_freq, fitted_phase_vals, marker='v', linestyle='solid', color='purple', markersize=8, label = "analytical model")
@@ -176,8 +229,8 @@ for x0 in FDTR_x0_vals:
     
     counter = counter + 1
     
-    thermal_conductivity_z.append(k_Si_opt_z)
-    thermal_conductivity_r.append(k_Si_opt_r)
+    thermal_conductivity_z.append(kappa_z_opt)
+    thermal_conductivity_r.append(kappa_r_opt)
 
 plt.figure()
 plt.plot(FDTR_x0_vals, thermal_conductivity_z, marker='o', linestyle='--', color='black', markersize=8)
