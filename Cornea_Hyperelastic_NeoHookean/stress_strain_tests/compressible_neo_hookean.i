@@ -70,9 +70,21 @@ dt_val = ${fparse right_disp_val/100}
     order = CONSTANT
     family = MONOMIAL
   []
+  
+  [jacobian]
+    order = CONSTANT
+    family = MONOMIAL
+  []
 []
 
 [AuxKernels]
+  [jacobian]
+    type = RankTwoScalarAux
+    rank_two_tensor = deformation_gradient
+    variable = jacobian
+	scalar_type = ThirdInvariant
+  []
+  
   [stress_xx]
     type = RankTwoAux
     rank_two_tensor = cauchy_stress

@@ -2,9 +2,6 @@
 
 shear_modulus_val = 100000
 
-poissons_ratio_val = 0.49
-bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
-
 stretch_ratio = 5.0
 l_plate = 0.02
 right_disp_val = ${fparse (stretch_ratio - 1)*l_plate}
@@ -63,7 +60,6 @@ dt_val = ${fparse right_disp_val/100}
     type = TLIncompressibilityPressure
     variable = pressure
 	displacements = 'disp_x disp_y'
-	kappa = ${bulk_modulus_val}
   []
 []
 
@@ -86,7 +82,7 @@ dt_val = ${fparse right_disp_val/100}
     family = MONOMIAL
   []
   
-  [j]
+  [jacobian]
     order = CONSTANT
     family = MONOMIAL
   []
@@ -96,9 +92,10 @@ dt_val = ${fparse right_disp_val/100}
   [jacobian]
     type = RankTwoScalarAux
     rank_two_tensor = deformation_gradient
-    variable = j
+    variable = jacobian
 	scalar_type = ThirdInvariant
   []
+  
   [stress_xx]
     type = RankTwoAux
     rank_two_tensor = cauchy_stress
@@ -152,8 +149,6 @@ dt_val = ${fparse right_disp_val/100}
   [stress]
     type = HyperelasticIsochoricNeoHookeanStress
     mu = ${shear_modulus_val}
-	
-	pressure = pressure
   []
   
   [strain]
