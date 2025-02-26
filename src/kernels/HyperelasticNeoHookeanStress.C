@@ -1,11 +1,11 @@
-#include "ComputeStressCompressibleNeoHookean.h"
+#include "HyperelasticNeoHookeanStress.h"
 #include <Eigen/Dense>
 #include <cmath>
 
-registerMooseObject("purpleApp", ComputeStressCompressibleNeoHookean);
+registerMooseObject("purpleApp", HyperelasticNeoHookeanStress);
 
 InputParameters
-ComputeStressCompressibleNeoHookean::validParams()
+HyperelasticNeoHookeanStress::validParams()
 {
   InputParameters params = ComputeLagrangianStressPK2::validParams();
   params.addClassDescription("Collect material properties required and calculate the strain energy, stress, and tangent for an incompressible Neo-Hookean solid");
@@ -16,7 +16,7 @@ ComputeStressCompressibleNeoHookean::validParams()
   return params;
 }
 
-ComputeStressCompressibleNeoHookean::ComputeStressCompressibleNeoHookean(const InputParameters & parameters)
+HyperelasticNeoHookeanStress::HyperelasticNeoHookeanStress(const InputParameters & parameters)
   : ComputeLagrangianStressPK2(parameters),
   
   
@@ -29,7 +29,7 @@ ComputeStressCompressibleNeoHookean::ComputeStressCompressibleNeoHookean(const I
 
 
 void
-ComputeStressCompressibleNeoHookean::computeQpPK2Stress()
+HyperelasticNeoHookeanStress::computeQpPK2Stress()
 { 
    	// Deformation gradient
 	RankTwoTensor F = _F[_qp];
@@ -50,7 +50,7 @@ ComputeStressCompressibleNeoHookean::computeQpPK2Stress()
 }
 
 
-RankTwoTensor ComputeStressCompressibleNeoHookean::computePiolaKStress2(const Real &mu, const Real &lambda, const RankTwoTensor &C_inv, const RankTwoTensor &F)
+RankTwoTensor HyperelasticNeoHookeanStress::computePiolaKStress2(const Real &mu, const Real &lambda, const RankTwoTensor &C_inv, const RankTwoTensor &F)
 {	
 	// Jacobian
 	Real J = F.det();
@@ -65,7 +65,7 @@ RankTwoTensor ComputeStressCompressibleNeoHookean::computePiolaKStress2(const Re
  
 
 
-RankFourTensor ComputeStressCompressibleNeoHookean::compute_dSdE(const Real &mu, const Real &lambda, const RankTwoTensor &C_inv, const RankTwoTensor &F)
+RankFourTensor HyperelasticNeoHookeanStress::compute_dSdE(const Real &mu, const Real &lambda, const RankTwoTensor &C_inv, const RankTwoTensor &F)
 {	
 	// Jacobian
 	Real J = F.det();

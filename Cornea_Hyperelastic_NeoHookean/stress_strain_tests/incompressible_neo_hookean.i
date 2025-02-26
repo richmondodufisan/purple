@@ -150,7 +150,7 @@ dt_val = ${fparse right_disp_val/100}
 
 [Materials]
   [stress]
-    type = ComputeStressIncompressibleNeoHookean
+    type = HyperelasticIsochoricNeoHookeanStress
     mu = ${shear_modulus_val}
 	
 	pressure = pressure

@@ -2,11 +2,11 @@
 
 #include "ComputeLagrangianStressPK2.h"
 
-class ComputeStressCompressibleNeoHookean : public ComputeLagrangianStressPK2
+class HyperelasticNeoHookeanStress : public ComputeLagrangianStressPK2
 {
 public:
   static InputParameters validParams();
-  ComputeStressCompressibleNeoHookean(const InputParameters & parameters);
+  HyperelasticNeoHookeanStress(const InputParameters & parameters);
 
 protected:
   /// Actual stress/Jacobian update

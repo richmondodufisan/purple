@@ -1,29 +1,25 @@
-#include "ComputeStressIncompressibleNeoHookean.h"
+#include "HyperelasticIsochoricNeoHookeanStress.h"
 #include <Eigen/Dense>
 #include <cmath>
 
-registerMooseObject("purpleApp", ComputeStressIncompressibleNeoHookean);
+registerMooseObject("purpleApp", HyperelasticIsochoricNeoHookeanStress);
 
 InputParameters
-ComputeStressIncompressibleNeoHookean::validParams()
+HyperelasticIsochoricNeoHookeanStress::validParams()
 {
   InputParameters params = ComputeLagrangianStressPK2::validParams();
   params.addClassDescription("Collect material properties required and calculate the strain energy, stress, and tangent for an incompressible Neo-Hookean solid");
 
   params.addRequiredParam<Real>("mu", "the shear modulus");
-  
-  params.addRequiredCoupledVar("pressure", "the pressure variable");
 
   return params;
 }
 
-ComputeStressIncompressibleNeoHookean::ComputeStressIncompressibleNeoHookean(const InputParameters & parameters)
+HyperelasticIsochoricNeoHookeanStress::HyperelasticIsochoricNeoHookeanStress(const InputParameters & parameters)
   : ComputeLagrangianStressPK2(parameters),
   
   
-	_user_mu(getParam<Real>("mu")),
-	
-	_pressure(coupledValue("pressure"))
+	_user_mu(getParam<Real>("mu"))
 
 {
 }
@@ -31,16 +27,12 @@ ComputeStressIncompressibleNeoHookean::ComputeStressIncompressibleNeoHookean(con
 
 
 void
-ComputeStressIncompressibleNeoHookean::computeQpPK2Stress()
+HyperelasticIsochoricNeoHookeanStress::computeQpPK2Stress()
 { 
    	// Deformation gradient
 	RankTwoTensor F = _F[_qp];
 	
 	RankTwoTensor C = F.transpose() * F;
-	
-	
-	// Pressure
-	Real p = _pressure[_qp];
 
 
 	
@@ -48,14 +40,14 @@ ComputeStressIncompressibleNeoHookean::computeQpPK2Stress()
 	// That is, the PK2 Template Class
 	// These are the final submissions of stress and tangent operator
 	
-	_S[_qp] = computePiolaKStress2(_user_mu, C, F, p);
+	_S[_qp] = computePiolaKStress2(_user_mu, C, F);
 	
-	_C[_qp] = compute_dSdE(_user_mu, C, F, p);
+	_C[_qp] = compute_dSdE(_user_mu, C, F);
 	
 }
 
 
-RankTwoTensor ComputeStressIncompressibleNeoHookean::computePiolaKStress2(const Real &mu, const RankTwoTensor &C, const RankTwoTensor &F, const Real &p)
+RankTwoTensor HyperelasticIsochoricNeoHookeanStress::computePiolaKStress2(const Real &mu, const RankTwoTensor &C, const RankTwoTensor &F)
 {	
 	// Jacobian
 	Real J = F.det();
@@ -69,9 +61,9 @@ RankTwoTensor ComputeStressIncompressibleNeoHookean::computePiolaKStress2(const 
 	
 	Real J_min_23 = std::pow(J, (-2.0/3.0));
 	
-	// RankTwoTensor S = (mu * J_min_23 * (I  -   ((1.0/3.0) * I_1) * C_inv)) + (p * C_inv);
+
 	
-	// Handle pressure part separately in Kernel
+	// PK2 Stress
 	RankTwoTensor S = (mu * J_min_23 * (I  -   ((1.0/3.0) * I_1) * C_inv));
 	
 	return S;
@@ -79,7 +71,7 @@ RankTwoTensor ComputeStressIncompressibleNeoHookean::computePiolaKStress2(const 
  
 
 
-RankFourTensor ComputeStressIncompressibleNeoHookean::compute_dSdE(const Real &mu, const RankTwoTensor &C, const RankTwoTensor &F, const Real &p)
+RankFourTensor HyperelasticIsochoricNeoHookeanStress::compute_dSdE(const Real &mu, const RankTwoTensor &C, const RankTwoTensor &F)
 {	
 	// Jacobian
 	Real J = F.det();
@@ -112,13 +104,7 @@ RankFourTensor ComputeStressIncompressibleNeoHookean::compute_dSdE(const Real &m
 					Real term3 = (mu/3.0) * J_min_23 * I_1 * C_inv(i, k) * C_inv(l, j);
 					
 					Real term4 = -(mu/3.0) * J_min_23 * C_inv(k, l) * I(i, j);
-					
-					
-					// Incompressibility
-					// Real term5 = -p * C_inv(i, k) * C_inv(l, j);	
-
-					// Handle pressure part separately in kernel
-					
+		
 					
 					dSdE(i, j, k, l) = 2 * (term1 + term2 + term3 + term4);
 				}

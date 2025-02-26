@@ -39,17 +39,19 @@ dt_val = ${fparse right_disp_val/100}
 
 [Kernels]
   [div_sig_x]
-    type = TotalLagrangianStressDivergence
+    type = TLStressDivergenceNearlyIncompressible
 	component = 0
 	displacements = 'disp_x disp_y'
     variable = disp_x
+	kappa = ${bulk_modulus_val}
   []
   
   [div_sig_y]
-    type = TotalLagrangianStressDivergence
+    type = TLStressDivergenceNearlyIncompressible
 	component = 1
 	displacements = 'disp_x disp_y'
     variable = disp_y
+	kappa = ${bulk_modulus_val}
   []
 []
 
@@ -131,9 +133,8 @@ dt_val = ${fparse right_disp_val/100}
 
 [Materials]
   [stress]
-    type = ComputeStressNearlyIncompressibleNeoHookean
+    type = HyperelasticIsochoricNeoHookeanStress
     mu = ${shear_modulus_val}
-	kappa = ${bulk_modulus_val}
   []
   
   [strain]

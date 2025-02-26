@@ -119,7 +119,7 @@ dt_val = ${fparse right_disp_val/100}
 
 [Materials]
   [stress]
-    type = ComputeStressCompressibleNeoHookean
+    type = HyperelasticNeoHookeanStress
     mu = ${shear_modulus_val}
 	lambda = ${lame_lambda_val}
   []
