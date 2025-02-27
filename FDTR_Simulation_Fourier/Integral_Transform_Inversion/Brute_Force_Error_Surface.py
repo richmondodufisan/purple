@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import pandas as pd
 
 # from Layered_Heat_Conduction_BesselRing import calc_thermal_response
 from Layered_Heat_Conduction_ConcentricGaussian import calc_thermal_response
@@ -38,8 +39,8 @@ correct_kappa_r = 130
 assert len(user_phases) == len(user_frequencies), "Phases and frequencies must have the same length."
 
 # Define the parameter space
-kappa_z_values = np.linspace(1, 259, 30)  # Discretize kappa_z within bounds
-kappa_r_values = np.linspace(1, 259, 30)  # Discretize kappa_r within bounds
+kappa_z_values = np.linspace(100, 150, 30)  # Discretize kappa_z within bounds
+kappa_r_values = np.linspace(100, 150, 30)  # Discretize kappa_r within bounds
 
 # conductance_values = np.linspace(1e6, 59e6, 100)  # Discretize conductance within bounds
 
@@ -108,6 +109,33 @@ plt.legend()
 plt.savefig('cumulative_error_plot_2D_Concentric.png')
 # plt.savefig('cumulative_error_plot_2D_BesselRing_3um.png')
 plt.show()
+
+
+
+
+# Save error data to Excel
+error_df = pd.DataFrame(error_surface, index=kappa_z_values, columns=kappa_r_values)
+# error_df.to_excel("error_surface_data_bessel_3um.xlsx", sheet_name="Error Data")
+error_df.to_excel("error_surface_data_concentric.xlsx", sheet_name="Error Data")
+
+# Save kappa values to Excel
+kappa_df = pd.DataFrame({"kappa_z": kappa_z_values, "kappa_r": kappa_r_values})
+# kappa_df.to_excel("kappa_values_bessel_3um.xlsx", sheet_name="Kappa Values", index=False)
+kappa_df.to_excel("kappa_values_concentric.xlsx", sheet_name="Kappa Values", index=False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # # 3D Plot of the cumulative error surface
 # fig = plt.figure(figsize=(12, 8))
