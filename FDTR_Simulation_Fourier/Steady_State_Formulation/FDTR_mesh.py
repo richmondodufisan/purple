@@ -14,7 +14,7 @@ newMeshName = "FDTR_mesh.msh"
 xcen = 0
 ycen = 0
 radius = 8
-trans_thick = 0.09
+trans_thick = 5
 
 dummy_factor = 2
 trans_thick_ref = 0.09
@@ -68,10 +68,10 @@ cloop6 = gmsh.model.occ.addCurveLoop([c1, -c9, -c12, -c10])
 s6 = gmsh.model.occ.addPlaneSurface([cloop6])
 
 # Add transducer box
-p9 = gmsh.model.occ.addPoint(x_dir, y_dir, trans_thick, reg_element_refine, 9)
-p10 = gmsh.model.occ.addPoint(x_dir, -y_dir, trans_thick, reg_element_refine, 10)
-p11 = gmsh.model.occ.addPoint(-x_dir, -y_dir, trans_thick, reg_element_refine, 11)
-p12 = gmsh.model.occ.addPoint(-x_dir, y_dir, trans_thick, reg_element_refine, 12)
+p9 = gmsh.model.occ.addPoint(x_dir, y_dir, trans_thick, reg_element_refine)
+p10 = gmsh.model.occ.addPoint(x_dir, -y_dir, trans_thick, reg_element_refine)
+p11 = gmsh.model.occ.addPoint(-x_dir, -y_dir, trans_thick, reg_element_refine)
+p12 = gmsh.model.occ.addPoint(-x_dir, y_dir, trans_thick, reg_element_refine)
 
 # Add transducer lines
 c13 = gmsh.model.occ.addLine(p9, p10)
@@ -102,6 +102,13 @@ v1 = gmsh.model.occ.addVolume([sloop1])
 # Transducer volume
 sloop2 = gmsh.model.occ.addSurfaceLoop([s6, s11, s8, s7, s10, s9])
 v2 = gmsh.model.occ.addVolume([sloop2])
+
+
+
+
+
+
+#################### SUBSTRATE SUBVOLUME ######################
 
 # Points for radial refinement dummy volume
 p13 = gmsh.model.occ.addPoint(xcen, ycen, 0, sub_center_ref)
@@ -137,7 +144,13 @@ s16 = gmsh.model.occ.addSurfaceFilling(cloop16)
 sloop3 = gmsh.model.occ.addSurfaceLoop([s12, s13, s14, s15, s16])
 v3 = gmsh.model.occ.addVolume([sloop3])
 
-##### ADDITIONAL SUB-SPHERE REFINEMENT DUMMY POINTS #####
+#################### END SUBSTRATE SUBVOLUME ######################
+
+
+
+
+
+############### ADDITIONAL SUBSTRATE SUBVOLUME #################
 p36 = gmsh.model.occ.addPoint(xcen, ycen+(radius/dummy_factor), 0, sub_center_ref)
 p37 = gmsh.model.occ.addPoint(xcen, ycen-(radius/dummy_factor), 0, sub_center_ref)
 p38 = gmsh.model.occ.addPoint(xcen+(radius/dummy_factor), ycen, 0, sub_center_ref)
@@ -164,11 +177,49 @@ s31 = gmsh.model.occ.addSurfaceFilling(cloop31)
 cloop32 = gmsh.model.occ.addCurveLoop([c52, c56, c53])
 s32 = gmsh.model.occ.addSurfaceFilling(cloop32)
 
-sloop6 = gmsh.model.occ.addSurfaceLoop([s28, s29, s30, s31, s32])
-v6 = gmsh.model.occ.addVolume([sloop6])
+sloop4 = gmsh.model.occ.addSurfaceLoop([s28, s29, s30, s31, s32])
+v4 = gmsh.model.occ.addVolume([sloop4])
 
-##### END SUB-SPHERE DUMMY REFINEMENT #####
+############# END SUB-SPHERE DUMMY REFINEMENT ####################
 
+
+
+
+
+result = gmsh.model.occ.cut([(3, v1)], [(3, v3)], removeTool=False)
+if result[0]:  # Ensure subtraction was successful
+    v1 = result[0][0]  # Store the new volume tag
+
+result = gmsh.model.occ.cut([(3, v3)], [(3, v4)], removeTool=False)
+if result[0]:
+    v3 = result[0][0]
+
+
+
+
+
+gmsh.model.occ.synchronize()
+gmsh.fltk.run()
+
+
+
+
+
+
+# Remake surface 12 for the next section
+
+c21 = gmsh.model.occ.addCircleArc(p17, p13, p15)
+c22 = gmsh.model.occ.addCircleArc(p15, p13, p16)
+c23 = gmsh.model.occ.addCircleArc(p16, p13, p14)
+c24 = gmsh.model.occ.addCircleArc(p17, p13, p14)
+
+cloop12 = gmsh.model.occ.addCurveLoop([c21, c22, c23, c24])
+s12 = gmsh.model.occ.addPlaneSurface([cloop12])
+
+
+
+
+################## TRANSDUCER SUBVOLUME ##################################
 
 # Adding mesh refinement for pump region in transducer
 p27 = gmsh.model.occ.addPoint(xcen, ycen, trans_thick, trans_thick_ref)
@@ -201,6 +252,12 @@ s27 = gmsh.model.occ.addSurfaceFilling(cloop27)
 sloop5 = gmsh.model.occ.addSurfaceLoop([s12, s23, s24, s25, s26])
 v5 = gmsh.model.occ.addVolume([sloop5])
 
+################## END TRANSDUCER SUBVOLUME ##################################
+
+
+
+
+################## ADDITIONAL TRANSDUCER SUBVOLUME ##################################
 ##### TRANSDUCER DUMMY SUB-VOLUME #####
 p32 = gmsh.model.occ.addPoint(xcen, ycen+(radius/dummy_factor), trans_thick, trans_thick_ref)
 p33 = gmsh.model.occ.addPoint(xcen, ycen-(radius/dummy_factor), trans_thick, trans_thick_ref)
@@ -228,14 +285,34 @@ s36 = gmsh.model.occ.addSurfaceFilling(cloop36)
 cloop37 = gmsh.model.occ.addCurveLoop([c64, c60, c61, c52])
 s37 = gmsh.model.occ.addSurfaceFilling(cloop37)
 
-sloop7 = gmsh.model.occ.addSurfaceLoop([s28, s33, s34, s35, s36])
-v7 = gmsh.model.occ.addVolume([sloop7])
+sloop6 = gmsh.model.occ.addSurfaceLoop([s28, s33, s34, s35, s36])
+v6 = gmsh.model.occ.addVolume([sloop6])
 
-##### END TRANSDUCER DUMMY SUB-VOLUME #####
+################## END ADDITIONAL TRANSDUCER SUBVOLUME ##################################
+
+
+
+
+
+result = gmsh.model.occ.cut([(3, v2)], [(3, v5)], removeTool=False)
+if result[0]:  # Ensure subtraction was successful
+    v2 = result[0][0]  # Store the new volume tag
+
+result = gmsh.model.occ.cut([(3, v5)], [(3, v6)], removeTool=False)
+if result[0]:
+    v6 = result[0][0]
+
+
+
 
 
 
 gmsh.model.occ.synchronize()
+
+gmsh.fltk.run()
+
+
+
 
 # EMBED Dummy Points in Mesh
 # gmsh.model.mesh.embed(0, [p13], 2, s12)
@@ -248,48 +325,44 @@ gmsh.model.occ.synchronize()
 # gmsh.model.mesh.embed(3, [v7], 3, v5)
 
 # Make mesh coherent
-gmsh.model.occ.removeAllDuplicates()
-gmsh.model.occ.synchronize()
+# gmsh.model.occ.removeAllDuplicates()
+# gmsh.model.occ.synchronize()
 
-# assign mesh size at all points without a mesh size constraint
-p = gmsh.model.occ.getEntities(0)
-s = gmsh.model.mesh.getSizes(p)
 
-for ps in zip(p, s):
-    if ps[1] == 0:
-        # get coordinates of newly created points
-        val = gmsh.model.getValue(0, ps[0][1], [])
+# Subtract dummy volumes instead of relying on removeAllDuplicates
+# Subtract dummy volumes instead of relying on removeAllDuplicates
+
+
+# gmsh.fltk.run()
+
+# # assign mesh size at all points without a mesh size constraint
+# p = gmsh.model.occ.getEntities(0)
+# s = gmsh.model.mesh.getSizes(p)
+
+# for ps in zip(p, s):
+    # if ps[1] == 0:
+        # # get coordinates of newly created points
+        # val = gmsh.model.getValue(0, ps[0][1], [])
         
-        # check if they are within the radius of the small sphere
-        checkSphere = ((val[0])**2 + (val[1])**2 + (val[2])**2)
-        # checkCylinder = ((val[0])**2 + (val[1])**2 + (val[2]-0.09)**2)
-        # print(checkSphere)
+        # # check if they are within the radius of the small sphere
+        # checkSphere = ((val[0])**2 + (val[1])**2 + (val[2])**2)
+        # # checkCylinder = ((val[0])**2 + (val[1])**2 + (val[2]-0.09)**2)
+        # # print(checkSphere)
         
-        # assign small sphere refinement if yes, large sphere refinement otherwise
-        if (( checkSphere <= ((radius/dummy_factor)**2 + 1e-2)) and ((val[2]) <= 0)):
-            gmsh.model.mesh.setSize([ps[0]], trans_thick_ref)
-        else:
-            gmsh.model.mesh.setSize([ps[0]], pump_refine)
+        # # assign small sphere refinement if yes, large sphere refinement otherwise
+        # if (( checkSphere <= ((radius/dummy_factor)**2 + 1e-2)) and ((val[2]) <= 0)):
+            # gmsh.model.mesh.setSize([ps[0]], trans_thick_ref)
+        # else:
+            # gmsh.model.mesh.setSize([ps[0]], pump_refine)
    
-gmsh.model.occ.removeAllDuplicates()
-gmsh.model.occ.synchronize()
-
-# Delete extra volume erroneously created by Coherence/removeAllDuplicates()   
-volumes = gmsh.model.occ.getEntities(3)
-lastVolume = volumes[-1]
-gmsh.model.removeEntities([lastVolume], recursive=True)
-
-gmsh.model.occ.synchronize()
+# gmsh.model.occ.removeAllDuplicates()
+# gmsh.model.occ.synchronize()
 
 
-# Set algorithm / comment out to use default
-# gmsh.option.setNumber("Mesh.Algorithm", 5)
-# gmsh.option.setNumber("Mesh.Algorithm3D", 5)
 
+# # Create 3D mesh
+# gmsh.model.mesh.generate(3)
 
-# Create 3D mesh
-gmsh.model.mesh.generate(3)
-
-gmsh.write(newMeshName)
+# gmsh.write(newMeshName)
 
 # gmsh.fltk.run()
