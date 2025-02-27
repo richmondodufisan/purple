@@ -283,13 +283,6 @@ gmsh.option.setNumber("Mesh.Recombine3DAll", 1)  # Attempt hex-dominant volume m
 # Increase tolerance for surface intersections
 gmsh.option.setNumber("Geometry.Tolerance", 1e-6)
 
-# Ensure surfaces are properly oriented
-gmsh.model.mesh.reorientSurfaces()
-
-# Synchronize geometry and remove duplicates
-gmsh.model.occ.synchronize()
-gmsh.model.occ.removeAllDuplicates()
-
 # Create 3D mesh
 gmsh.model.mesh.generate(3)
 
