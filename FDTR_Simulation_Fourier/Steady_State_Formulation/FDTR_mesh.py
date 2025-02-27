@@ -3,6 +3,10 @@ import math
 import sys
 
 gmsh.initialize()
+
+# Set the number of threads for meshing
+gmsh.option.setNumber("General.NumThreads", 10)
+
 gmsh.model.add("FDTR_mesh")
 
 newMeshName = "FDTR_mesh.msh"
