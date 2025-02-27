@@ -5,7 +5,7 @@ import sys
 gmsh.initialize()
 
 # Set the number of threads for meshing
-gmsh.option.setNumber("General.NumThreads", 10)
+gmsh.option.setNumber("General.NumThreads", 20)
 
 gmsh.model.add("FDTR_mesh")
 
@@ -18,13 +18,13 @@ trans_thick = 0.09
 
 dummy_factor = 2
 trans_thick_ref = 0.09
-sub_center_ref=0.09
+sub_center_ref=0.095
 
 x_dir = 160
 y_dir = 80
 z_dir = 40
 
-pump_refine = 0.09
+pump_refine = 0.095
 reg_element_refine = 10
 
 
