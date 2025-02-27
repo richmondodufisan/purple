@@ -1,8 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-# from Layered_Heat_Conduction_BesselRing import calc_thermal_response
-from Layered_Heat_Conduction_ConcentricGaussian import calc_thermal_response
+from Layered_Heat_Conduction_BesselRing import calc_thermal_response
+# from Layered_Heat_Conduction_ConcentricGaussian import calc_thermal_response
 from scipy.optimize import curve_fit
 # from scipy.integrate import trapz
 import pdb
@@ -13,7 +13,7 @@ import math
 # File for calculating phase and amplitude for any parameters (for checking)
 # Mostly for debugging purposes
 
-freq = 100 # in MHz
+freq = 0.1 # in MHz
 kappa = 130 # in W/(m.K)
 # conductance = 3e7 # in W/(m2.K)
 conductance = 30e6 # in W/(m2.K)
@@ -44,8 +44,8 @@ freq = freq * 1e6
 # freq = freq * 1e6
 
 # Calculate analytical phase 
-phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
-# phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
+# phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
+phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
 
 print("----------------------------------------------------------------------------------------------")
 print("Phase: " + str(phase) + " radians") 

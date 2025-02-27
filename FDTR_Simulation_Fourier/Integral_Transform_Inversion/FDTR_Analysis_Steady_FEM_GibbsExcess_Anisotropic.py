@@ -30,32 +30,32 @@ FDTR_x0_vals = FDTR_data['x0'].unique().tolist()
 
 
 ############################################# PLOT RAW DATA FOR INSPECTION #############################################
-# Plot imag_part and real_part grouped by frequency
-plt.figure(figsize=(10, 5))
-for freq in FDTR_freq_vals:
-    subset = FDTR_data[FDTR_data['frequency'] == freq]
-    plt.plot(subset['x0'], subset['imag_part'], marker='o', linestyle='-', label=f"{freq} MHz")
+# # Plot imag_part and real_part grouped by frequency
+# plt.figure(figsize=(10, 5))
+# for freq in FDTR_freq_vals:
+    # subset = FDTR_data[FDTR_data['frequency'] == freq]
+    # plt.plot(subset['x0'], subset['imag_part'], marker='o', linestyle='-', label=f"{freq} MHz")
 
-plt.xlabel('Pump/Probe Position')
-plt.ylabel('Imaginary Part')
-plt.title('Imaginary Part vs Position (Grouped by Frequency)')
-plt.legend(title='Frequencies', loc='upper right')
-plt.grid(True)
-plt.show()
+# plt.xlabel('Pump/Probe Position')
+# plt.ylabel('Imaginary Part')
+# plt.title('Imaginary Part vs Position (Grouped by Frequency)')
+# plt.legend(title='Frequencies', loc='upper right')
+# plt.grid(True)
+# plt.show()
 
-plt.figure(figsize=(10, 5))
-for freq in FDTR_freq_vals:
-    subset = FDTR_data[FDTR_data['frequency'] == freq]
-    plt.plot(subset['x0'], subset['real_part'], marker='o', linestyle='-', label=f"{freq} MHz")
+# plt.figure(figsize=(10, 5))
+# for freq in FDTR_freq_vals:
+    # subset = FDTR_data[FDTR_data['frequency'] == freq]
+    # plt.plot(subset['x0'], subset['real_part'], marker='o', linestyle='-', label=f"{freq} MHz")
 
-plt.xlabel('Pump/Probe Position')
-plt.ylabel('Real Part')
-plt.title('Real Part vs Position (Grouped by Frequency)')
-plt.legend(title='Frequencies', loc='upper right')
-plt.grid(True)
-plt.show()
+# plt.xlabel('Pump/Probe Position')
+# plt.ylabel('Real Part')
+# plt.title('Real Part vs Position (Grouped by Frequency)')
+# plt.legend(title='Frequencies', loc='upper right')
+# plt.grid(True)
+# plt.show()
 
-############################################# END PLOT RAW DATA FOR INSPECTION #############################################
+# ############################################# END PLOT RAW DATA FOR INSPECTION #############################################
 
 
 
@@ -85,19 +85,20 @@ for x0 in FDTR_x0_vals:
             imag_val = subset_df['imag_part'].iloc[0]
             real_val = subset_df['real_part'].iloc[0]
             
-            phase = math.atan2(imag_val, real_val)
+            # phase = math.atan2(imag_val, real_val)
+            phase = math.atan(imag_val/real_val)
         
             amplitude = math.sqrt(imag_val**2 + real_val**2)
             
             # Wrapping phase values for consistency with model
-            phase = phase % (2 * np.pi)  # Wrap to [0, 2π]
-            if phase > 0:  
-                phase -= 2 * np.pi  # Shift to [-2π, 0] range
+            # phase = phase % (2 * np.pi)  # Wrap to [0, 2π]
+            # if phase > 0:  
+                # phase -= 2 * np.pi  # Shift to [-2π, 0] range
         
             # Save phase values
             phase_vals.append(phase)
             
-            pdb.set_trace()
+            # pdb.set_trace()
         
     FDTR_phase_data[x0] = phase_vals
 
@@ -164,9 +165,9 @@ def fit_function_FDTR(freqs, kappa_z, kappa_r):
         phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
         
         # Ensure model-generated phase is also wrapped within [-2*pi, 0]
-        phase = phase % (2 * np.pi)  # Wrap to [0, 2π]
-        if phase > 0:  
-            phase -= 2 * np.pi  # Shift to [-2π, 0] range
+        # phase = phase % (2 * np.pi)  # Wrap to [0, 2π]
+        # if phase > 0:  
+            # phase -= 2 * np.pi  # Shift to [-2π, 0] range
         
         phases.append(phase)
     
