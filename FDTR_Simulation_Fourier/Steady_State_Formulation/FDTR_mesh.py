@@ -238,14 +238,14 @@ v7 = gmsh.model.occ.addVolume([sloop7])
 gmsh.model.occ.synchronize()
 
 # EMBED Dummy Points in Mesh
-gmsh.model.mesh.embed(0, [p13], 2, s12)
-gmsh.model.mesh.embed(0, [p13], 3, v3)
+# gmsh.model.mesh.embed(0, [p13], 2, s12)
+# gmsh.model.mesh.embed(0, [p13], 3, v3)
 
-gmsh.model.mesh.embed(0, [p27], 2, s23)
-gmsh.model.mesh.embed(0, [p27], 3, v5)
+# gmsh.model.mesh.embed(0, [p27], 2, s23)
+# gmsh.model.mesh.embed(0, [p27], 3, v5)
 
-gmsh.model.mesh.embed(3, [v6], 3, v3)
-gmsh.model.mesh.embed(3, [v7], 3, v5)
+# gmsh.model.mesh.embed(3, [v6], 3, v3)
+# gmsh.model.mesh.embed(3, [v7], 3, v5)
 
 # Make mesh coherent
 gmsh.model.occ.removeAllDuplicates()
@@ -254,6 +254,7 @@ gmsh.model.occ.synchronize()
 # assign mesh size at all points without a mesh size constraint
 p = gmsh.model.occ.getEntities(0)
 s = gmsh.model.mesh.getSizes(p)
+
 for ps in zip(p, s):
     if ps[1] == 0:
         # get coordinates of newly created points
@@ -270,18 +271,21 @@ for ps in zip(p, s):
         else:
             gmsh.model.mesh.setSize([ps[0]], pump_refine)
    
+gmsh.model.occ.removeAllDuplicates()
+gmsh.model.occ.synchronize()
+
 # Delete extra volume erroneously created by Coherence/removeAllDuplicates()   
 volumes = gmsh.model.occ.getEntities(3)
 lastVolume = volumes[-1]
 gmsh.model.removeEntities([lastVolume], recursive=True)
 
-# Set algorithm to generate quadrilateral-dominant surface meshes
-gmsh.option.setNumber("Mesh.RecombineAll", 1)  # Try to recombine triangles into quads
-gmsh.option.setNumber("Mesh.Algorithm", 8)  # Delquad meshing algorithm (good for quads)
-gmsh.option.setNumber("Mesh.Recombine3DAll", 1)  # Attempt hex-dominant volume meshing
+gmsh.model.occ.synchronize()
 
-# Increase tolerance for surface intersections
-gmsh.option.setNumber("Geometry.Tolerance", 1e-6)
+
+# Set algorithm / comment out to use default
+# gmsh.option.setNumber("Mesh.Algorithm", 5)
+# gmsh.option.setNumber("Mesh.Algorithm3D", 5)
+
 
 # Create 3D mesh
 gmsh.model.mesh.generate(3)
