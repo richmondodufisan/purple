@@ -275,8 +275,20 @@ volumes = gmsh.model.occ.getEntities(3)
 lastVolume = volumes[-1]
 gmsh.model.removeEntities([lastVolume], recursive=True)
 
-# More efficient meshing algorithm used when there are multiple subvolumes
-gmsh.option.setNumber("Mesh.Algorithm",5)
+# Set algorithm to generate quadrilateral-dominant surface meshes
+gmsh.option.setNumber("Mesh.RecombineAll", 1)  # Try to recombine triangles into quads
+gmsh.option.setNumber("Mesh.Algorithm", 8)  # Delquad meshing algorithm (good for quads)
+gmsh.option.setNumber("Mesh.Recombine3DAll", 1)  # Attempt hex-dominant volume meshing
+
+# Increase tolerance for surface intersections
+gmsh.option.setNumber("Geometry.Tolerance", 1e-6)
+
+# Ensure surfaces are properly oriented
+gmsh.model.mesh.reorientSurfaces()
+
+# Synchronize geometry and remove duplicates
+gmsh.model.occ.synchronize()
+gmsh.model.occ.removeAllDuplicates()
 
 # Create 3D mesh
 gmsh.model.mesh.generate(3)
