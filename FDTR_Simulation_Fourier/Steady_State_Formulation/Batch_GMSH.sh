@@ -1,13 +1,15 @@
 #!/bin/bash
 #SBATCH --account=p32089  ## YOUR ACCOUNT pXXXX or bXXXX
 #SBATCH --partition=short  ### PARTITION (buyin, short, normal, etc)
+#SBATCH --array=0-38
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=20 ## how many cpus or processors do you need on each computer
-#SBATCH --time=4:00:00 ## how long does this need to run (remember different partitions have restrictions on this param)
-#SBATCH --mem-per-cpu=2G ## how much RAM do you need per CPU (this effects your FairShare score so be careful to not ask for more than you need))
-#SBATCH --job-name=param_sweep_meshing  ## When you run squeue -u NETID this is how you can identify the job
+#SBATCH --ntasks-per-node=20 ## how many CPUs or processors do you need on each computer
+#SBATCH --time=1:00:00 ## how long does this need to run (different partitions have restrictions on this param)
+#SBATCH --mem-per-cpu=2G ## how much RAM per CPU
+#SBATCH --job-name=mesh  ## When you run squeue -u NETID this is how you can identify the job
+#SBATCH --output=mesh_x0_%a.out ## dynamically sets the output file name
 #SBATCH --exclude=qnode0565
 
-./Parameter_Sweep_HPC.sh
+IFS=$'\n' read -d '' -r -a lines < MeshCreation.txt
 
-
+python3 "${lines[$SLURM_ARRAY_TASK_ID]}"

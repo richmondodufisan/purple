@@ -18,13 +18,13 @@ trans_thick = 0.09
 
 dummy_factor = 2
 trans_thick_ref = 0.09
-sub_center_ref=0.095
+sub_center_ref= 0.09
 
 x_dir = 160
 y_dir = 80
 z_dir = 40
 
-pump_refine = 0.095
+pump_refine = 0.09
 reg_element_refine = 10
 
 

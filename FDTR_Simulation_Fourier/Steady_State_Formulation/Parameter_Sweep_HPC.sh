@@ -22,27 +22,31 @@ freq_vals_num=("1e6" "2e6" "4e6" "6e6" "8e6" "10e6" "20e6" "40e6" "60e6" "80e6" 
 # theta_vals_num=("40" "45" "50" "55" "60" "65" "70" "75" "80" "85")
 
 
-# Clear the output file before appending
+# Clear the output files before appending
 > SteadyStateFourier.txt
+> MeshCreation.txt
 
 
 # Loop over values
 for x0_val_num in "${x0_vals_num[@]}"; do
 
-	# Replace the x0_val value in the mesh script
-	sed -i "s/\(xcen\s*=\s*\)[0-9.eE+-]\+/\1$x0_val_num/g" "${og_mesh_script}${og_mesh_ext}"
-	
-	# Replace the mesh name in the mesh script
-	new_mesh_name="${og_mesh_script}_x0_${x0_val_num}.msh"
-	sed -i "0,/newMeshName = [^ ]*/s/newMeshName = [^ ]*/newMeshName = \"$new_mesh_name\"/" "${og_mesh_script}${og_mesh_ext}"	
-	
-	#echo "$new_mesh_name"
-	
-	# Make new 3D mesh
-	python3 FDTR_mesh.py >> gmsh_output.txt &
-	wait
+	# Create a new mesh script file name
+    new_mesh_script="${og_mesh_script}_x0_${x0_val_num}${og_mesh_ext}"
 
-	echo "Mesh Generated, x0 = ${x0_val_num}"
+    # Copy the original mesh script
+    cp "${og_mesh_script}${og_mesh_ext}" "$new_mesh_script"
+
+    # Replace the x0_val value in the copied mesh script
+    sed -i "s/\(xcen\s*=\s*\)[0-9.eE+-]\+/\1$x0_val_num/g" "$new_mesh_script"
+
+    # Replace the mesh name in the copied mesh script
+    new_mesh_name="${og_mesh_script}_x0_${x0_val_num}.msh"
+    sed -i "0,/newMeshName = [^ ]*/s/newMeshName = [^ ]*/newMeshName = \"$new_mesh_name\"/" "$new_mesh_script"
+
+    # Save the new mesh script to MeshCreation.txt
+    echo "$new_mesh_script" >> MeshCreation.txt
+
+	echo "Mesh Script Created: $new_mesh_script"
 
 	for theta_val_num in "${theta_vals_num[@]}"; do
 		
@@ -70,6 +74,19 @@ for x0_val_num in "${x0_vals_num[@]}"; do
 		done
 	done
 done
+
+
+# Count the number of mesh scripts in MeshCreation.txt
+num_mesh_jobs=$(wc -l < MeshCreation.txt)
+
+# Update the job array in Batch_GMSH.sh using sed
+if [ "$num_mesh_jobs" -gt 0 ]; then
+    sed -i "s/^#SBATCH --array=[0-9-]*/#SBATCH --array=0-$((num_mesh_jobs-1))/" Batch_GMSH.sh
+    echo "Updated job array to 0-$((num_mesh_jobs-1)) in Batch_GMSH.sh"
+else
+    echo "Error: No mesh jobs found in MeshCreation.txt"
+    exit 1
+fi
 
 
 # Count the number of lines in SteadyStateFourier.txt
