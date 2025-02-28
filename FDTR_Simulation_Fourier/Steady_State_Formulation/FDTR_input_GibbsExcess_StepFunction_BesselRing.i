@@ -330,8 +330,11 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   type = Steady
   solve_type = 'NEWTON'
   
-  petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
+  #petsc_options_iname = '-pc_type'
+  #petsc_options_value = 'lu'
+  
+  petsc_options_iname = '-ksp_type -pc_type -pc_hypre_type -pc_factor_levels'
+  petsc_options_value = 'gmres hypre boomeramg 2'
 
 
   nl_rel_tol = 1e-8
