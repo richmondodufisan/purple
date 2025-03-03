@@ -20,7 +20,7 @@ stress2 = data2.iloc[:, 2]
 strain3 = data3.iloc[:, 1]
 stress3 = data3.iloc[:, 2]
 
-# Plot the data 
+# Plot the data for all three
 plt.figure(figsize=(8, 6))
 plt.plot(strain1, stress1, marker='o', linestyle='-', label=r'Compressible Neo-Hookean, $\nu = 0.2$')
 plt.plot(strain2, stress2, marker='o', linestyle='-', label=r'Nearly Incompressible Neo-Hookean, $\nu = 0.4999$')
