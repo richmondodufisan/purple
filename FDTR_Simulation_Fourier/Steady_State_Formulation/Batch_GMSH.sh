@@ -10,6 +10,15 @@
 #SBATCH --output=mesh_x0_%a.out ## dynamically sets the output file name
 #SBATCH --exclude=qnode0565
 
+
+module purge
+module load mamba/24.3.0
+module load git
+eval "$(conda shell.bash hook)"
+
+conda activate gmsh-env
+
+
 IFS=$'\n' read -d '' -r -a lines < MeshCreation.txt
 
 python3 "${lines[$SLURM_ARRAY_TASK_ID]}"
