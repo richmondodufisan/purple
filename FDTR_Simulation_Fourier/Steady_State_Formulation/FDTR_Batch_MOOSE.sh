@@ -13,12 +13,12 @@
 #moose_exec.sh ../purple-opt -i ${script_name}
 
 module purge
-module use /software/spack_v20d1/spack/share/spack/modules/linux-rhel7-x86_64/
-module load singularity
-module load mpi/mpich-4.0.2-gcc-10.4.0
+module load mamba/24.3.0
+module load git
+eval "$(conda shell.bash hook)"
+
+conda activate /projects/p32089/envs/moose
 
 IFS=$'\n' read -d '' -r -a lines < SteadyStateFourier.txt
 
-mpiexec -np ${SLURM_NTASKS} singularity exec -B /projects:/projects -B /scratch:/scratch -B /projects/p32089/moose:/opt/moose /projects/p32089/moose-dev_e930b1d.sif /projects/p32089/purple/purple-opt -i ${lines[$SLURM_ARRAY_TASK_ID]}
-
-
+mpirun -np ${SLURM_NTASKS} /projects/p32089/purple/purple-opt -i ${lines[$SLURM_ARRAY_TASK_ID]}
