@@ -20,7 +20,7 @@ x_dir = 160
 y_dir = 80
 z_dir = 40
 
-pump_refine = 0.09
+pump_refine = 0.2
 reg_element_refine = 25
 
 
