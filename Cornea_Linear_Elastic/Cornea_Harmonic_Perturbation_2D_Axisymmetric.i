@@ -1,12 +1,12 @@
 #Global Parameters
-freq_val = 3e6
+freq_val = 10e6
 omega = ${fparse 2 * pi * freq_val}
 
-youngs_modulus_val = 70e9
-poissons_ratio_val = 0.33
-density = 2700
+youngs_modulus_val = 207e9
+poissons_ratio_val = 0.29
+density = 7850
 
-excitation_val = 0.0001
+excitation_val = 10000000
 
 [GlobalParams]
   large_kinematics = false
@@ -18,6 +18,13 @@ excitation_val = 0.0001
   [sample_mesh]
     type = FileMeshGenerator
     file = eyeball_2D_axisymmetric.msh
+  []
+  
+  [applied_force]
+    type = ParsedGenerateSideset
+	input = sample_mesh
+	combinatorial_geometry = '(y > 0.025-1e-4) & (y < 0.025+1e-4) & (x < 0+1e-4) & (x < 0+1e-4)'
+	new_sideset_name = top_force_area
   []
 []
 
@@ -100,29 +107,10 @@ excitation_val = 0.0001
 	variable = disp_z_imag
 	rate = ${fparse -omega*omega*density}
   []
+  
+
 []
 
-[AuxVariables]
-  [disp_r]
-  []
-  [disp_z]
-  []
-[]
-
-[AuxKernels]
-  [x_displacement]
-    type = ParsedAux
-    variable = disp_r
-    coupled_variables = 'disp_r_real disp_r_imag'
-	expression = 'sqrt(disp_r_real^2 + disp_r_imag^2)'
-  []
-  [z_displacement]
-    type = ParsedAux
-    variable = disp_z
-    coupled_variables = 'disp_z_real disp_z_imag'
-	expression = 'sqrt(disp_z_real^2 + disp_z_imag^2)'
-  []
-[]
 
 [Materials]
   [elastic_tensor_real]
@@ -163,35 +151,17 @@ excitation_val = 0.0001
 
 [BCs]
   [harmonic_perturbation_real]
-    type = DirichletBC
+    type = NeumannBC
     variable = disp_z_real
-    boundary = 'loading_point'
+    boundary = 'top_force_area'
 	value = '${excitation_val}'
-	preset = false
   []
   
   [harmonic_perturbation_imag]
-    type = DirichletBC
+    type = NeumannBC
     variable = disp_z_imag
-    boundary = 'loading_point'
+    boundary = 'top_force_area'
     value = 0
-	preset = false
-  []
-
-  [stable_r_real]
-    type = DirichletBC
-    variable = disp_r_real
-    boundary = 'loading_point'
-	value = 0
-	preset = false
-  []
-  
-  [stable_r_imag]
-    type = DirichletBC
-    variable = disp_r_imag
-    boundary = 'loading_point'
-    value = 0
-	preset = false
   []
   
   [symmetry_real]
@@ -209,9 +179,6 @@ excitation_val = 0.0001
     value = 0
 	preset = false
   []
-
-
-
 
   [fix_r_real]
     type = DirichletBC
@@ -241,7 +208,8 @@ excitation_val = 0.0001
     boundary = 'fixed_point'
 	value = 0
 	preset = false
-  []
+  []  
+
 
 []
 

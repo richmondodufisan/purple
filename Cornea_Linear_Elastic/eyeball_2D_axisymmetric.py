@@ -4,14 +4,16 @@ import gmsh
 gmsh.initialize()
 gmsh.model.add("2D geometry")
 
+radius = 0.025
+
 # Set the refinement size
-refinement = 0.002 / 100
+refinement = radius / 100
 
 # Create points in the x-y plane
 p1 = gmsh.model.occ.addPoint(0, 0, 0, refinement)
-p2 = gmsh.model.occ.addPoint(0, 0.002, 0, refinement)
-p3 = gmsh.model.occ.addPoint(0, -0.002, 0, refinement)
-p4 = gmsh.model.occ.addPoint(0.002, 0, 0, refinement)
+p2 = gmsh.model.occ.addPoint(0, radius, 0, refinement)
+p3 = gmsh.model.occ.addPoint(0, -radius, 0, refinement)
+p4 = gmsh.model.occ.addPoint(radius, 0, 0, refinement)
 
 # Create circle arcs and lines
 c1 = gmsh.model.occ.addCircleArc(p2, p1, p4)
@@ -42,7 +44,7 @@ gmsh.model.mesh.generate(2)
 gmsh.write("eyeball_2D_axisymmetric.msh")
 
 # Run Gmsh's built-in GUI (optional)
-gmsh.fltk.run()
+# gmsh.fltk.run()
 
 # Finalize Gmsh
 gmsh.finalize()
