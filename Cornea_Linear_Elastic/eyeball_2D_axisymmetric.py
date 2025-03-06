@@ -44,7 +44,7 @@ gmsh.model.mesh.generate(2)
 gmsh.write("eyeball_2D_axisymmetric.msh")
 
 # Run Gmsh's built-in GUI (optional)
-# gmsh.fltk.run()
+gmsh.fltk.run()
 
 # Finalize Gmsh
 gmsh.finalize()

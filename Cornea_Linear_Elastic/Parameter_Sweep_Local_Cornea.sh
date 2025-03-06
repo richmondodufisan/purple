@@ -24,4 +24,5 @@ for freq_val_num in "${freq_vals_num[@]}"; do
 		sed -i "s/\(freq_val\s*=\s*\)[0-9.eE+-]\+/\1$freq_val_num/g" "$new_filename"
 		
 		../purple-opt -i $new_filename
+		wait
 done

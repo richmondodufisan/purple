@@ -12,7 +12,7 @@ excitation_frequencies = ["1e3", "1.5e3", "2e3", "2.5e3", "3e3", "3.5e3", "4e3",
                           "11.5e3", "12e3", "12.5e3", "13e3", "13.5e3", "14e3", "14.5e3", "15e3", "15.5e3", 
                           "16e3", "16.5e3", "17e3", "17.5e3", "18e3", "18.5e3", "19e3", "19.5e3", "20e3"]  
 
-file_template = './Free_X_Data/Plate_Harmonic_Perturbation_freq_{freq}_out_wave_profile_*.csv'
+file_template = './Cornea_Harmonic_Perturbation_2D_Axisymmetric_freq_{freq}_out_upper_right_z_disp_*.csv'
 
 # Function to process each file and calculate wave speeds
 def process_file(file_path, excitation_frequency):
@@ -60,7 +60,7 @@ def process_file(file_path, excitation_frequency):
     fft_magnitude_normalized = fft_magnitude / np.max(fft_magnitude)
 
     # Find peaks with magnitude > 0.2 (these are spatial frequencies, the cycles per unit arc length)
-    peaks, _ = find_peaks(fft_magnitude_normalized, height=0.2)
+    peaks, _ = find_peaks(fft_magnitude_normalized, height=0.6)
 
     # Calculate wave speeds for peaks
     wave_speeds = []
@@ -83,7 +83,7 @@ def find_latest_file(excitation_frequency):
     # Extract the wave profile number from the filenames
     def extract_wave_profile(file_name):
         base_name = os.path.basename(file_name)
-        number_str = base_name.split('_wave_profile_')[-1].split('.')[0]
+        number_str = base_name.split('_upper_right_z_disp_')[-1].split('.')[0]
         return int(number_str)  # Convert to int for numerical comparison
 
     # Find the file with the largest wave profile number
