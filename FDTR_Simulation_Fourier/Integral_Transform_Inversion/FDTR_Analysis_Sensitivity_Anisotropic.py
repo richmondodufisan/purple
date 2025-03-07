@@ -118,7 +118,7 @@ def finite_difference_log(FDTR_function, freq_range, param_name, param_value, pe
     log_1high = np.log(param_1high)
     log_2high = np.log(param_2high)
 
-    # Five-point stencil for first derivative approximation
+    # Compute derivative with respect to log(parameter), central differencing
     sensitivity = (-phase_2high + 8*phase_1high - 8*phase_1low + phase_2low) / (6 * (log_1high - log_1low))
 
     
