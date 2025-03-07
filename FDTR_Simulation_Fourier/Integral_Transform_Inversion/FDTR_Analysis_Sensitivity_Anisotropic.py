@@ -12,9 +12,9 @@ exp_range = np.arange(-1, 2.3, 0.05) # range of exponents as in experiments
 freq_range = (10**exp_range) # frequency range in MHz
 
 # Thermal Properties to check sensitivity of:
-G = 30 * 10e6       # interface conductance
-kappa_r = 130       # thermal conductivity r
-kappa_z = 130       # thermal conductivity z
+G_val = 30 * 1e6       # interface conductance
+kappa_r_val = 130       # thermal conductivity r
+kappa_z_val = 130       # thermal conductivity z
 
 
 def FDTR_function(freqs, kappa_z, kappa_r, G):
@@ -32,7 +32,7 @@ def FDTR_function(freqs, kappa_z, kappa_r, G):
         pump_power = 0.01
         freq = freq * 1e6
         
-        offset = 7e-6
+        offset = 5e-6
 
         # Calculate analytical phase 
         phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
@@ -43,31 +43,107 @@ def FDTR_function(freqs, kappa_z, kappa_r, G):
         
     return np.array(phases)
     
+
+
+def finite_difference_log(FDTR_function, freq_range, param_name, param_value, perturbation, kwargs):
+
+    # Computes sensitivity using finite difference with log-scaled perturbations.
+    # The sensitivity is defined as d/d(log x) of the phase
+    # Where x is the parameter investigated
     
-# Calculate conductance sensitivity
-factor1 = 0.9
-factor2 = 1.1
+    # Parameters:
+        # FDTR_function : function - The function to evaluate.
+        # freq_range : array - Frequency range for calculations.
+        # param_name : str - The parameter to perturb.
+        # param_value : float - The base value of the parameter.
+        # perturbation : float - The percentage change (e.g., 0.1 for ±10%).
+        # kwargs : dict - Dictionary of additional parameters for FDTR_function.
+
+    # Returns:
+        # Sensitivity (array) : d(phase) / d(log param)
 
 
-phase_G_1 = FDTR_function(freq_range, kappa_z, kappa_r, G*factor1)
-phase_G_2 = FDTR_function(freq_range, kappa_z, kappa_r, G*factor2)
+    # TWO POINT CENTRAL DIFFERENCING
+    # (f(x + h) - f(x - h))/2h
+    # Perturbed values
+    # param_low = param_value * (1 - perturbation)
+    # param_high = param_value * (1 + perturbation)
 
-Sensitivity_G = (phase_G_2 - phase_G_1)/(np.log(G * factor2) - np.log(G * factor1))
+    # # Create modified copies of kwargs for each perturbation
+    # kwargs_low = kwargs.copy()
+    # kwargs_high = kwargs.copy()
+    
+    # # Replace the parameter to be investigated (ONLY) by perturbed versions
+    # kwargs_low[param_name] = param_low
+    # kwargs_high[param_name] = param_high
 
-# Calculate z kappa sensitivity
+    # # Compute phases at perturbed values
+    # phase_low = FDTR_function(freq_range, **kwargs_low)
+    # phase_high = FDTR_function(freq_range, **kwargs_high)
 
-phase_kappa_z_1 = FDTR_function(freq_range, kappa_z*factor1, kappa_r, G)
-phase_kappa_z_2 = FDTR_function(freq_range, kappa_z*factor2, kappa_r, G)
+    # # Compute derivative with respect to log(parameter), central differencing
+    # sensitivity = (phase_high - phase_low) / (np.log(param_high) - np.log(param_low))
+    
+    
+    
+    # FOUR POINT CENTRAL DIFFERENCING
+    # (-f(x + 2h) + 8f(x + h) - 8f(x - h) + f(x - 2h))/12h
+    # Define more perturbation points 
+    param_2low = param_value * (1 - 2 * perturbation)  
+    param_1low = param_value * (1 - perturbation)     
+    param_1high = param_value * (1 + perturbation)     
+    param_2high = param_value * (1 + 2 * perturbation) 
 
-Sensitivity_kappa_z = (phase_kappa_z_2 - phase_kappa_z_1)/(np.log(kappa_z * factor2) - np.log(kappa_z * factor1))
+    # Create modified copies of kwargs for each perturbation
+    kwargs_2low = kwargs.copy()
+    kwargs_1low = kwargs.copy()
+    kwargs_1high = kwargs.copy()
+    kwargs_2high = kwargs.copy()
 
-# Calculate r kappa sensitivity
+    # Assign perturbed values
+    kwargs_2low[param_name] = param_2low
+    kwargs_1low[param_name] = param_1low
+    kwargs_1high[param_name] = param_1high
+    kwargs_2high[param_name] = param_2high
 
-phase_kappa_r_1 = FDTR_function(freq_range, kappa_z, kappa_r*factor1, G)
-phase_kappa_r_2 = FDTR_function(freq_range, kappa_z, kappa_r*factor2, G)
+    # Compute phases at perturbed values
+    phase_2low = FDTR_function(freq_range, **kwargs_2low)
+    phase_1low = FDTR_function(freq_range, **kwargs_1low)
+    phase_1high = FDTR_function(freq_range, **kwargs_1high)
+    phase_2high = FDTR_function(freq_range, **kwargs_2high)
 
-Sensitivity_kappa_r = (phase_kappa_r_2 - phase_kappa_r_1)/(np.log(kappa_r * factor2) - np.log(kappa_r * factor1))
+    # Compute log differences
+    log_2low = np.log(param_2low)
+    log_1low = np.log(param_1low)
+    log_1high = np.log(param_1high)
+    log_2high = np.log(param_2high)
 
+    # Five-point stencil for first derivative approximation
+    sensitivity = (-phase_2high + 8*phase_1high - 8*phase_1low + phase_2low) / (6 * (log_1high - log_1low))
+
+    
+    
+    return sensitivity
+
+
+
+# Define common parameters in a dictionary
+# Name in quotes is the name in FDTR_function
+# The dictionary binds the name in quotes to the values defined at the top of the code
+
+params = {"kappa_z": kappa_z_val, "kappa_r": kappa_r_val, "G": G_val}
+
+    
+# Compute sensitivities
+# Input arguments: FDTR_function, frequency range, param name (in FDTR Function), param value, perturbation amount, dictionary of params
+
+perturbation = 0.0005
+
+Sensitivity_G = finite_difference_log(FDTR_function, freq_range, "G", G_val, perturbation, params)
+
+Sensitivity_kappa_z = finite_difference_log(FDTR_function, freq_range, "kappa_z", kappa_z_val, perturbation, params)
+
+Sensitivity_kappa_r = finite_difference_log(FDTR_function, freq_range, "kappa_r", kappa_r_val, perturbation, params)
 
 
 
@@ -89,13 +165,13 @@ plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
 
 # Set title and legend font size
-plt.title('Sensitivity Plot for 90nm Au on Si, 7 micron offset', fontsize=16)
+plt.title('Sensitivity Plot for 90nm Au on Si, 5 micron offset', fontsize=16)
 # plt.title('Sensitivity Plot for 90nm Au on Si, concentric beams', fontsize=16)
 plt.legend(fontsize=14)
 
 # Display and save plot
-plt.savefig('sensitivity_offset_7um.png')
-# plt.savefig('sensitivity_concentric.png')
+plt.savefig('sensitivity_offset_5um.png')
+# plt.savefig('sensitivity_concentric_test.png')
 plt.show()
 
 

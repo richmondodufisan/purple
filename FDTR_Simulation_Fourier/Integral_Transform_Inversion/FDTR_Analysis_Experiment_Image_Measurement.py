@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from scipy.optimize import curve_fit
 from Layered_Heat_Conduction import calc_thermal_response
+import textwrap
 import pdb
 
 ############################################################# USER-DEFINED PARAMETERS #########################################################################################
@@ -16,19 +17,19 @@ import pdb
 # In this section, you define the length and breadth of the map, and the number of steps in each direction
 
 # Define map size and resolution parameters
-length_x = 90
-length_y = 90
+length_x = 100
+length_y = 100
 steps_x = 31
 steps_y = 31
 
-output_file_prefix = "SnSe"
+output_file_prefix = "Si"
 
 # Directory where phase data files are stored
 data_directory = "./"  # User should update this to the actual directory
 
 # Expected phase data files
-phase_range = ["1MHz", "2MHz", "4MHz", "10MHz", "20MHz"]
-frequencies = [1e6, 2e6, 4e6, 10e6, 20e6]  # Corresponding frequency values, write the numerical values
+phase_range = ["1MHz", "2MHz", "4MHz", "6MHz", "10MHz"]
+frequencies = [1, 2, 4, 6, 10]  # Corresponding frequency values, write the numerical values in MHz
 
 
 # Define material regions, with an array of material properties for each region
@@ -39,7 +40,7 @@ frequencies = [1e6, 2e6, 4e6, 10e6, 20e6]  # Corresponding frequency values, wri
 # You can define however many/little as you like, but when changing the size of the array, update "fit_function_FDTR" in the function definitions section
 
 regions = [
-    {"x_range": (0, 90), "y_range": (0, 90), "material_properties": [215, 19300, 128.5, 6180, 249.06]}
+    {"x_range": (0, 100), "y_range": (0, 100), "material_properties": [215, 19300, 128.5, 6180, 249.06]}
     # Add more regions as needed
 ]
 
@@ -104,11 +105,11 @@ def fit_function_FDTR(freqs, fitting_properties, material_properties):
         # See comments in Layered_Heat_Conduction.py for documentation
         N_layers = 2
         layer2 = [100e-6, kappa_2, kappa_2, rho_2, c_2]
-        layer1 = [80e-9, kappa_1, kappa_1, rho_1, c_1]
+        layer1 = [50e-9, kappa_1, kappa_1, rho_1, c_1]
         layer_props = np.array([layer2, layer1])
         interface_props = [conductance_12]
         w_probe = 1.46e-6
-        w_pump = 1.987e-6
+        w_pump = 2.1e-6
         pump_power = 1.5
         freq = freq * 1e6
 
@@ -139,7 +140,7 @@ def read_phase_data(file_name):
 
 # Store fitting results
 # CHANGE IF CHANGING FITTING PROPERTIES
-fitting_map = np.zeros((steps_y, steps_x, 2))  # Assuming we're fitting 2 properties (kappa_2, conductance_12). if more, simply change number
+fitting_map = np.zeros((steps_y, steps_x, 2))  # Assuming we're fitting 2 properties (kappa_2, conductance_12). if more, simply change number to make n-dimensional a
 
 # Perform fitting at each position
 for i in range(steps_y):
@@ -165,7 +166,7 @@ for i in range(steps_y):
 
         # Define initial guesses and bounds for fitting properties
         # CHANGE IF CHANGING FITTING PROPERTIES
-        # initial_guesses = [1, 5e6]  # Initial guesses for kappa_2 and conductance_12 (you can extend this list)
+        initial_guesses = [100, 30e6]  # Initial guesses for kappa_2 and conductance_12 (you can extend this list)
         bounds_lower = [0, 0]     # Lower bounds for the fitting properties
         bounds_upper = [300, 500e6]  # Upper bounds for the fitting properties
         
@@ -186,7 +187,7 @@ for i in range(steps_y):
                 fit_wrapper,
                 FDTR_data['frequency'],   # Frequency data
                 FDTR_data['phase'],       # Phase data
-                # p0=initial_guesses,       # Initial guesses for the fitting properties
+                p0=initial_guesses,       # Initial guesses for the fitting properties
                 bounds=(bounds_lower, bounds_upper),  # Bounds for the parameters
                 method='trf',             # Trust Region Reflective algorithm
                 maxfev=10000,             # Maximum function evaluations
@@ -201,26 +202,34 @@ for i in range(steps_y):
             
             # DEBUGGING - check fit
             # Plot fit vs. experimental data for specific coordinate
-            
-            # if i == 0 and j == 0:  # Change this to the desired coordinate
-            if (True):
-            
-                fit_phases = fit_function_FDTR((FDTR_data['frequency']/1e6), popt, material_properties)
+            if i == 0 and j == 0:  # Change this to the desired coordinate
+            # if (True):
+
+                fit_phases = fit_function_FDTR((FDTR_data['frequency']), popt, material_properties)
                 
-                # fit_phases = fit_wrapper((FDTR_data['frequency']/1e6), *popt)
-
-                # pdb.set_trace()
-
-                plt.figure(figsize=(6, 4))
+                # Define title text with LaTeX formatting and proper line breaks
+                title_text = (
+                    f'Fit vs Experimental Data at ({i}, {j})\n'
+                    r'$\kappa$: ' + f'{popt[0]:.2f} W/(m$\cdot$K) '  # New line before κ
+                    r'G: ' + f'{(popt[1] / 1e6):.2f} MW/(m$^2\cdot$K)\n'  # New line before G
+                    r'MSE: ' + f'{np.mean((FDTR_data["phase"] - fit_phases) ** 2):.2e}'
+                )
+                
+                
+                plt.figure()
                 plt.plot(FDTR_data['frequency'], FDTR_data['phase'], 'v-', label='Experimental', markersize=8)
                 plt.plot(FDTR_data['frequency'], fit_phases, 'v-', label='Fit', markersize=8)
                 plt.xscale('log')
                 plt.xlabel('Frequency (Hz)')
                 plt.ylabel('Phase (radians)')
-                plt.title(f'Fit vs Experimental Data at ({i}, {j})')
+                plt.title(title_text, fontsize=14, y=1.1)  # Adjusted title positioning
                 plt.legend()
                 plt.grid(True)
-                plt.show()
+                plt.tight_layout()
+                plt.savefig('fit_test.png')
+                # plt.show()
+                
+                # pdb.set_trace()
 
         except Exception as e:
             print(f"Fitting failed at position ({i}, {j}): {e}")
@@ -256,20 +265,20 @@ plt.figure(figsize=(6, 6))  # Create a new figure for the thermal conductivity m
 img1 = plt.imshow(fitting_map[:, :, 0], cmap='jet', extent=[0, length_x, 0, length_y])
 
 cbar1 = plt.colorbar(img1)
-cbar1.set_label('Thermal Conductivity, W/(m.K)')
+cbar1.set_label(r'Thermal Conductivity, W/(m$\cdot$K)')
 
 # Manually set colorbar ticks with intermediate values
 # ticks_kappa = np.linspace(kappa_min, kappa_max, 5)  # Generate 5 evenly spaced ticks
 # cbar1.set_ticks(ticks_kappa)
 # cbar1.ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))  # Adjust the format if needed
-plt.title('Thermal Conductivity Map')
-plt.xlabel('X position')
-plt.ylabel('Y position')
+plt.title('Si Thermal Conductivity Image')
+plt.xlabel('X position (μm)')
+plt.ylabel('Y position (μm)')
 
 # Save the thermal conductivity map as a separate PNG file
 save_path_kappa = f'{output_file_prefix}_kappa.png'
 plt.savefig(save_path_kappa)
-plt.show()  
+# plt.show()  
 
 
 
@@ -277,23 +286,22 @@ plt.show()
 # Generate second figure for interface conductance map
 plt.figure(figsize=(6, 6))  # Create a new figure for the interface conductance map
 # img2 = plt.imshow(fitting_map[:, :, 1] / 1e6, cmap='jet', extent=[0, length_x, 0, length_y], vmin=conductance_min, vmax=conductance_max)
-img2 = plt.imshow(fitting_map[:, :, 1], cmap='jet', extent=[0, length_x, 0, length_y])
+img2 = plt.imshow(fitting_map[:, :, 1] / 1e6, cmap='jet', extent=[0, length_x, 0, length_y])
 
 cbar2 = plt.colorbar(img2)
-# cbar2.set_label('Interface Conductance, MW/(m^2.K)')
-cbar2.set_label('Interface Conductance, W/(m^2.K)')
+cbar2.set_label(r'Interface Conductance, MW/(m$^2\cdot$K)')
 
 # Manually set colorbar ticks with intermediate values
 # ticks_conductance = np.linspace(conductance_min, conductance_max, 5)  # Generate 5 evenly spaced ticks
 # cbar2.set_ticks(ticks_conductance)
 # cbar2.ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))  # Adjust the format if needed
-plt.title('Interface (1-2) Conductance Map')
-plt.xlabel('X position')
-plt.ylabel('Y position')
+plt.title('Interface (Au-Si) Conductance Map')
+plt.xlabel('X position (μm)')
+plt.ylabel('Y position (μm)')
 
 # Save the interface conductance map as a separate PNG file
 save_path_conductance = f'{output_file_prefix}_conductance.png'
 plt.savefig(save_path_conductance)
-plt.show()
+# plt.show()
 
 ############################################################# END GENERATING HEAT MAPS #########################################################################################
