@@ -1,5 +1,5 @@
 #Global Parameters
-freq_val = 1e6
+freq_val = 3e6
 omega = ${fparse 2 * pi * freq_val}
 
 youngs_modulus_val = 207e9

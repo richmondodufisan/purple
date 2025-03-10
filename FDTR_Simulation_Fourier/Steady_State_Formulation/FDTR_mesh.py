@@ -165,6 +165,12 @@ for ps in zip(p, s):
 
 gmsh.option.setNumber("Mesh.Algorithm", 5)
 
+
+# Enable parallel meshing and set the number of threads:
+gmsh.option.setNumber("Mesh.Parallel", 1)  # Enable parallel meshing
+gmsh.option.setNumber("Mesh.NumThreads", 20)  # Adjust based on your CPU cores
+
+
 # Create 3D mesh
 gmsh.model.mesh.generate(3)
 

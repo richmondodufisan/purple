@@ -9,24 +9,27 @@
 #SBATCH --job-name=fourier  ## When you run squeue -u NETID this is how you can identify the job
 #SBATCH --exclude=qnode0565
 
+conda deactivate
 
 module purge
-module load mamba/24.3.0
 module load git
-eval "$(conda shell.bash hook)"
+module load gcc/12.3.0-gcc
+module load llvm/12.0.1-gcc-12.3.0
+module load python/3.9.16-gcc-12.3.0
+module load cmake/3.26.3-gcc-12.3.0
+module load mpi/openmpi-4.1.6rc2-gcc-12.3.0
+module load hdf5/1.14.1-2-gcc-12.3.0
+module load gmake/4.4.1-gcc-12.3.0
+module load flex/2.6.3-gcc-12.3.0
+module load bison/3.8.2-gcc-12.3.0
 
-conda activate /projects/p32089/envs/moose
+export CC=mpicc CXX=mpicxx FC=mpif90 F90=mpif90 F77=mpif77
 
+export HDF5_DIR=/hpc/software/spack_v20d1/spack/opt/spack/linux-rhel7-x86_64/gcc-12.3.0/hdf5-1.14.1-2-w5cjk4urzmrsa32md2hxgkc44dshuncf
 
-# Manually set the PATH to ensure consistency
-export PATH=/projects/p32089/envs/moose/bin:$PATH
-
-# Debug: Print environment variables
-echo "PATH inside job: $PATH"
-echo "CONDA_PREFIX: $CONDA_PREFIX"
-echo "SLURM_JOB_ID: $SLURM_JOB_ID"
+export FLEX_DIR=/hpc/software/spack_v20d1/spack/opt/spack/linux-rhel7-x86_64/gcc-12.3.0/flex-2.6.3-agkmkc2za7ufjrcsi2vvp5af2t3tno7v
 
 
 IFS=$'\n' read -d '' -r -a lines < SteadyStateFourier.txt
 
-mpirun -np ${SLURM_NTASKS} /projects/p32089/purple/purple-opt -i ${lines[$SLURM_ARRAY_TASK_ID]}
+mpiexec -n ${SLURM_NTASKS} /projects/p32089/purple/purple-opt -i ${lines[$SLURM_ARRAY_TASK_ID]}
