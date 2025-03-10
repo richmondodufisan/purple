@@ -2,14 +2,12 @@
 #SBATCH --account=p32089  ## YOUR ACCOUNT pXXXX or bXXXX
 #SBATCH --partition=short  ### PARTITION (buyin, short, normal, etc)
 #SBATCH --array=0-1
-#SBATCH --nodes=1
+#SBATCH --nodes=2
 #SBATCH --ntasks-per-node=20 ## how many cpus or processors do you need on each computer
 #SBATCH --time=4:00:00 ## how long does this need to run (remember different partitions have restrictions on this param)
 #SBATCH --mem-per-cpu=4G ## how much RAM do you need per CPU (this effects your FairShare score so be careful to not ask for more than you need))
 #SBATCH --job-name=fourier  ## When you run squeue -u NETID this is how you can identify the job
 #SBATCH --exclude=qnode0565
-
-conda deactivate
 
 module purge
 module load git
@@ -32,4 +30,4 @@ export FLEX_DIR=/hpc/software/spack_v20d1/spack/opt/spack/linux-rhel7-x86_64/gcc
 
 IFS=$'\n' read -d '' -r -a lines < SteadyStateFourier.txt
 
-mpiexec -n ${SLURM_NTASKS} /projects/p32089/purple/purple-opt -i ${lines[$SLURM_ARRAY_TASK_ID]}
+mpiexec -n ${SLURM_NTASKS} /projects/p32089/moose_projects/purple/purple-opt -i ${lines[$SLURM_ARRAY_TASK_ID]}
