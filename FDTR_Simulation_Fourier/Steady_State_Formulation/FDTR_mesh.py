@@ -16,7 +16,7 @@ trans_thick = 0.09
 dummy_factor = 2
 sub_center_ref = 0.09
 trans_thick_ref = 0.09
-pump_refine = 0.09
+pump_refine = 0.2
 reg_element_refine = 20
 
 # 1. Create the **Base Substrate Box**

@@ -1,174 +1,120 @@
 import gmsh
-import math
-import sys
 
 gmsh.initialize()
 gmsh.model.add("FDTR_mesh")
 
 newMeshName = "FDTR_mesh_x0_0.msh"
 
-xcen = 0
-ycen = 0
-radius = 7.5
-trans_thick = 0.09
-
-dummy_factor = 2
-trans_thick_ref = 0.09
-sub_center_ref = 0.09
-
+# Dimensions
 x_dir = 160
 y_dir = 80
 z_dir = 40
+radius = 8
+trans_thick = 0.09
 
+# Refinement Parameters
+dummy_factor = 2
+sub_center_ref = 0.09
+trans_thick_ref = 0.09
 pump_refine = 0.2
-reg_element_refine = 25
+reg_element_refine = 20
+
+# 1. Create the **Base Substrate Box**
+substrate = gmsh.model.occ.addBox(-x_dir, -y_dir, -z_dir, 2*x_dir, 2*y_dir, z_dir)
 
 
 
-# Adding points for base box/substrate, i.e Silicon sample
-p1 = gmsh.model.occ.addPoint(x_dir, y_dir, trans_thick, reg_element_refine)
-p2 = gmsh.model.occ.addPoint(x_dir, -y_dir, trans_thick, reg_element_refine)
-p3 = gmsh.model.occ.addPoint(-x_dir, -y_dir, trans_thick, reg_element_refine)
-p4 = gmsh.model.occ.addPoint(-x_dir, y_dir, trans_thick, reg_element_refine)
-p5 = gmsh.model.occ.addPoint(-x_dir, y_dir, -z_dir, reg_element_refine)
-p6 = gmsh.model.occ.addPoint(-x_dir, -y_dir, -z_dir, reg_element_refine)
-p7 = gmsh.model.occ.addPoint(x_dir, -y_dir, -z_dir, reg_element_refine)
-p8 = gmsh.model.occ.addPoint(x_dir, y_dir, -z_dir, reg_element_refine)
 
-# Adding lines for base box
-c1 = gmsh.model.occ.addLine(p3, p2)
-c2 = gmsh.model.occ.addLine(p3, p6)
-c3 = gmsh.model.occ.addLine(p6, p7)
-c4 = gmsh.model.occ.addLine(p7, p2)
-c5 = gmsh.model.occ.addLine(p6, p5)
-c6 = gmsh.model.occ.addLine(p5, p8)
-c7 = gmsh.model.occ.addLine(p8, p7)
-c8 = gmsh.model.occ.addLine(p8, p1)
-c9 = gmsh.model.occ.addLine(p1, p2)
-c10 = gmsh.model.occ.addLine(p3, p4)
-c11 = gmsh.model.occ.addLine(p4, p5)
-c12 = gmsh.model.occ.addLine(p4, p1)
-
-# Adding Surfaces
-cloop1 = gmsh.model.occ.addCurveLoop([c10, c11, c5, c2])
-s1 = gmsh.model.occ.addPlaneSurface([cloop1])
-cloop2 = gmsh.model.occ.addCurveLoop([c3, c4, -c1, c2])
-s2 = gmsh.model.occ.addPlaneSurface([cloop2])
-cloop3 = gmsh.model.occ.addCurveLoop([c7, c4, -c9, -c8])
-s3 = gmsh.model.occ.addPlaneSurface([cloop3])
-cloop4 = gmsh.model.occ.addCurveLoop([c6, c7, -c3, c5])
-s4 = gmsh.model.occ.addPlaneSurface([cloop4])
-cloop5 = gmsh.model.occ.addCurveLoop([c6, c8, -c12, c11])
-s5 = gmsh.model.occ.addPlaneSurface([cloop5])
-cloop6 = gmsh.model.occ.addCurveLoop([c1, -c9, -c12, -c10])
-s6 = gmsh.model.occ.addPlaneSurface([cloop6])
+# 2. Create the **First (Larger) Hemisphere for Refinement**
+large_sphere = gmsh.model.occ.addSphere(0, 0, 0, radius)
+cutting_box = gmsh.model.occ.addBox(-radius, -radius, 0, 2*radius, 2*radius, radius)
+large_hemisphere = gmsh.model.occ.cut([(3, large_sphere)], [(3, cutting_box)])[0][0]
 
 
-# Substrate volume
-sloop1 = gmsh.model.occ.addSurfaceLoop([s6, s2, s4, s5, s3, s1])
-v1 = gmsh.model.occ.addVolume([sloop1])
 
 
-# Points for radial refinement dummy volume
-p13 = gmsh.model.occ.addPoint(xcen, ycen, trans_thick, sub_center_ref)
-p14 = gmsh.model.occ.addPoint(xcen, ycen+radius, trans_thick, pump_refine)
-p15 = gmsh.model.occ.addPoint(xcen, ycen-radius, trans_thick, pump_refine)
-p16 = gmsh.model.occ.addPoint(xcen+radius, ycen, trans_thick, pump_refine)
-p17 = gmsh.model.occ.addPoint(xcen-radius, ycen, trans_thick, pump_refine)
-p18 = gmsh.model.occ.addPoint(xcen, ycen, trans_thick-radius, pump_refine)
+# 3. Create the **Second (Smaller) Hemisphere for Finer Refinement**
+small_radius = radius / dummy_factor
+small_sphere = gmsh.model.occ.addSphere(0, 0, 0, small_radius)
 
-# Make circle arcs for radial refinement
-c21 = gmsh.model.occ.addCircleArc(p17, p13, p15)
-c22 = gmsh.model.occ.addCircleArc(p15, p13, p16)
-c23 = gmsh.model.occ.addCircleArc(p16, p13, p14)
-c24 = gmsh.model.occ.addCircleArc(p17, p13, p14)
-c25 = gmsh.model.occ.addCircleArc(p17, p13, p18)
-c26 = gmsh.model.occ.addCircleArc(p15, p13, p18)
-c27 = gmsh.model.occ.addCircleArc(p16, p13, p18)
-c28 = gmsh.model.occ.addCircleArc(p14, p13, p18)
+# Make the cutting box slightly larger
+cutting_box_small = gmsh.model.occ.addBox(-radius-1, -radius-1, -1e-3, 2*radius+2, 2*radius+2, radius+1)
 
-# Make surface loops for semisphere
-cloop12 = gmsh.model.occ.addCurveLoop([c21, c22, c23, c24])
-s12 = gmsh.model.occ.addPlaneSurface([cloop12])
-cloop13 = gmsh.model.occ.addCurveLoop([c25, c26, c21])
-s13 = gmsh.model.occ.addSurfaceFilling(cloop13)
-cloop14 = gmsh.model.occ.addCurveLoop([c22, c27, c26])
-s14 = gmsh.model.occ.addSurfaceFilling(cloop14)
-cloop15 = gmsh.model.occ.addCurveLoop([c23, c28, c27])
-s15 = gmsh.model.occ.addSurfaceFilling(cloop15)
-cloop16 = gmsh.model.occ.addCurveLoop([c24, c28, c25])
-s16 = gmsh.model.occ.addSurfaceFilling(cloop16)
+# Perform the cut
+cut_result = gmsh.model.occ.cut([(3, small_sphere)], [(3, cutting_box_small)])
+if cut_result:
+    small_hemisphere = cut_result[0][0]  # Access the first element safely
+else:
+    raise ValueError("Boolean cut for small hemisphere failed. Check geometry setup.")
+    
+    
 
-# Make semisphere volume
-sloop3 = gmsh.model.occ.addSurfaceLoop([s12, s13, s14, s15, s16])
-v3 = gmsh.model.occ.addVolume([sloop3])
 
-##### ADDITIONAL SUB-SPHERE REFINEMENT DUMMY POINTS #####
-p36 = gmsh.model.occ.addPoint(xcen, ycen+(radius/dummy_factor), trans_thick, sub_center_ref)
-p37 = gmsh.model.occ.addPoint(xcen, ycen-(radius/dummy_factor), trans_thick, sub_center_ref)
-p38 = gmsh.model.occ.addPoint(xcen+(radius/dummy_factor), ycen, trans_thick, sub_center_ref)
-p39 = gmsh.model.occ.addPoint(xcen-(radius/dummy_factor), ycen, trans_thick, sub_center_ref)
-p40 = gmsh.model.occ.addPoint(xcen, ycen, trans_thick-(radius/dummy_factor), sub_center_ref)
 
-c49 = gmsh.model.occ.addCircleArc(p39, p13, p37)
-c50 = gmsh.model.occ.addCircleArc(p37, p13, p38)
-c51 = gmsh.model.occ.addCircleArc(p38, p13, p36)
-c52 = gmsh.model.occ.addCircleArc(p39, p13, p36)
-c53 = gmsh.model.occ.addCircleArc(p39, p13, p40)
-c54 = gmsh.model.occ.addCircleArc(p37, p13, p40)
-c55 = gmsh.model.occ.addCircleArc(p38, p13, p40)
-c56 = gmsh.model.occ.addCircleArc(p36, p13, p40)
+# 4. Create the **Transducer Box (Top Rectangular Volume)**
+transducer = gmsh.model.occ.addBox(-x_dir, -y_dir, 0, 2*x_dir, 2*y_dir, trans_thick)
 
-cloop28 = gmsh.model.occ.addCurveLoop([c49, c50, c51, c52])
-s28 = gmsh.model.occ.addPlaneSurface([cloop28])
-cloop29 = gmsh.model.occ.addCurveLoop([c53, c54, c49])
-s29 = gmsh.model.occ.addSurfaceFilling(cloop29)
-cloop30 = gmsh.model.occ.addCurveLoop([c50, c55, c54])
-s30 = gmsh.model.occ.addSurfaceFilling(cloop30)
-cloop31 = gmsh.model.occ.addCurveLoop([c51, c56, c55])
-s31 = gmsh.model.occ.addSurfaceFilling(cloop31)
-cloop32 = gmsh.model.occ.addCurveLoop([c52, c56, c53])
-s32 = gmsh.model.occ.addSurfaceFilling(cloop32)
+# 5. Create the **Cylindrical Refinement Region in Transducer**
+cylinder = gmsh.model.occ.addCylinder(0, 0, 0, 0, 0, trans_thick, radius)
 
-sloop6 = gmsh.model.occ.addSurfaceLoop([s28, s29, s30, s31, s32])
-v6 = gmsh.model.occ.addVolume([sloop6])
 
-##### END SUB-SPHERE DUMMY REFINEMENT #####
-
-gmsh.model.occ.synchronize()
-
-# Make mesh coherent
+# Make mesh coherent & synchronize
 gmsh.model.occ.removeAllDuplicates()
 gmsh.model.occ.synchronize()
+# gmsh.fltk.run()
 
 
-# assign mesh size at all points without a mesh size constraint
+
+# **Mesh Refinement Assignment Using a Loop**
+# Get all points in the model
 p = gmsh.model.occ.getEntities(0)
-s = gmsh.model.mesh.getSizes(p)
-for ps in zip(p, s):
-    if ps[1] == 0:
-        # get coordinates of newly created points
-        val = gmsh.model.getValue(0, ps[0][1], [])
-        
-        # check if they are within the radius of the small sphere
-        checkSphere = ((val[0])**2 + (val[1])**2 + (val[2])**2)
-        # checkCylinder = ((val[0])**2 + (val[1])**2 + (val[2]-0.09)**2)
-        # print(checkSphere)
-        
-        # assign small sphere refinement if yes, large sphere refinement otherwise
-        if (( checkSphere <= ((radius/dummy_factor)**2 + 1e-2)) and ((val[2]) <= 0)):
-            gmsh.model.mesh.setSize([ps[0]], trans_thick_ref)
-        else:
-            gmsh.model.mesh.setSize([ps[0]], pump_refine)
-   
+
+# Loop through each point and determine mesh refinement
+for point in p:
+    point_id = point[1]
+    
+    # Get point coordinates
+    val = gmsh.model.getValue(0, point_id, [])
+
+    # Compute distance from center
+    checkSphere = (val[0])**2 + (val[1])**2 + (val[2])**2
+    checkCylinder = (val[0])**2 + (val[1])**2  # Cylinder check only in XY
+
+    # Assign mesh size based on location
+    if checkSphere <= ((small_radius)**2 + 1e-2) and val[2] <= 0:
+        # Point is inside the **smaller hemisphere**
+        gmsh.model.mesh.setSize([point], trans_thick_ref)
+    
+    elif checkSphere <= ((radius)**2 + 1e-2) and val[2] <= 0:
+        # Point is inside the **larger hemisphere**
+        gmsh.model.mesh.setSize([point], pump_refine)
+    
+    elif checkCylinder <= (radius**2 + 1e-2) and (0 <= val[2] <= trans_thick):
+        # Point is inside the **cylindrical refinement region**
+        gmsh.model.mesh.setSize([point], trans_thick_ref)
+    
+    else:
+        # Default refinement for all other points
+        gmsh.model.mesh.setSize([point], reg_element_refine)
 
 
-gmsh.option.setNumber("Mesh.Algorithm", 5)
 
 
-# Create 3D mesh
+# Make mesh coherent & synchronize
+gmsh.model.occ.removeAllDuplicates()
+gmsh.model.occ.synchronize()
+# gmsh.fltk.run()
+
+
+# **Mesh Generation**
+gmsh.option.setNumber("Mesh.Algorithm", 5)  # Efficient 3D meshing algorithm
 gmsh.model.mesh.generate(3)
 
+# **Write Mesh to File**
 gmsh.write(newMeshName)
 
+# **Visualize in Gmsh GUI**
 # gmsh.fltk.run()
+
+# Finalize
+gmsh.finalize()
