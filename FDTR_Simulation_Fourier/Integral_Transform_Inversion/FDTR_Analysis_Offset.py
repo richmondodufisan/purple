@@ -16,7 +16,7 @@ perturbation = 0.0005  # Small perturbation for sensitivity calculation
 
 
 def FDTR_function(freqs, kappa_z, kappa_r, G, offset):
-    """ Computes phase response for given parameters. """
+    # Computes phase response for given parameters
     phases = []
     for freq in freqs:
         N_layers = 2
@@ -35,7 +35,7 @@ def FDTR_function(freqs, kappa_z, kappa_r, G, offset):
 
 
 def finite_difference_log(FDTR_function, freq_range, param_name, param_value, perturbation, kwargs, offset):
-    """ Computes sensitivity using four-point central differencing on a logarithmic scale. """
+    # Computes sensitivity using four-point central differencing on a logarithmic scale
     param_2low = param_value * (1 - 2 * perturbation)  
     param_1low = param_value * (1 - perturbation)     
     param_1high = param_value * (1 + perturbation)     
