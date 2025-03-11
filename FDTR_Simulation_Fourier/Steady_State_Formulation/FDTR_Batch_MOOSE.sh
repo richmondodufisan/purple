@@ -2,7 +2,7 @@
 #SBATCH --account=p32089  ## YOUR ACCOUNT pXXXX or bXXXX
 #SBATCH --partition=short  ### PARTITION (buyin, short, normal, etc)
 #SBATCH --array=0-1
-#SBATCH --nodes=1
+#SBATCH --nodes=2
 #SBATCH --ntasks-per-node=20 ## how many cpus or processors do you need on each computer
 #SBATCH --time=4:00:00 ## how long does this need to run (remember different partitions have restrictions on this param)
 #SBATCH --mem-per-cpu=4G ## how much RAM do you need per CPU (this effects your FairShare score so be careful to not ask for more than you need))

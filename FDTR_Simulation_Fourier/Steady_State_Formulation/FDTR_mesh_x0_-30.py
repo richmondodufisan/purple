@@ -3,7 +3,7 @@ import gmsh
 gmsh.initialize()
 gmsh.model.add("FDTR_mesh")
 
-newMeshName = "FDTR_mesh.msh"
+newMeshName = "FDTR_mesh_x0_-30.msh"
 
 # Dimensions
 x_dir = 160
@@ -13,7 +13,7 @@ radius = 8
 trans_thick = 0.09
 
 # Center coordinates (adjustable)
-xcen = 0
+xcen = -30
 ycen = 0
 
 # Refinement Parameters

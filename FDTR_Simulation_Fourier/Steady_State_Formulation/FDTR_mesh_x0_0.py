@@ -3,7 +3,7 @@ import gmsh
 gmsh.initialize()
 gmsh.model.add("FDTR_mesh")
 
-newMeshName = "FDTR_mesh.msh"
+newMeshName = "FDTR_mesh_x0_0.msh"
 
 # Dimensions
 x_dir = 160
