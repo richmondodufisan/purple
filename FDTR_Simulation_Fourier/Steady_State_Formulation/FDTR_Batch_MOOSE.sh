@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --account=p32089  ## YOUR ACCOUNT pXXXX or bXXXX
 #SBATCH --partition=short  ### PARTITION (buyin, short, normal, etc)
-#SBATCH --array=0-428
+#SBATCH --array=0-10
 #SBATCH --nodes=5
 #SBATCH --ntasks-per-node=20 ## how many cpus or processors do you need on each computer
 #SBATCH --time=4:00:00 ## how long does this need to run (remember different partitions have restrictions on this param)
@@ -32,3 +32,16 @@ export FLEX_DIR=/hpc/software/spack_v20d1/spack/opt/spack/linux-rhel7-x86_64/gcc
 IFS=$'\n' read -d '' -r -a lines < SteadyStateFourier.txt
 
 mpirun -np ${SLURM_NTASKS} /projects/p32089/moose_projects/purple/purple-opt -i ${lines[$SLURM_ARRAY_TASK_ID]}
+
+# Get the input filename from the array
+input_file="${lines[$SLURM_ARRAY_TASK_ID]}"
+
+# Remove the .i extension to get the base name
+base="${input_file%.i}"
+
+# Build the output folder name by appending _out_cp
+output_folder="${base}_out_cp"
+
+# Remove the folder and its contents
+rm -rf "${output_folder}"
+
