@@ -29,7 +29,7 @@ def find_job_line(filename, job_array_file="SteadyStateFourier.txt"):
         return f"Job array file '{job_array_file}' not found."
 
 # Example usage
-script_name = "FDTR_input_GibbsExcess_StepFunction_BesselRing_Fourier_Steady_theta_0_freq_60e6_x0_-11.i"
+script_name = "FDTR_input_GibbsExcess_StepFunction_BesselRing_Fourier_Steady_theta_0_freq_4e6_x0_13.i"
 line_number = find_job_line(script_name)
 print(f"{script_name} is at line: {line_number}")
 
