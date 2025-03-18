@@ -18,8 +18,8 @@ ycen = 0
 
 # Refinement Parameters
 dummy_factor = 2
-sub_center_ref = 0.45
-trans_thick_ref = 0.45
+sub_center_ref = 0.075
+trans_thick_ref = 0.075
 pump_refine = 0.1
 reg_element_refine = 4
 
