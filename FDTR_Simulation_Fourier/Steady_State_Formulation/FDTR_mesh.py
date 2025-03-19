@@ -18,9 +18,9 @@ ycen = 0
 
 # Refinement Parameters
 dummy_factor = 2
-sub_center_ref = 0.075
-trans_thick_ref = 0.075
-pump_refine = 0.1
+sub_center_ref = 0.09
+trans_thick_ref = 0.09
+pump_refine = 0.15
 reg_element_refine = 4
 
 # 1. Create the **Base Substrate Box**
