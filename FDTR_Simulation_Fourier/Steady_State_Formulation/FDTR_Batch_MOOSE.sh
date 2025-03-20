@@ -8,7 +8,6 @@
 #SBATCH --mem-per-cpu=8G ## how much RAM do you need per CPU (this effects your FairShare score so be careful to not ask for more than you need))
 #SBATCH --job-name=fourier  ## When you run squeue -u NETID this is how you can identify the job
 #SBATCH --exclude=qnode0565
-#SBATCH --constraint="[quest8|quest9|quest10|quest11]"
 
 module purge
 module load git
