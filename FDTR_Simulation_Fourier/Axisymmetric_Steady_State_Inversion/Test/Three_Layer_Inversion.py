@@ -82,7 +82,10 @@ def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_prob
     os.system(f"../../purple-opt -i {temp_file} > output_log.txt 2>&1")
     
     # Step 3: Read the results from the generated CSV file
-    output_csv = "FDTR_Three_Layer_temp_out.csv"
+    output_csv = "FDTR_Three_Layer_Concentric_out.csv"
+    
+    
+    
     H_imag = None
     H_real = None
     

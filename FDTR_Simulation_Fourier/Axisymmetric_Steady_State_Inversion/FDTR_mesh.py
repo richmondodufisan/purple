@@ -11,22 +11,22 @@ radius = 8
 trans_thick = 0.09
 
 dummy_factor = 2
-trans_thick_ref = 0.1
-sub_center_ref=0.1
+trans_thick_ref = 0.09
+sub_center_ref=0.09
 
 x_len = 40
-z_len = 40
+y_len = 40
 
-pump_refine = 0.1
+pump_refine = 0.09
 reg_element_refine = 4
 
 
-
+# NB: In axisymmetric case, y axis becomes z axis in MOOSE
 # Adding points for base box/substrate, i.e Silicon sample
 p1 = gmsh.model.occ.addPoint(0, 0, 0, sub_center_ref)
 p2 = gmsh.model.occ.addPoint(x_len, 0, 0, reg_element_refine)
-p3 = gmsh.model.occ.addPoint(0, 0, -z_len, reg_element_refine)
-p4 = gmsh.model.occ.addPoint(x_len, 0, -z_len, reg_element_refine)
+p3 = gmsh.model.occ.addPoint(0, -y_len, 0, reg_element_refine)
+p4 = gmsh.model.occ.addPoint(x_len, -y_len, 0, reg_element_refine)
 
 # Adding lines for base box
 c1 = gmsh.model.occ.addLine(p1, p2)
@@ -40,8 +40,8 @@ cloop1 = gmsh.model.occ.addCurveLoop([c1, c2, c3, c4])
 s1 = gmsh.model.occ.addPlaneSurface([cloop1])
 
 # Add transducer box
-p5 = gmsh.model.occ.addPoint(0, 0, trans_thick, sub_center_ref)
-p6 = gmsh.model.occ.addPoint(x_len, 0, trans_thick, reg_element_refine)
+p5 = gmsh.model.occ.addPoint(0, trans_thick, 0, sub_center_ref)
+p6 = gmsh.model.occ.addPoint(x_len, trans_thick, 0, reg_element_refine)
 
 # Add transducer lines
 c5 = gmsh.model.occ.addLine(p1, p5)
@@ -56,8 +56,7 @@ s2 = gmsh.model.occ.addPlaneSurface([cloop2])
 ##### REFINEMENT DUMMY POINTS #####
 # Points for radial refinement dummy surface
 p7 = gmsh.model.occ.addPoint(radius, 0, 0, pump_refine)
-p8 = gmsh.model.occ.addPoint(0, 0, -radius, pump_refine)
-
+p8 = gmsh.model.occ.addPoint(0, -radius, 0, pump_refine)
 
 # Make circle arcs for radial refinement
 c8 = gmsh.model.occ.addCircleArc(p7, p1, p8)
@@ -73,8 +72,7 @@ s3 = gmsh.model.occ.addPlaneSurface([cloop3])
 ##### ADDITIONAL SUB-REFINEMENT DUMMY POINTS #####
 # Points for radial refinement dummy surface
 p9 = gmsh.model.occ.addPoint(radius/dummy_factor, 0, 0, sub_center_ref)
-p10 = gmsh.model.occ.addPoint(0, 0, -radius/dummy_factor, sub_center_ref)
-
+p10 = gmsh.model.occ.addPoint(0, -radius/dummy_factor, 0, sub_center_ref)
 
 # Make circle arcs for radial refinement
 c11 = gmsh.model.occ.addCircleArc(p9, p1, p10)
@@ -86,12 +84,8 @@ c13 = gmsh.model.occ.addLine(p1, p10)
 cloop4 = gmsh.model.occ.addCurveLoop([c11, c12, c13])
 s4 = gmsh.model.occ.addPlaneSurface([cloop4])
 
-
-
-
-
 # Adding mesh refinement for pump region in transducer
-p11 = gmsh.model.occ.addPoint(radius, 0, trans_thick, pump_refine)
+p11 = gmsh.model.occ.addPoint(radius, trans_thick, 0, pump_refine)
 
 c14 = gmsh.model.occ.addLine(p5, p11)
 c15 = gmsh.model.occ.addLine(p7, p11)
@@ -99,11 +93,8 @@ c15 = gmsh.model.occ.addLine(p7, p11)
 cloop5 = gmsh.model.occ.addCurveLoop([c5, c14, c15, c9])
 s5 = gmsh.model.occ.addPlaneSurface([cloop5])
 
-
-
-
 # Adding mesh sub-refinement for pump region in transducer
-p12 = gmsh.model.occ.addPoint(radius/dummy_factor, 0, trans_thick, sub_center_ref)
+p12 = gmsh.model.occ.addPoint(radius/dummy_factor, trans_thick, 0, sub_center_ref)
 
 c16 = gmsh.model.occ.addLine(p5, p12)
 c17 = gmsh.model.occ.addLine(p9, p12)
@@ -156,5 +147,5 @@ gmsh.model.mesh.generate(2)
 
 gmsh.write(newMeshName)
 
-# gmsh.fltk.run()
+gmsh.fltk.run()
 

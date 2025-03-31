@@ -3,14 +3,14 @@ import math
 import csv
 import re
 
-def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_probe, freq, pump_power):
+def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, x0, freq, pump_power):
 
 
     if (N_layers != 2):
         raise RuntimeError("Error: This is for 2 Layer systems only")
 
-    input_file = "FDTR_Two_Layer.i"
-    temp_file = "FDTR_Two_Layer_temp.i"
+    input_file = "FDTR_Two_Layer_BesselRing.i"
+    temp_file = "FDTR_Two_Layer_BesselRing_temp.i"
     
     h1 = float(layer_props[1][0] * 1e6)
     kappa_z1 = layer_props[1][1] * 1e-6
@@ -42,11 +42,13 @@ def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_prob
         'rho_samp': rho2,
         'c_samp': c2,
     
-        'pump_radius': r_pump * 1e6,
-        'probe_radius': r_probe * 1e6,
+        'pump_radius': w_pump * 1e6,
+        'probe_radius': w_probe * 1e6,
         'pump_power': pump_power,
         
-        'conductance_12': G_12      
+        'conductance_12': G_12,
+
+        'offset': x0 * 1e6        
     }
     
     # Read the input file and modify the necessary lines
@@ -55,18 +57,28 @@ def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_prob
     
     # Open a new file to write the modified content
     with open(temp_file, 'w') as file:
+        replaced_keys = set()  # Track which keys have been replaced
+
         for line in lines:
             for key, value in replacements.items():
-                if key in line:
-                    # Replace the value in the line
-                    line = re.sub(rf"{key} = \S+", f"{key} = {value}", line)
+                if key in line and key not in replaced_keys:
+                    # Replace only the first occurrence
+                    line = re.sub(rf"{key} = \S+", f"{key} = {value}", line, count=1)
+                    replaced_keys.add(key)  # Mark this key as replaced
             file.write(line)
+
     
     # Step 2: Run the simulation and suppress the console output
+    # Locally
     os.system(f"../../purple-opt -i {temp_file} > output_log.txt 2>&1")
     
+    # On HPC
+    # os.system(f"mpirun -np 20 /projects/p32089/moose_projects/purple/purple-opt -i {temp_file} > output_log.txt 2>&1")
+    
+    
     # Step 3: Read the results from the generated CSV file
-    output_csv = "FDTR_Two_Layer_temp_out.csv"
+    output_csv = "FDTR_Two_Layer_BesselRing_temp_out.csv"
+    
     H_imag = None
     H_real = None
     
@@ -90,6 +102,6 @@ def calc_thermal_response(N_layers, layer_props, interface_props, r_pump, r_prob
     amplitude = math.sqrt(H_real**2 + H_imag**2)
     
     # Clean files
-    os.system(f"rm FDTR_Two_Layer_temp*")
+    os.system(f"rm FDTR_Two_Layer_BesselRing_temp*")
     
     return phase, amplitude

@@ -22,6 +22,9 @@ probe_radius = 1.34
 pump_radius = 1.53
 pump_power = 0.01
 
+w_Probe = ${fparse probe_radius * sqrt(2)}
+w_Pump = ${fparse pump_radius * sqrt(2)}
+
 
 pump_absorbance = 1
 
@@ -37,13 +40,13 @@ pump_absorbance = 1
     input = sample_mesh
     block_id = 1
     top_right = '40 0 0'
-    bottom_left = '0 0 -${sample_thickness}'
+    bottom_left = '0 -${sample_thickness} 0'
   []
   [transducer_block]
     type = SubdomainBoundingBoxGenerator
     input = sample_block
     block_id = 2	
-    top_right = '40 0 ${transducer_thickness}'
+    top_right = '40 ${transducer_thickness} 0'
     bottom_left = '0 0 0'
   []
   
@@ -57,14 +60,14 @@ pump_absorbance = 1
   [applied_pump_area]
     type = ParsedGenerateSideset
 	input = rename
-	combinatorial_geometry = '(z > ${transducer_thickness}-1e-8) & (z < ${transducer_thickness}+1e-8)'
+	combinatorial_geometry = '(y > ${transducer_thickness}-1e-8) & (y < ${transducer_thickness}+1e-8)'
 	new_sideset_name = top_pump_area
   []
   
   [applied_pump_sample]
     type = ParsedGenerateSideset
 	input = applied_pump_area
-	combinatorial_geometry = '(z > 0.0-1e-8) & (z < 0.0+1e-8)'
+	combinatorial_geometry = '(y > 0.0-1e-8) & (y < 0.0+1e-8)'
 	new_sideset_name = sample_pump_area
   []
   
@@ -79,7 +82,7 @@ pump_absorbance = 1
   [bottom_area]
     type = ParsedGenerateSideset
 	input = conductance_area
-	combinatorial_geometry = '((z > -${sample_thickness}-1e-8) & (z < -${sample_thickness}+1e-8))'
+	combinatorial_geometry = '((y > -${sample_thickness}-1e-8) & (y < -${sample_thickness}+1e-8))'
 	new_sideset_name = bottom_surface
   []
   
@@ -213,20 +216,20 @@ pump_absorbance = 1
     type = ParsedAux
     variable = avg_surf_temp_real
     coupled_variables = 'temp_trans_real'
-	constant_names = 'Rprobe pi'
-	constant_expressions = '${probe_radius} 3.14159265359'
+	constant_names = 'w_Probe pi'
+	constant_expressions = '${w_Probe} 3.14159265359'
 	use_xyzt = true
-	expression = '((temp_trans_real)/(pi*(Rprobe^2)))*exp((-(x^2))/(Rprobe^2))'
+	expression = '((2 * temp_trans_real)/(pi*(w_Probe^2)))*exp((-2 * ((x)^2))/(w_Probe^2))'
 	block = transducer_material
   []
   [average_surface_temperature_imag]
     type = ParsedAux
     variable = avg_surf_temp_imag
     coupled_variables = 'temp_trans_imag'
-	constant_names = 'Rprobe pi'
+	constant_names = 'w_Probe pi'
 	constant_expressions = '${probe_radius} 3.14159265359'
 	use_xyzt = true
-	expression = '((temp_trans_imag)/(pi*(Rprobe^2)))*exp((-(x^2))/(Rprobe^2))'
+	expression = '((2 * temp_trans_imag)/(pi*(w_Probe^2)))*exp((-2 * (x^2))/(w_Probe^2))'
 	block = transducer_material
   []
 []
@@ -245,14 +248,8 @@ pump_absorbance = 1
 []
 
 [Functions]
-  [heat_source_function]
-    type = ADParsedFunction
-    expression = '-((Q0*absorbance)/(pi*(Rpump^2)))*exp(-(x^2)/(Rpump^2))'
-    symbol_names = 'Rpump Q0 absorbance'
-    symbol_values = '${pump_radius} ${pump_power} ${pump_absorbance}'
-  []
   [angular_frequency]
-	type = ADParsedFunction
+	type = ParsedFunction
 	expression = '2 * pi * freq'
 	symbol_names = 'freq'
     symbol_values = '${freq_val}'
@@ -297,11 +294,6 @@ pump_absorbance = 1
     prop_values = angular_frequency
 	block = 'transducer_material sample_material'
   []
-  [heat_source_material]
-    type = ADGenericFunctionMaterial
-    prop_names = heat_source_mat
-    prop_values = heat_source_function
-  []
 []
 
 [BCs]
@@ -320,10 +312,13 @@ pump_absorbance = 1
   
   
   [heat_source_term_real]
-    type = FunctionNeumannBC
+    type = ConcentricGaussianPumpStandardAxisymmetric
 	variable = temp_trans_real
 	boundary = 'top_pump_area'
-	function = heat_source_function
+	
+	pump_power = ${pump_power}
+	absorbance = ${pump_absorbance}
+	pump_spot_size = ${w_Pump}
   []
   [heat_source_term_imag]
     type = NeumannBC
