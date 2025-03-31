@@ -221,7 +221,7 @@ offset = 3
 	constant_names = 'w_Probe pi'
 	constant_expressions = '${w_Probe} 3.14159265359'
 	use_xyzt = true
-	expression = '((temp_trans_real)/(pi*(w_Probe^2)))*exp((-(x^2))/(w_Probe^2))'
+	expression = '((2 * temp_trans_real)/(pi*(w_Probe^2)))*exp((-2 * ((x)^2))/(w_Probe^2))'
 	block = transducer_material
   []
   [average_surface_temperature_imag]
@@ -229,9 +229,9 @@ offset = 3
     variable = avg_surf_temp_imag
     coupled_variables = 'temp_trans_imag'
 	constant_names = 'w_Probe pi'
-	constant_expressions = '${probe_radius} 3.14159265359'
+	constant_expressions = '${w_Probe} 3.14159265359'
 	use_xyzt = true
-	expression = '((temp_trans_imag)/(pi*(w_Probe^2)))*exp((-(x^2))/(w_Probe^2))'
+	expression = '((2 * temp_trans_imag)/(pi*(w_Probe^2)))*exp((-2 * ((x)^2))/(w_Probe^2))'
 	block = transducer_material
   []
 []
