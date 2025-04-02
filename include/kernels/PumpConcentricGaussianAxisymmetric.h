@@ -8,12 +8,12 @@
  // * Boundary condition of a Neumann style whose value is computed by a user-defined function
  // */
  
-class RingGaussianPumpBesselAxisymmetric : public IntegratedBC
+class PumpConcentricGaussianAxisymmetric : public IntegratedBC
 {
 public:
   static InputParameters validParams();
 
-  RingGaussianPumpBesselAxisymmetric(const InputParameters & parameters);
+  PumpConcentricGaussianAxisymmetric(const InputParameters & parameters);
 
 protected:
   virtual Real computeQpResidual() override;
@@ -24,6 +24,4 @@ protected:
   const Real _pump_power;
   const Real _absorbance;
   const Real _pump_spot_size;
-  const Real _offset;
-
 };

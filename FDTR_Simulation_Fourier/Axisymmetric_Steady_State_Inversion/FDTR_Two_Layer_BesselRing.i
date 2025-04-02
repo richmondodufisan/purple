@@ -320,7 +320,7 @@ offset = 3
   
   
   [heat_source_term_real]
-    type = RingGaussianPumpBesselAxisymmetric
+    type = PumpBesselRingAxisymmetric
 	variable = temp_trans_real
 	boundary = 'top_pump_area'
 	

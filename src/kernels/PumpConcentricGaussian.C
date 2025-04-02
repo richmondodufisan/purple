@@ -1,12 +1,12 @@
-#include "ConcentricGaussianPumpStandard.h"
+#include "PumpConcentricGaussian.h"
 #include "Function.h"
 #include <cmath>
 #include <numbers>
 
-registerMooseObject("purpleApp", ConcentricGaussianPumpStandard);
+registerMooseObject("purpleApp", PumpConcentricGaussian);
 
 InputParameters
-ConcentricGaussianPumpStandard::validParams()
+PumpConcentricGaussian::validParams()
 {
   InputParameters params = IntegratedBC::validParams();
   
@@ -30,7 +30,7 @@ ConcentricGaussianPumpStandard::validParams()
   return params;
 }
 
-ConcentricGaussianPumpStandard::ConcentricGaussianPumpStandard(const InputParameters & parameters)
+PumpConcentricGaussian::PumpConcentricGaussian(const InputParameters & parameters)
   : IntegratedBC(parameters), 
   
     // _func(getFunction("function"))
@@ -48,7 +48,7 @@ ConcentricGaussianPumpStandard::ConcentricGaussianPumpStandard(const InputParame
 }
 
 Real
-ConcentricGaussianPumpStandard::computeQpResidual()
+PumpConcentricGaussian::computeQpResidual()
 {
   auto x0 = _center_x;
   auto y0 = _center_y;

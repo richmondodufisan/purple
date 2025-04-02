@@ -3,14 +3,14 @@ import math
 import csv
 import re
 
-def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, x0, freq, pump_power):
+def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, x0, n, freq, pump_power):
 
 
     if (N_layers != 2):
         raise RuntimeError("Error: This is for 2 Layer systems only")
 
-    input_file = "FDTR_Two_Layer_BesselRing.i"
-    temp_file = "FDTR_Two_Layer_BesselRing_temp.i"
+    input_file = "FDTR_Two_Layer_SuperGaussianRing.i"
+    temp_file = "FDTR_Two_Layer_SuperGaussianRing_temp.i"
     
     h1 = float(layer_props[1][0] * 1e6)
     kappa_z1 = layer_props[1][1] * 1e-6
@@ -48,7 +48,8 @@ def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_prob
         
         'conductance_12': G_12,
 
-        'offset': x0 * 1e6        
+        'offset': x0 * 1e6,
+        'gaussian_order': n
     }
     
     # Read the input file and modify the necessary lines
@@ -77,7 +78,7 @@ def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_prob
     
     
     # Step 3: Read the results from the generated CSV file
-    output_csv = "FDTR_Two_Layer_BesselRing_temp_out.csv"
+    output_csv = "FDTR_Two_Layer_SuperGaussianRing_temp_out.csv"
     
     H_imag = None
     H_real = None
@@ -103,6 +104,6 @@ def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_prob
     amplitude = math.sqrt(H_real**2 + H_imag**2)
     
     # Clean files
-    os.system(f"rm FDTR_Two_Layer_BesselRing_temp*")
+    os.system(f"rm FDTR_Two_Layer_SuperGaussianRing_temp*")
     
     return phase, amplitude

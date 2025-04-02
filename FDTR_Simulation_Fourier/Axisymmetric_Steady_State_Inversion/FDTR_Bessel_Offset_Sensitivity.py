@@ -31,6 +31,9 @@ def FDTR_function(freqs, kappa_z, kappa_r, G, offset):
         phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
         phases.append(phase)
         
+        if (phase > 0.0):
+            phase = phase - (2*pi)
+        
     return np.array(phases)
 
 # === Sensitivity Calculation using Finite Difference in log-space ===
@@ -128,7 +131,7 @@ for offset in offset_list:
 
 # === Plot Phase vs Offset ===
 plt.figure(figsize=(10, 6))
-plt.plot(np.array(offset_list)*1e6, phase_list, linewidth=3)
+plt.plot(np.array(offset_list)*1e6, phase_list, 'o-', linewidth=1)
 plt.grid(True)
 plt.xlabel('Offset (μm)', fontsize=14)
 plt.ylabel('Phase (radians)', fontsize=14)

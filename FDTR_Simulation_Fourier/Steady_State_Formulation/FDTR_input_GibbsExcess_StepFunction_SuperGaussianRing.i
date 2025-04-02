@@ -1,38 +1,35 @@
 #Global Parameters
-freq_val = 1000000.0
+x0_val = 0
+y0_val = 0
+freq_val = 1e6
 
 transducer_thickness = 0.09
-k_trans_z = 0.000215
-k_trans_r = 0.000215
-rho_trans = 1.93e-14
-c_trans = 128.7
-
-
-sample_thickness = 40
-k_samp_z = 0.00013
-k_samp_r = 0.00013
-rho_samp = 2.329e-15
-c_samp = 689.1
-
-
-conductance_12 = 3e-05
-
-
 probe_radius = 1.34
 pump_radius = 1.53
-pump_power = 0.01
 
 w_Probe = ${fparse probe_radius * sqrt(2)}
 w_Pump = ${fparse pump_radius * sqrt(2)}
 
+offset = 5
+gaussian_order = 2.0
 
+pump_power = 0.01
 pump_absorbance = 1
+gb_width_val = 0.1
+kappa_bulk_si = 130e-6
+kappa_gb_si = 56.52e-6
+rho_si = 2.329e-15
+c_si = 0.6891e3
+au_si_conductance = -3e-5
+au_si_conductance_positive = 3e-5
+kappa_bulk_au = 215e-6
+rho_au = 19.3e-15
+c_au = 0.1287e3
 
-offset = 9.183673469387756
-
+theta_deg = 0
+theta_rad = ${fparse (theta_deg/180)*pi}
 
 [Mesh]
-  coord_type = RZ
   [sample_mesh]
     type = FileMeshGenerator
     file = FDTR_mesh.msh
@@ -41,15 +38,15 @@ offset = 9.183673469387756
     type = SubdomainBoundingBoxGenerator
     input = sample_mesh
     block_id = 1
-    top_right = '40 0 0'
-    bottom_left = '0 -${sample_thickness} 0'
+    top_right = '160 80 0'
+    bottom_left = '-160 -80 -40'
   []
   [transducer_block]
     type = SubdomainBoundingBoxGenerator
     input = sample_block
     block_id = 2	
-    top_right = '40 ${transducer_thickness} 0'
-    bottom_left = '0 0 0'
+    top_right = '160 80 ${transducer_thickness}'
+    bottom_left = '-160 -80 0'
   []
   
   [rename]
@@ -62,14 +59,18 @@ offset = 9.183673469387756
   [applied_pump_area]
     type = ParsedGenerateSideset
 	input = rename
-	combinatorial_geometry = '(y > ${transducer_thickness}-1e-8) & (y < ${transducer_thickness}+1e-8)'
+	combinatorial_geometry = '(z > ${transducer_thickness}-1e-8) & (z < ${transducer_thickness}+1e-8)'
+	constant_names = 'x0 y0'
+	constant_expressions = '${x0_val} ${y0_val}'
 	new_sideset_name = top_pump_area
   []
   
   [applied_pump_sample]
     type = ParsedGenerateSideset
 	input = applied_pump_area
-	combinatorial_geometry = '(y > 0.0-1e-8) & (y < 0.0+1e-8)'
+	combinatorial_geometry = '(z > 0.0-1e-8) & (z < 0.0+1e-8)'
+	constant_names = 'x0 y0'
+	constant_expressions = '${x0_val} ${y0_val}'
 	new_sideset_name = sample_pump_area
   []
   
@@ -84,15 +85,15 @@ offset = 9.183673469387756
   [bottom_area]
     type = ParsedGenerateSideset
 	input = conductance_area
-	combinatorial_geometry = '((y > -${sample_thickness}-1e-8) & (y < -${sample_thickness}+1e-8))'
+	combinatorial_geometry = '((z > -40-1e-8) & (z < -40+1e-8))'
 	new_sideset_name = bottom_surface
   []
   
-  [center_side_boundary]
+  [side_areas]
     type = ParsedGenerateSideset
 	input = bottom_area
-	combinatorial_geometry = '((x > 0-1e-8) & (x < 0+1e-8))'
-	new_sideset_name = center_side
+	combinatorial_geometry = '((x > -160-1e-8) & (x < -160+1e-8)) | ((x > 160-1e-8) & (x < 160+1e-8)) | ((y > -80-1e-8) & (y < -80+1e-8)) | ((y > 80-1e-8) & (y < 80+1e-8))'
+	new_sideset_name = side_surfaces
   []
 []
 
@@ -121,7 +122,7 @@ offset = 9.183673469387756
 
 [Kernels]
   [heat_conduction_transducer_real]
-    type = HeatConductionSteadyRealAnisotropic
+    type = HeatConductionSteadyReal
 	
     variable = temp_trans_real
 	imaginary_temp = temp_trans_imag
@@ -134,7 +135,7 @@ offset = 9.183673469387756
 	block = transducer_material
   []
   [heat_conduction_transducer_imag]
-    type = HeatConductionSteadyImagAnisotropic
+    type = HeatConductionSteadyImag
 	
     variable = temp_trans_imag
 	real_temp = temp_trans_real
@@ -149,7 +150,7 @@ offset = 9.183673469387756
   
   
   [heat_conduction_sample_real]
-    type = HeatConductionSteadyRealAnisotropic
+    type = HeatConductionSteadyReal
 	
     variable = temp_samp_real
 	imaginary_temp = temp_samp_imag
@@ -162,7 +163,7 @@ offset = 9.183673469387756
 	block = sample_material
   []
   [heat_conduction_sample_imag]
-    type = HeatConductionSteadyImagAnisotropic
+    type = HeatConductionSteadyImag
 	
     variable = temp_samp_imag
 	real_temp = temp_samp_real
@@ -182,7 +183,7 @@ offset = 9.183673469387756
     variable = temp_trans_real
     neighbor_var = temp_samp_real
     boundary = 'boundary_conductance'
-	conductance = -${conductance_12}
+	conductance = ${au_si_conductance}
 	
 	Tbulk_mat = 0
 	h_primary = 0
@@ -196,7 +197,7 @@ offset = 9.183673469387756
     variable = temp_trans_imag
     neighbor_var = temp_samp_imag
     boundary = 'boundary_conductance'
-	conductance = ${conductance_12}
+	conductance = ${au_si_conductance_positive}
 	
 	Tbulk_mat = 0
 	h_primary = 0
@@ -218,20 +219,20 @@ offset = 9.183673469387756
     type = ParsedAux
     variable = avg_surf_temp_real
     coupled_variables = 'temp_trans_real'
-	constant_names = 'w_Probe pi'
-	constant_expressions = '${w_Probe} 3.14159265359'
+	constant_names = 'x0 y0 w_Probe pi'
+	constant_expressions = '${x0_val} ${y0_val} ${w_Probe} 3.14159265359'
 	use_xyzt = true
-	expression = '((2 * temp_trans_real)/(pi*(w_Probe^2)))*exp((-2 * ((x)^2))/(w_Probe^2))'
+	expression = '((2 * temp_trans_real)/(pi*(w_Probe^2)))*exp((-2 * ((x-x0)^2+(y-y0)^2))/(w_Probe^2))'
 	block = transducer_material
   []
   [average_surface_temperature_imag]
     type = ParsedAux
     variable = avg_surf_temp_imag
     coupled_variables = 'temp_trans_imag'
-	constant_names = 'w_Probe pi'
-	constant_expressions = '${w_Probe} 3.14159265359'
+	constant_names = 'x0 y0 w_Probe pi'
+	constant_expressions = '${x0_val} ${y0_val} ${w_Probe} 3.14159265359'
 	use_xyzt = true
-	expression = '((2 * temp_trans_imag)/(pi*(w_Probe^2)))*exp((-2 * ((x)^2))/(w_Probe^2))'
+	expression = '((2 * temp_trans_imag)/(pi*(w_Probe^2)))*exp((-2 * ((x-x0)^2+(y-y0)^2))/(w_Probe^2))'
 	block = transducer_material
   []
 []
@@ -250,6 +251,12 @@ offset = 9.183673469387756
 []
 
 [Functions]
+  [grain_boundary_function]
+    type = ParsedFunction
+	expression = 'if ( (x<((-gb_width/(2*cos(theta)))+(abs(z)*tan(theta)))) | (x>((gb_width/(2*cos(theta)))+(abs(z)*tan(theta)))), k_bulk, k_gb)'
+	symbol_names = 'gb_width theta k_bulk k_gb'
+	symbol_values = '${gb_width_val} ${theta_rad} ${kappa_bulk_si} ${kappa_gb_si}'
+  []
   [angular_frequency]
 	type = ParsedFunction
 	expression = '2 * pi * freq'
@@ -262,45 +269,26 @@ offset = 9.183673469387756
   [basic_transducer_materials]
     type = ADGenericConstantMaterial
     block = transducer_material
-    prop_names = 'rho_trans c_trans'
-    prop_values = '${rho_trans} ${c_trans}'
+    prop_names = 'rho_trans c_trans k_trans'
+    prop_values = '${rho_au} ${c_au} ${kappa_bulk_au}'
   []
-  [transducer_kappa]
-    type = ADGenericConstantRankTwoTensor
-    tensor_name = k_trans
-	
-    # tensor values are column major-ordered
-	# Axisymmetric MOOSE is r, z, theta
-	
-    tensor_values = '${k_trans_r} 0 0 0 ${k_trans_z} 0 0 0 ${k_trans_r}'
-	block = transducer_material
-  []
-  
-  
   [basic_sample_materials]
     type = ADGenericConstantMaterial
     block = sample_material
     prop_names = 'rho_samp c_samp'
-    prop_values = '${rho_samp} ${c_samp}'
+    prop_values = '${rho_si} ${c_si}'
   []
-  [sample_kappa]
-    type = ADGenericConstantRankTwoTensor
-    tensor_name = k_samp
-	
-    # tensor values are column major-ordered
-	# Axisymmetric MOOSE is r, z, theta
-	
-    tensor_values = '${k_samp_r} 0 0 0 ${k_samp_r} 0 0 0 ${k_samp_z}'
-	block = sample_material
-  []
-  
-  
-  
   [simulation_frequency]
     type = ADGenericFunctionMaterial
 	prop_names = omega
     prop_values = angular_frequency
 	block = 'transducer_material sample_material'
+  []
+  [thermal_conductivity_sample]
+    type = ADGenericFunctionMaterial
+    prop_names = k_samp
+    prop_values = grain_boundary_function
+	block = sample_material
   []
 []
 
@@ -320,7 +308,7 @@ offset = 9.183673469387756
   
   
   [heat_source_term_real]
-    type = RingGaussianPumpBesselAxisymmetric
+    type = PumpSuperGaussianRing
 	variable = temp_trans_real
 	boundary = 'top_pump_area'
 	
@@ -328,6 +316,9 @@ offset = 9.183673469387756
 	absorbance = ${pump_absorbance}
 	pump_spot_size = ${w_Pump}
 	offset = ${offset}
+	order = ${gaussian_order}
+	center_x = ${x0_val}
+	center_y = ${y0_val}
   []
   [heat_source_term_imag]
     type = NeumannBC
@@ -354,15 +345,9 @@ offset = 9.183673469387756
   automatic_scaling = true
 []
 
+
 [Outputs]
-  interval = 1
-  #execute_on = 'initial timestep_end'
   print_linear_residuals = false
   csv = true
-  exodus = true
-  [pgraph]
-    type = PerfGraphOutput
-    execute_on = 'final'  # Default is "final"
-    level = 1             # Default is 1
-  []
+  exodus = false
 []

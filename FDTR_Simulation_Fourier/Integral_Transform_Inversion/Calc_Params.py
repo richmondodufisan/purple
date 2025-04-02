@@ -1,8 +1,11 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+
+# from Layered_Heat_Conduction_ConcentricGaussian import calc_thermal_response
 # from Layered_Heat_Conduction_BesselRing import calc_thermal_response
-from Layered_Heat_Conduction_ConcentricGaussian import calc_thermal_response
+from Layered_Heat_Conduction_SuperGaussianRing import calc_thermal_response
+
 from scipy.optimize import curve_fit
 # from scipy.integrate import trapz
 import pdb
@@ -33,6 +36,8 @@ freq = freq * 1e6
 
 offset = 3e-6
 
+order = 2.0
+
 
 # N_layers = 2
 # layer2 = [100e-6, kappa, kappa, 6180, 249.06]
@@ -45,8 +50,13 @@ offset = 3e-6
 # freq = freq * 1e6
 
 # Calculate analytical phase 
-phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
+# phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
 # phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
+phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, order, freq, pump_power)
+
+# Ensure phase is within 0 and - 2*pi
+if (phase > 0.0):
+    phase = phase - (2*np.pi)
 
 print("----------------------------------------------------------------------------------------------")
 print("Phase: " + str(phase) + " radians") 

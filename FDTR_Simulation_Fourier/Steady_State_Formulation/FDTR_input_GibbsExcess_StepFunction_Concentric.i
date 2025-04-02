@@ -305,7 +305,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   
   
   [heat_source_term_real]
-    type = ConcentricGaussianPumpStandard
+    type = PumpConcentricGaussian
 	variable = temp_trans_real
 	boundary = 'top_pump_area'
 	

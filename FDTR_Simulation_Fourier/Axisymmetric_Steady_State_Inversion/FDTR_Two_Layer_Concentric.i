@@ -312,7 +312,7 @@ pump_absorbance = 1
   
   
   [heat_source_term_real]
-    type = ConcentricGaussianPumpStandardAxisymmetric
+    type = PumpConcentricGaussianAxisymmetric
 	variable = temp_trans_real
 	boundary = 'top_pump_area'
 	

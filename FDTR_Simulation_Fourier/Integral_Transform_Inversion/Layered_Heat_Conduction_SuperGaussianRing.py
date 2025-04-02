@@ -11,7 +11,7 @@ import pdb
 
 # This is a helper file for calculating phase and temperature increase in FDTR experiments
 # It is assumed that thermal transport is within the diffusive regime, hence Fourier's equation applies
-# This is the analytical solution for radial heat transfer with an offset as in Feser 2012
+# This is the analytical solution for radial heat transfer with an offset, using an unnormalized ring-shaped super gaussian
 
 # The calc_thermal_response function should be used to find the phase and amplitude given the appropriate material properties
 
@@ -43,23 +43,34 @@ import pdb
 
 # pump_power: the pump power, Q0 * absorbance
 
+# r0: the beam offset
+
+# order: the order of the super gaussian
+
 
 
 
 
 # Expression for normalized gaussian based on 1/e^2 beam waist
-def pump_integrand_to_hankel(r, x0, w, k):
-    
-    exponent_term = np.exp(  (-2 * ((r**2) + (x0**2)))   /   (w**2)   )
-    
-    bessel_i0_term = i0( (4 * x0 * r) / (w**2) )
+
+def normalized_pump_profile(r, r0, w, n):
+    # Unnormalized radial super-Gaussian profile times r for 2D integration.
+    return np.exp(-2 * ((r - r0) / w) ** n) * r
+
+def pump_integrand_to_hankel(r, r0, w, k, n):
   
-    prefactor = 2 / (np.pi * (w**2))
+    # Returns normalized super-Gaussian * Bessel function for Hankel transform.
     
-    # Pump gaussian in r
-    P_r = prefactor * exponent_term * bessel_i0_term
+    # Compute normalization integral ∫₀^∞ exp(...) * r * 2π dr
+    integrand = lambda r: normalized_pump_profile(r, r0, w, n)
+    integral_result, _ = quad(integrand, 0, r0 + 10 * w, limit=1000)
     
-    return P_r * r * j0(k * r)
+    normalization = 1.0 / (2 * np.pi * integral_result)
+    
+    exponent_term = np.exp(-2 * ((r - r0) / w) ** n)
+    P_r = exponent_term
+    
+    return normalization * P_r * r * j0(k * r)
     
     
     
@@ -78,7 +89,7 @@ def probe_integrand_to_hankel(r, w, k):
 
 
 
-def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, x0, freq):
+def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, r0, n, freq):
 
   # Checks to ensure data is properly submitted/formatted
   
@@ -95,7 +106,7 @@ def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, x0, fr
   r_bound = 10*w_pump
   
   # Pump Gaussian in Hankel Space 
-  P_k, _ = quad(pump_integrand_to_hankel, 0, r_bound, args=(x0, w_pump, k))
+  P_k, _ = quad(pump_integrand_to_hankel, 0, r_bound, args=(r0, w_pump, k, n))
   S_k, _ = quad(probe_integrand_to_hankel, 0, r_bound, args=(w_probe, k))
   
 
@@ -145,7 +156,7 @@ def integrand(k, N_layers, layer_props, interface_props, w_pump, w_probe, x0, fr
 
 
 
-def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, x0, freq, pump_power):
+def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, r0, order, freq, pump_power):
 
 
   # Converting from 1/e beam waist to 1/e^2 beam waist
@@ -155,11 +166,11 @@ def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_prob
 
 
 
-  result, error = quad_vec(integrand, 0, 10000001, args=(N_layers, layer_props, interface_props, w_pump, w_probe, x0, freq))
+  result, error = quad_vec(integrand, 0, 10000001, args=(N_layers, layer_props, interface_props, w_pump, w_probe, r0, order, freq))
   
   H = pump_power * result
 
-  phase = math.atan(H.imag/H.real)
+  phase = math.atan2(H.imag, H.real)
   amplitude = cmath.sqrt(H.real**2 + H.imag**2).real
 
   return phase, amplitude

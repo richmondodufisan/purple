@@ -1,12 +1,12 @@
-#include "RingGaussianPumpBessel.h"
+#include "PumpSuperGaussianRing.h"
 #include "Function.h"
 #include <cmath>
 #include <numbers>
 
-registerMooseObject("purpleApp", RingGaussianPumpBessel);
+registerMooseObject("purpleApp", PumpSuperGaussianRing);
 
 InputParameters
-RingGaussianPumpBessel::validParams()
+PumpSuperGaussianRing::validParams()
 {
   InputParameters params = IntegratedBC::validParams();
   
@@ -16,6 +16,7 @@ RingGaussianPumpBessel::validParams()
   params.addRequiredParam<Real>("absorbance", "The fraction of the pump absorbed by the transducer");
   params.addRequiredParam<Real>("pump_spot_size", "the 1/e^2 beam waist");
   params.addRequiredParam<Real>("offset", "the approximate offset of the pump");
+  params.addRequiredParam<Real>("order", "the order of the super gaussian");
   
   
   params.addRequiredParam<Real>("center_x", "center of the gaussian (x - coordinate)");
@@ -32,7 +33,7 @@ RingGaussianPumpBessel::validParams()
   return params;
 }
 
-RingGaussianPumpBessel::RingGaussianPumpBessel(const InputParameters & parameters)
+PumpSuperGaussianRing::PumpSuperGaussianRing(const InputParameters & parameters)
   : IntegratedBC(parameters), 
   
     // _func(getFunction("function"))
@@ -42,6 +43,7 @@ RingGaussianPumpBessel::RingGaussianPumpBessel(const InputParameters & parameter
     _absorbance(getParam<Real>("absorbance")),
 	_pump_spot_size(getParam<Real>("pump_spot_size")),
 	_offset(getParam<Real>("offset")),
+	_order(getParam<Real>("order")),
 	
 	_center_x(getParam<Real>("center_x")),
     _center_y(getParam<Real>("center_y"))
@@ -51,7 +53,7 @@ RingGaussianPumpBessel::RingGaussianPumpBessel(const InputParameters & parameter
 }
 
 Real
-RingGaussianPumpBessel::computeQpResidual()
+PumpSuperGaussianRing::computeQpResidual()
 {
   auto x0 = _center_x;
   auto y0 = _center_y;
@@ -68,17 +70,38 @@ RingGaussianPumpBessel::computeQpResidual()
   
   auto x_off = _offset;
   
+  auto n = _order;
+  
   auto r_squared = ((std::pow((x-x0), 2.0))+(std::pow((y-y0), 2.0)));
   auto r = std::pow(r_squared, (1.0/2.0));
   
-  auto prefactor = ((2*Q0*absorbance)/(pi*(std::pow(w_Pump, 2.0))));
   
-  auto exp_term = std::exp(   (- 2.0 * ( r_squared + std::pow(x_off, 2.0)))    /    (std::pow(w_Pump, 2.0))   );
+  auto exp_term = std::exp(-2.0 * std::pow(((r - x_off) / w_Pump), n));
+
   
-  auto bessel_arg = (   (4.0 * x_off * r)    /    (std::pow(w_Pump, 2.0))   );
-  auto bessel_term = std::cyl_bessel_i(0.0, bessel_arg);
+  // Numerically integrate to normalize: ∫[0,∞] exp(-2((r - r0)/w)^n) * 2πr dr
+  // Simple trapezoidal rule approximation
+  Real integral = 0.0;
+  const int N = 1000;         // number of steps
+  const Real r_max = 10.0 * w_Pump + x_off;  // integration upper bound
+  const Real dr = r_max / N;
   
-  return -_test[_i][_qp] * (prefactor   *   exp_term  *  bessel_term);
+  for (int i = 0; i < N; ++i)
+  {
+    Real ri = i * dr;
+    Real rip1 = (i + 1) * dr;
+    
+    Real fi = std::exp(-2.0 * std::pow((ri - x_off) / w_Pump, n)) * ri;
+    Real fip1 = std::exp(-2.0 * std::pow((rip1 - x_off) / w_Pump, n)) * rip1;
+    
+    integral += 0.5 * (fi + fip1) * dr;
+  }
+
+  // Multiply by 2π due to polar integration
+  integral *= 2.0 * M_PI;
   
-  // return -_test[_i][_qp] * _func.value(_t, _q_point[_qp]);
+  // Normalize such that the integral = 1.0
+  Real prefactor = 1.0 / integral;
+  
+  return -_test[_i][_qp] * Q0 * absorbance * prefactor * exp_term;
 }

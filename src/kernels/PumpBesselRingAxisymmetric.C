@@ -1,12 +1,12 @@
-#include "RingGaussianPumpBesselAxisymmetric.h"
+#include "PumpBesselRingAxisymmetric.h"
 #include "Function.h"
 #include <cmath>
 #include <numbers>
 
-registerMooseObject("purpleApp", RingGaussianPumpBesselAxisymmetric);
+registerMooseObject("purpleApp", PumpBesselRingAxisymmetric);
 
 InputParameters
-RingGaussianPumpBesselAxisymmetric::validParams()
+PumpBesselRingAxisymmetric::validParams()
 {
   InputParameters params = IntegratedBC::validParams();
   
@@ -29,7 +29,7 @@ RingGaussianPumpBesselAxisymmetric::validParams()
   return params;
 }
 
-RingGaussianPumpBesselAxisymmetric::RingGaussianPumpBesselAxisymmetric(const InputParameters & parameters)
+PumpBesselRingAxisymmetric::PumpBesselRingAxisymmetric(const InputParameters & parameters)
   : IntegratedBC(parameters), 
   
     // _func(getFunction("function"))
@@ -45,7 +45,7 @@ RingGaussianPumpBesselAxisymmetric::RingGaussianPumpBesselAxisymmetric(const Inp
 }
 
 Real
-RingGaussianPumpBesselAxisymmetric::computeQpResidual()
+PumpBesselRingAxisymmetric::computeQpResidual()
 {
   auto x0 = 0.0;
   

@@ -1,12 +1,12 @@
-#include "ConcentricGaussianPumpStandardAxisymmetric.h"
+#include "PumpConcentricGaussianAxisymmetric.h"
 #include "Function.h"
 #include <cmath>
 #include <numbers>
 
-registerMooseObject("purpleApp", ConcentricGaussianPumpStandardAxisymmetric);
+registerMooseObject("purpleApp", PumpConcentricGaussianAxisymmetric);
 
 InputParameters
-ConcentricGaussianPumpStandardAxisymmetric::validParams()
+PumpConcentricGaussianAxisymmetric::validParams()
 {
   InputParameters params = IntegratedBC::validParams();
   
@@ -27,7 +27,7 @@ ConcentricGaussianPumpStandardAxisymmetric::validParams()
   return params;
 }
 
-ConcentricGaussianPumpStandardAxisymmetric::ConcentricGaussianPumpStandardAxisymmetric(const InputParameters & parameters)
+PumpConcentricGaussianAxisymmetric::PumpConcentricGaussianAxisymmetric(const InputParameters & parameters)
   : IntegratedBC(parameters), 
   
     // _func(getFunction("function"))
@@ -42,7 +42,7 @@ ConcentricGaussianPumpStandardAxisymmetric::ConcentricGaussianPumpStandardAxisym
 }
 
 Real
-ConcentricGaussianPumpStandardAxisymmetric::computeQpResidual()
+PumpConcentricGaussianAxisymmetric::computeQpResidual()
 {
   
   auto x = _q_point[_qp](0);
