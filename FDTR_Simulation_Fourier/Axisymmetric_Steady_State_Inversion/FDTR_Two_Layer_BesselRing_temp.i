@@ -10,7 +10,7 @@ c_trans = 128.7
 
 sample_thickness = 40
 k_samp_z = 0.00013
-k_samp_r = 0.000130013
+k_samp_r = 0.0001299935
 rho_samp = 2.329e-15
 c_samp = 689.1
 
@@ -28,7 +28,7 @@ w_Pump = ${fparse pump_radius * sqrt(2)}
 
 pump_absorbance = 1
 
-offset = 30.61224489795919
+offset = 44.89795918367347
 
 
 [Mesh]
