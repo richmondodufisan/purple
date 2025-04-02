@@ -57,10 +57,62 @@ def finite_difference_log(FDTR_function, freq_range, param_name, param_value, pe
 
     return sensitivity
 
-# === Run Sensitivity for Offset Range ===
-# Sensitivity_G_list = []
-Sensitivity_kappa_r_list = []
-# Sensitivity_kappa_z_list = []
+
+
+
+
+
+# ############ PLOT OFFSET VS SENSITIVITY ###################
+
+# # Sensitivity_G_list = []
+# Sensitivity_kappa_r_list = []
+# # Sensitivity_kappa_z_list = []
+
+# for offset in offset_list:
+    # params = {
+        # "kappa_z": kappa_z_val,
+        # "kappa_r": kappa_r_val,
+        # "G": G_val,
+        # "offset": offset
+    # }
+
+    # freqs = np.array([fixed_frequency])  # Single frequency as array
+
+    # # sens_G = finite_difference_log(FDTR_function, freqs, "G", G_val, perturbation, params)[0]
+    # sens_kappa_r = finite_difference_log(FDTR_function, freqs, "kappa_r", kappa_r_val, perturbation, params)[0]
+    # # sens_kappa_z = finite_difference_log(FDTR_function, freqs, "kappa_z", kappa_z_val, perturbation, params)[0]
+
+    # # Sensitivity_G_list.append(sens_G)
+    # Sensitivity_kappa_r_list.append(sens_kappa_r)
+    # # Sensitivity_kappa_z_list.append(sens_kappa_z)
+
+# # === Plotting ===
+# plt.figure(figsize=(10, 6))
+# # plt.plot(np.array(offset_list)*1e6, Sensitivity_G_list, label=r'$G (Au-Si)$', linestyle='--', linewidth=3)
+# plt.plot(np.array(offset_list)*1e6, Sensitivity_kappa_r_list, label=r'$\kappa_{r}$ (Si)', linestyle='--', linewidth=3)
+# # plt.plot(np.array(offset_list)*1e6, Sensitivity_kappa_z_list, label=r'$\kappa_{z}$ (Si)', linestyle='--', linewidth=3)
+
+# plt.grid(True)
+# plt.xlabel('Offset (μm)', fontsize=14)
+# plt.ylabel('Sensitivity (radians)', fontsize=14)
+# plt.xticks(fontsize=14)
+# plt.yticks(fontsize=14)
+# plt.title(f'Sensitivity vs Offset for $\\kappa_{{r}}$ (Si) at {fixed_frequency/1e6:.1f} MHz', fontsize=16)
+# # plt.title(f'Sensitivity vs Offset for $\\kappa_{{z}}$ (Si) at {fixed_frequency/1e6:.1f} MHz', fontsize=16)
+# plt.legend(fontsize=14)
+# plt.tight_layout()
+# # plt.savefig(f'sensitivity_vs_offset_kappa_z_{int(fixed_frequency/1e6)}MHz.png')
+# plt.savefig(f'sensitivity_vs_offset_kappa_r_{int(fixed_frequency/1e6)}MHz.png')
+# plt.show()
+
+
+
+
+
+
+############ PLOT OFFSET VS PHASE ###################
+
+phase_list = []
 
 for offset in offset_list:
     params = {
@@ -70,31 +122,19 @@ for offset in offset_list:
         "offset": offset
     }
 
-    freqs = np.array([fixed_frequency])  # Single frequency as array
+    freqs = np.array([fixed_frequency])  # Single frequency
+    phase = FDTR_function(freqs, **params)[0]  # Get the phase at the fixed frequency
+    phase_list.append(phase)
 
-    # sens_G = finite_difference_log(FDTR_function, freqs, "G", G_val, perturbation, params)[0]
-    sens_kappa_r = finite_difference_log(FDTR_function, freqs, "kappa_r", kappa_r_val, perturbation, params)[0]
-    # sens_kappa_z = finite_difference_log(FDTR_function, freqs, "kappa_z", kappa_z_val, perturbation, params)[0]
-
-    # Sensitivity_G_list.append(sens_G)
-    Sensitivity_kappa_r_list.append(sens_kappa_r)
-    # Sensitivity_kappa_z_list.append(sens_kappa_z)
-
-# === Plotting ===
+# === Plot Phase vs Offset ===
 plt.figure(figsize=(10, 6))
-# plt.plot(np.array(offset_list)*1e6, Sensitivity_G_list, label=r'$G (Au-Si)$', linestyle='--', linewidth=3)
-plt.plot(np.array(offset_list)*1e6, Sensitivity_kappa_r_list, label=r'$\kappa_{r}$ (Si)', linestyle='--', linewidth=3)
-# plt.plot(np.array(offset_list)*1e6, Sensitivity_kappa_z_list, label=r'$\kappa_{z}$ (Si)', linestyle='--', linewidth=3)
-
+plt.plot(np.array(offset_list)*1e6, phase_list, linewidth=3)
 plt.grid(True)
 plt.xlabel('Offset (μm)', fontsize=14)
-plt.ylabel('Sensitivity (radians)', fontsize=14)
+plt.ylabel('Phase (radians)', fontsize=14)
 plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
-plt.title(f'Sensitivity vs Offset for $\\kappa_{{r}}$ (Si) at {fixed_frequency/1e6:.1f} MHz', fontsize=16)
-# plt.title(f'Sensitivity vs Offset for $\\kappa_{{z}}$ (Si) at {fixed_frequency/1e6:.1f} MHz', fontsize=16)
-plt.legend(fontsize=14)
+plt.title(f'Phase vs Offset at {fixed_frequency/1e6:.1f} MHz', fontsize=16)
 plt.tight_layout()
-# plt.savefig(f'sensitivity_vs_offset_kappa_z_{int(fixed_frequency/1e6)}MHz.png')
-plt.savefig(f'sensitivity_vs_offset_kappa_r_{int(fixed_frequency/1e6)}MHz.png')
+plt.savefig(f'phase_vs_offset_{int(fixed_frequency/1e6)}MHz.png')
 plt.show()

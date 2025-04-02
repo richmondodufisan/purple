@@ -22,7 +22,7 @@ w_pump = 1.53e-6
 pump_power = 0.01
 freq = freq * 1e6
 
-offset = 3e-6
+offset = 20e-6
 
 # Calculate analytical phase 
 # phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)

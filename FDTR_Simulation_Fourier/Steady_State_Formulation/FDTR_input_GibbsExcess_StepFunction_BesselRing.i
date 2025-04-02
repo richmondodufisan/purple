@@ -16,7 +16,8 @@ pump_power = 0.01
 pump_absorbance = 1
 gb_width_val = 0.1
 kappa_bulk_si = 130e-6
-kappa_gb_si = 56.52e-6
+#kappa_gb_si = 56.52e-6
+kappa_gb_si = 130e-6
 rho_si = 2.329e-15
 c_si = 0.6891e3
 au_si_conductance = -3e-5
@@ -329,16 +330,17 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 [Executioner]
   type = Steady
   solve_type = 'NEWTON'
+  
+  petsc_options_iname = '-pc_type'
+  petsc_options_value = 'lu'
 
-  petsc_options_iname = '-ksp_type -pc_type -pc_hypre_type -ksp_rtol -ksp_max_it'
-  petsc_options_value = 'gmres     hypre    boomeramg      1e-8     300'
 
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-8
   l_tol = 1e-5
   l_max_its = 300
   nl_max_its = 20
-
+  
   automatic_scaling = true
 []
 
