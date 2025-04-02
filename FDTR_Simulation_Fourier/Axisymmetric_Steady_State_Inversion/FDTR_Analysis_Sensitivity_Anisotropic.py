@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from Layered_Heat_Conduction_BesselRing import calc_thermal_response
+from Two_Layer_Inversion_BesselRing import calc_thermal_response
 # from Layered_Heat_Conduction import calc_thermal_response
 import pdb
 import csv
@@ -32,7 +32,7 @@ def FDTR_function(freqs, kappa_z, kappa_r, G):
         pump_power = 0.01
         freq = freq * 1e6
         
-        offset = 8e-6
+        offset = 19e-6
 
         # Calculate analytical phase 
         phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
@@ -165,12 +165,12 @@ plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
 
 # Set title and legend font size
-plt.title('Sensitivity Plot for 90nm Au on Si, 8 micron offset', fontsize=16)
+plt.title('Sensitivity Plot for 90nm Au on Si, 19 micron offset', fontsize=16)
 # plt.title('Sensitivity Plot for 90nm Au on Si, concentric beams', fontsize=16)
 plt.legend(fontsize=14)
 
 # Display and save plot
-plt.savefig('sensitivity_offset_8um.png')
+plt.savefig('sensitivity_offset_19um.png')
 # plt.savefig('sensitivity_concentric.png')
 plt.show()
 
