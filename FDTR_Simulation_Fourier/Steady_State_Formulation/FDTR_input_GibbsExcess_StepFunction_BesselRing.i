@@ -10,7 +10,7 @@ pump_radius = 1.53
 w_Probe = ${fparse probe_radius * sqrt(2)}
 w_Pump = ${fparse pump_radius * sqrt(2)}
 
-offset = 5
+offset = 3
 
 pump_power = 0.01
 pump_absorbance = 1
