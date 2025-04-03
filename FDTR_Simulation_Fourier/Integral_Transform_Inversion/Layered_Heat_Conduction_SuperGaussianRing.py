@@ -53,22 +53,31 @@ import pdb
 
 # Expression for normalized gaussian based on 1/e^2 beam waist
 
+# Coarse Integrator (I don't care about accuracy of amplitude)
+# Hence normalization factor can be offset
+
+def coarse_integrate(func, a, b, N=10):
+    r_vals = np.linspace(a, b, N)
+    y_vals = func(r_vals)
+    return np.trapz(y_vals, r_vals)
+
+# Super-Gaussian Pump Profile
 def normalized_pump_profile(r, r0, w, n):
-    # Unnormalized radial super-Gaussian profile times r for 2D integration.
+    # Unnormalized super-Gaussian ring profile * r (for 2D integration)
     return np.exp(-2 * ((r - r0) / w) ** n) * r
 
+# Pump Integrand for Hankel Transform 
 def pump_integrand_to_hankel(r, r0, w, k, n):
-  
-    # Returns normalized super-Gaussian * Bessel function for Hankel transform.
+    # Integrand: normalized super-Gaussian * Bessel function J0(k r)
     
-    # Compute normalization integral ∫₀^∞ exp(...) * r * 2π dr
-    integrand = lambda r: normalized_pump_profile(r, r0, w, n)
-    integral_result, _ = quad(integrand, 0, r0 + 10 * w, limit=1000)
+    # Compute normalization with coarse integration
+    integrand = lambda r_vals: normalized_pump_profile(r_vals, r0, w, n)
+    integral_result = coarse_integrate(integrand, 0, r0 + 10 * w, N=10)
     
     normalization = 1.0 / (2 * np.pi * integral_result)
     
-    exponent_term = np.exp(-2 * ((r - r0) / w) ** n)
-    P_r = exponent_term
+    # Unnormalized pump profile (for actual integrand)
+    P_r = np.exp(-2 * ((r - r0) / w) ** n)
     
     return normalization * P_r * r * j0(k * r)
     
@@ -171,6 +180,7 @@ def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_prob
   H = pump_power * result
 
   phase = math.atan2(H.imag, H.real)
+  # phase = math.atan(H.imag / H.real)
   amplitude = cmath.sqrt(H.real**2 + H.imag**2).real
 
   return phase, amplitude

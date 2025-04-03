@@ -82,7 +82,7 @@ PumpSuperGaussianRing::computeQpResidual()
   // Numerically integrate to normalize: ∫[0,∞] exp(-2((r - r0)/w)^n) * 2πr dr
   // Simple trapezoidal rule approximation
   Real integral = 0.0;
-  const int N = 1000;         // number of steps
+  const int N = 10;         // number of steps
   const Real r_max = 10.0 * w_Pump + x_off;  // integration upper bound
   const Real dr = r_max / N;
   

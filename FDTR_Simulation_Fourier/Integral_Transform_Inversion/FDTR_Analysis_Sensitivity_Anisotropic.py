@@ -1,8 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from Layered_Heat_Conduction_BesselRing import calc_thermal_response
+# from Layered_Heat_Conduction_BesselRing import calc_thermal_response
 # from Layered_Heat_Conduction import calc_thermal_response
+from Layered_Heat_Conduction_SuperGaussianRing import calc_thermal_response
 import pdb
 import csv
 import math
@@ -32,10 +33,13 @@ def FDTR_function(freqs, kappa_z, kappa_r, G):
         pump_power = 0.01
         freq = freq * 1e6
         
-        offset = 8e-6
+        offset = 3e-6
+        
+        order = 2.0
 
-        # Calculate analytical phase 
-        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
+        # Calculate analytical phase
+        phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, order, freq, pump_power)
+        # phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
         # phase, _ = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
         
         # phase = phase * (180/np.pi)   # Toggle to plot sensitivity in degrees instead of radians
@@ -170,7 +174,7 @@ plt.title('Sensitivity Plot for 90nm Au on Si, 8 micron offset', fontsize=16)
 plt.legend(fontsize=14)
 
 # Display and save plot
-plt.savefig('sensitivity_offset_8um.png')
+plt.savefig('sensitivity_supgauss_offset_3um.png')
 # plt.savefig('sensitivity_concentric.png')
 plt.show()
 

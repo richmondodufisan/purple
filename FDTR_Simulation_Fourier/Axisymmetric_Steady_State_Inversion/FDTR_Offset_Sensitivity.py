@@ -1,8 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-# from Layered_Heat_Conduction_BesselRing import calc_thermal_response
-from Layered_Heat_Conduction_SuperGaussianRing import calc_thermal_response
+# from Two_Layer_Inversion_Concentric import calc_thermal_response
+# from Two_Layer_Inversion_BesselRing import calc_thermal_response
+from Two_Layer_Inversion_SuperGaussianRing import calc_thermal_response
 import math
 
 # === USER INPUTS ===

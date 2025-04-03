@@ -2,7 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 # from Layered_Heat_Conduction import calc_thermal_response
-from Layered_Heat_Conduction_BesselRing import calc_thermal_response
+# from Layered_Heat_Conduction_BesselRing import calc_thermal_response
+from Layered_Heat_Conduction_SuperGaussianRing import calc_thermal_response
 from scipy.optimize import curve_fit
 from scipy.integrate import trapz
 import pdb
