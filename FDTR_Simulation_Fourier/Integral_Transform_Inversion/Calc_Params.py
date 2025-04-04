@@ -34,7 +34,7 @@ w_pump = 1.53e-6
 pump_power = 0.01
 freq = freq * 1e6
 
-offset = 3e-6
+offset = 5e-6
 
 order = 2.0
 
