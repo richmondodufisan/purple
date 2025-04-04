@@ -10,23 +10,26 @@ newMeshName = "FDTR_mesh.msh"
 radius = 8
 trans_thick = 0.09
 
-dummy_factor = 2
+
 trans_thick_ref = 0.09
 sub_center_ref=0.09
 
 x_len = 40
 y_len = 40
 
-pump_refine = 0.09
+dummy_factor = 2
+trans_thick_ref = 0.05
+pump_inner_refine = 0.15
+pump_outer_refine = 0.15
 reg_element_refine = 4
 
 
 # NB: In axisymmetric case, y axis becomes z axis in MOOSE
 # Adding points for base box/substrate, i.e Silicon sample
-p1 = gmsh.model.occ.addPoint(0, 0, 0, sub_center_ref)
-p2 = gmsh.model.occ.addPoint(x_len, 0, 0, reg_element_refine)
-p3 = gmsh.model.occ.addPoint(0, -y_len, 0, reg_element_refine)
-p4 = gmsh.model.occ.addPoint(x_len, -y_len, 0, reg_element_refine)
+p1 = gmsh.model.occ.addPoint(0, 0, 0)
+p2 = gmsh.model.occ.addPoint(x_len, 0, 0)
+p3 = gmsh.model.occ.addPoint(0, -y_len, 0)
+p4 = gmsh.model.occ.addPoint(x_len, -y_len, 0)
 
 # Adding lines for base box
 c1 = gmsh.model.occ.addLine(p1, p2)
@@ -40,8 +43,8 @@ cloop1 = gmsh.model.occ.addCurveLoop([c1, c2, c3, c4])
 s1 = gmsh.model.occ.addPlaneSurface([cloop1])
 
 # Add transducer box
-p5 = gmsh.model.occ.addPoint(0, trans_thick, 0, sub_center_ref)
-p6 = gmsh.model.occ.addPoint(x_len, trans_thick, 0, reg_element_refine)
+p5 = gmsh.model.occ.addPoint(0, trans_thick, 0)
+p6 = gmsh.model.occ.addPoint(x_len, trans_thick, 0)
 
 # Add transducer lines
 c5 = gmsh.model.occ.addLine(p1, p5)
@@ -55,8 +58,8 @@ s2 = gmsh.model.occ.addPlaneSurface([cloop2])
 
 ##### REFINEMENT DUMMY POINTS #####
 # Points for radial refinement dummy surface
-p7 = gmsh.model.occ.addPoint(radius, 0, 0, pump_refine)
-p8 = gmsh.model.occ.addPoint(0, -radius, 0, pump_refine)
+p7 = gmsh.model.occ.addPoint(radius, 0, 0)
+p8 = gmsh.model.occ.addPoint(0, -radius, 0)
 
 # Make circle arcs for radial refinement
 c8 = gmsh.model.occ.addCircleArc(p7, p1, p8)
@@ -71,8 +74,8 @@ s3 = gmsh.model.occ.addPlaneSurface([cloop3])
 
 ##### ADDITIONAL SUB-REFINEMENT DUMMY POINTS #####
 # Points for radial refinement dummy surface
-p9 = gmsh.model.occ.addPoint(radius/dummy_factor, 0, 0, sub_center_ref)
-p10 = gmsh.model.occ.addPoint(0, -radius/dummy_factor, 0, sub_center_ref)
+p9 = gmsh.model.occ.addPoint(radius/dummy_factor, 0, 0)
+p10 = gmsh.model.occ.addPoint(0, -radius/dummy_factor, 0)
 
 # Make circle arcs for radial refinement
 c11 = gmsh.model.occ.addCircleArc(p9, p1, p10)
@@ -85,7 +88,7 @@ cloop4 = gmsh.model.occ.addCurveLoop([c11, c12, c13])
 s4 = gmsh.model.occ.addPlaneSurface([cloop4])
 
 # Adding mesh refinement for pump region in transducer
-p11 = gmsh.model.occ.addPoint(radius, trans_thick, 0, pump_refine)
+p11 = gmsh.model.occ.addPoint(radius, trans_thick, 0)
 
 c14 = gmsh.model.occ.addLine(p5, p11)
 c15 = gmsh.model.occ.addLine(p7, p11)
@@ -94,7 +97,7 @@ cloop5 = gmsh.model.occ.addCurveLoop([c5, c14, c15, c9])
 s5 = gmsh.model.occ.addPlaneSurface([cloop5])
 
 # Adding mesh sub-refinement for pump region in transducer
-p12 = gmsh.model.occ.addPoint(radius/dummy_factor, trans_thick, 0, sub_center_ref)
+p12 = gmsh.model.occ.addPoint(radius/dummy_factor, trans_thick, 0)
 
 c16 = gmsh.model.occ.addLine(p5, p12)
 c17 = gmsh.model.occ.addLine(p9, p12)
@@ -119,24 +122,41 @@ gmsh.model.occ.synchronize()
 
 # assign mesh size at all points without a mesh size constraint
 p = gmsh.model.occ.getEntities(0)
-s = gmsh.model.mesh.getSizes(p)
 
-for ps in zip(p, s):
-    if ps[1] == 0:
-        # get coordinates of newly created points
-        val = gmsh.model.getValue(0, ps[0][1], [])
-        
-        # check if they are within the radius of the small sphere
-        checkSphere = ((val[0])**2 + (val[1])**2 + (val[2])**2)
-        
-        # checkCylinder = ((val[0])**2 + (val[1])**2 + (val[2]-0.09)**2)
-        # print(checkSphere)
-        
-        # assign small sphere refinement if yes, large sphere refinement otherwise
-        if (( checkSphere <= ((radius/dummy_factor)**2 + 1e-2))):
-            gmsh.model.mesh.setSize([ps[0]], trans_thick_ref)
-        else:
-            gmsh.model.mesh.setSize([ps[0]], pump_refine)
+# Loop through each point and determine mesh refinement
+for point in p:
+    point_id = point[1]
+    
+    # Get point coordinates
+    val = gmsh.model.getValue(0, point_id, [])
+
+    # Compute distances from center
+    checkSphere = (val[0])**2 + (val[1])**2
+    checkOuterCylinder = (val[0])**2   # Outer cylinder check in XY
+    checkInnerCylinder = (val[0])**2   # Inner cylinder check in XY
+    
+    small_radius = radius/dummy_factor
+
+    # Assign mesh size based on location
+    if checkSphere <= ((small_radius)**2 + 1e-2) and val[1] <= 0:
+        # Point is inside the **smaller hemisphere**
+        gmsh.model.mesh.setSize([point], pump_inner_refine)
+    
+    elif checkSphere <= ((radius)**2 + 1e-2) and val[1] <= 0:
+        # Point is inside the **larger hemisphere**
+        gmsh.model.mesh.setSize([point], pump_outer_refine)
+    
+    elif checkInnerCylinder <= (small_radius**2 + 1e-2) and (0 <= val[1] <= trans_thick):
+        # Point is inside the **inner cylindrical refinement region**
+        gmsh.model.mesh.setSize([point], trans_thick_ref)
+    
+    elif checkOuterCylinder <= (radius**2 + 1e-2) and (0 <= val[1] <= trans_thick):
+        # Point is inside the **outer cylindrical refinement region**
+        gmsh.model.mesh.setSize([point], trans_thick_ref)
+    
+    else:
+        # Default refinement for all other points
+        gmsh.model.mesh.setSize([point], reg_element_refine)
    
 
 # More efficient meshing algorithm used when there are multiple subvolumes
