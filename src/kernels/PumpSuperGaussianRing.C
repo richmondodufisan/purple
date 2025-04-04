@@ -101,7 +101,7 @@ PumpSuperGaussianRing::computeQpResidual()
   integral *= 2.0 * M_PI;
   
   // Normalize such that the integral = 1.0
-  Real prefactor = 1.0 / integral;
+  Real prefactor = -1.0 / integral;
   
   return -_test[_i][_qp] * Q0 * absorbance * prefactor * exp_term;
 }

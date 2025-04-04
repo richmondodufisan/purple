@@ -71,7 +71,7 @@ PumpBesselRing::computeQpResidual()
   auto r_squared = ((std::pow((x-x0), 2.0))+(std::pow((y-y0), 2.0)));
   auto r = std::pow(r_squared, (1.0/2.0));
   
-  auto prefactor = ((2*Q0*absorbance)/(pi*(std::pow(w_Pump, 2.0))));
+  auto prefactor = -((2*Q0*absorbance)/(pi*(std::pow(w_Pump, 2.0))));
   
   auto exp_term = std::exp(   (- 2.0 * ( r_squared + std::pow(x_off, 2.0)))    /    (std::pow(w_Pump, 2.0))   );
   

@@ -18,9 +18,9 @@ ycen = 0
 
 # Refinement Parameters
 dummy_factor = 2
-sub_center_ref = 0.3
 trans_thick_ref = 0.3
-pump_refine = 1.2
+pump_inner_refine = 1.2
+pump_outer_refine = 1.2
 reg_element_refine = 4
 
 # 1. Create the **Base Substrate Box**
@@ -76,11 +76,11 @@ for point in p:
     # Assign mesh size based on location
     if checkSphere <= ((small_radius)**2 + 1e-2) and val[2] <= 0:
         # Point is inside the **smaller hemisphere**
-        gmsh.model.mesh.setSize([point], trans_thick_ref)
+        gmsh.model.mesh.setSize([point], pump_inner_refine)
     
     elif checkSphere <= ((radius)**2 + 1e-2) and val[2] <= 0:
         # Point is inside the **larger hemisphere**
-        gmsh.model.mesh.setSize([point], pump_refine)
+        gmsh.model.mesh.setSize([point], pump_outer_refine)
     
     elif checkInnerCylinder <= (inner_radius**2 + 1e-2) and (0 <= val[2] <= trans_thick):
         # Point is inside the **inner cylindrical refinement region**
@@ -88,7 +88,7 @@ for point in p:
     
     elif checkOuterCylinder <= (radius**2 + 1e-2) and (0 <= val[2] <= trans_thick):
         # Point is inside the **outer cylindrical refinement region**
-        gmsh.model.mesh.setSize([point], pump_refine)
+        gmsh.model.mesh.setSize([point], trans_thick_ref)
     
     else:
         # Default refinement for all other points
