@@ -90,12 +90,6 @@ for x0 in FDTR_x0_vals:
             phase = math.atan(imag_val/real_val)
         
             amplitude = math.sqrt(imag_val**2 + real_val**2)
-            
-            # # convert to degrees
-            # phase = phase * (180/np.pi)
-            
-            # # keep within 0 and 360
-            # phase = phase % 360
         
             # Save phase values
             phase_vals.append(phase)
@@ -168,12 +162,6 @@ def fit_function_FDTR(freqs, kappa_z, kappa_r):
         # phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
         
         phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, order, freq, pump_power)
-        
-        # # convert to degrees
-        # phase = phase * (180/np.pi)
-
-        # # keep within 0 and 360
-        # phase = phase % 360
         
         phases.append(phase)
     

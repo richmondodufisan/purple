@@ -74,6 +74,7 @@ def finite_difference_log(FDTR_function, freq_range, param_name, param_value, pe
 
     sensitivity = (-phase_2high + 8*phase_1high - 8*phase_1low + phase_2low) / (6 * (log_1high - log_1low))
     
+    # log scale of phase for fairer comparison
     # relative_sensitivity = (-log_phase_2high + 8*log_phase_1high - 8*log_phase_1low + log_phase_2low) / (6 * (log_1high - log_1low))
 
     return sensitivity
