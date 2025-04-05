@@ -17,10 +17,10 @@ sub_center_ref=0.09
 x_len = 40
 y_len = 40
 
-dummy_factor = 2
-trans_thick_ref = 0.05
-pump_inner_refine = 0.15
-pump_outer_refine = 0.15
+dummy_factor = 1.6
+trans_thick_ref = 0.045
+pump_inner_refine = 0.075
+pump_outer_refine = 0.2
 reg_element_refine = 4
 
 

@@ -13,7 +13,7 @@ import math
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Read the CSV files into pandas DataFrames
-FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_StepFunction_SuperGaussianRing_5um_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_Interface_SuperGaussianRing_5um_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
 theta_angle = "0" # for output file name change
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -21,7 +21,7 @@ FDTR_freq_vals = FDTR_data['frequency'].unique().tolist()
 FDTR_x0_vals = FDTR_data['x0'].unique().tolist()
 
 # Skip first sampled frequency
-# FDTR_freq_vals = FDTR_freq_vals[1:]
+# FDTR_freq_vals = FDTR_freq_vals[:-5]
 
 ############################################# END READING IN AND ORGANIZING DATA #############################################
 
@@ -86,8 +86,8 @@ for x0 in FDTR_x0_vals:
             imag_val = subset_df['imag_part'].iloc[0]
             real_val = subset_df['real_part'].iloc[0]
             
-            # phase = math.atan2(imag_val, real_val)
-            phase = math.atan(imag_val/real_val)
+            phase = math.atan2(imag_val, real_val)
+            # phase = math.atan(imag_val/real_val)
         
             amplitude = math.sqrt(imag_val**2 + real_val**2)
         

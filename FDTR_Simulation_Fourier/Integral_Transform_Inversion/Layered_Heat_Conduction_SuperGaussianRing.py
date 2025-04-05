@@ -179,8 +179,8 @@ def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_prob
   
   H = pump_power * result
 
-  # phase = math.atan2(H.imag, H.real)
-  phase = math.atan(H.imag / H.real)
+  phase = math.atan2(H.imag, H.real)
+  # phase = math.atan(H.imag / H.real)
   amplitude = cmath.sqrt(H.real**2 + H.imag**2).real
 
   return phase, amplitude

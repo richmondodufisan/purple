@@ -16,8 +16,8 @@ import math
 # File for calculating phase and amplitude for any parameters (for checking)
 # Mostly for debugging purposes
 
-freq = 1.0 # in MHz
-kappa = 130 # in W/(m.K)
+freq = 2.0 # in MHz
+kappa = 130.1 # in W/(m.K)
 # conductance = 3e7 # in W/(m2.K)
 conductance_12 = 30e6 # in W/(m2.K)
 
@@ -34,7 +34,7 @@ w_pump = 1.53e-6
 pump_power = 0.01
 freq = freq * 1e6
 
-offset = 5e-6
+offset = 3e-6
 
 order = 2.0
 
