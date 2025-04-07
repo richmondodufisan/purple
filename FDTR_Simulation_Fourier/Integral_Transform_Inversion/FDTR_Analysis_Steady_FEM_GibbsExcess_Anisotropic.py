@@ -10,11 +10,20 @@ import pdb
 import csv
 import math
 
+
+
+
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
-# Read the CSV files into pandas DataFrames
-FDTR_data = pd.read_csv('FDTR_input_GibbsExcess_Interface_SuperGaussianRing_5um_out_theta_0.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
-theta_angle = "0" # for output file name change
+# Define input filename
+input_filename = 'FDTR_input_GibbsExcess_Interface_SuperGaussianRing_5um_out_theta_0.csv'
+
+# Create a base name for output by stripping 'FDTR_input_' and file extension
+output_basename = input_filename.replace('FDTR_input_', '').replace('.csv', '')
+
+# Read the CSV
+FDTR_data = pd.read_csv(input_filename, skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
 FDTR_freq_vals = FDTR_data['frequency'].unique().tolist()
@@ -25,38 +34,6 @@ FDTR_x0_vals = FDTR_data['x0'].unique().tolist()
 
 ############################################# END READING IN AND ORGANIZING DATA #############################################
 
-
-
-
-
-
-############################################# PLOT RAW DATA FOR INSPECTION #############################################
-# # Plot imag_part and real_part grouped by frequency
-# plt.figure(figsize=(10, 5))
-# for freq in FDTR_freq_vals:
-    # subset = FDTR_data[FDTR_data['frequency'] == freq]
-    # plt.plot(subset['x0'], subset['imag_part'], marker='o', linestyle='-', label=f"{freq} MHz")
-
-# plt.xlabel('Pump/Probe Position')
-# plt.ylabel('Imaginary Part')
-# plt.title('Imaginary Part vs Position (Grouped by Frequency)')
-# plt.legend(title='Frequencies', loc='upper right')
-# plt.grid(True)
-# plt.show()
-
-# plt.figure(figsize=(10, 5))
-# for freq in FDTR_freq_vals:
-    # subset = FDTR_data[FDTR_data['frequency'] == freq]
-    # plt.plot(subset['x0'], subset['real_part'], marker='o', linestyle='-', label=f"{freq} MHz")
-
-# plt.xlabel('Pump/Probe Position')
-# plt.ylabel('Real Part')
-# plt.title('Real Part vs Position (Grouped by Frequency)')
-# plt.legend(title='Frequencies', loc='upper right')
-# plt.grid(True)
-# plt.show()
-
-# ############################################# END PLOT RAW DATA FOR INSPECTION #############################################
 
 
 
@@ -124,7 +101,7 @@ plt.ylabel('Relative Phase')
 plt.title("Relative Phase vs Position")
 plt.legend(title='Frequencies')
 plt.grid(True)
-plt.savefig(f"Phase_Profile_Theta_{theta_angle}.png", bbox_inches='tight')
+plt.savefig(f"Phase_Profile_{output_basename}.png", bbox_inches='tight')
 plt.show()
     
 ############################################# END CALCULATING PHASE VALUES FROM DATA #############################################
@@ -219,13 +196,15 @@ for x0 in FDTR_x0_vals:
         plt.title("Sample phase/frequency fit, θ = " + str(theta_angle))
         plt.grid(True)
         plt.legend()
-        plt.savefig(f"Phase_Fit_{theta_angle}.png", bbox_inches='tight')
+        plt.savefig(f"Phase_Fit_{output_basename}.png", bbox_inches='tight')
         plt.show()
     
     counter = counter + 1
     
     thermal_conductivity_z.append(kappa_z_opt)
     thermal_conductivity_r.append(kappa_r_opt)
+
+
 
 plt.figure()
 plt.plot(FDTR_x0_vals, thermal_conductivity_z, marker='o', linestyle='--', color='black', markersize=8)
@@ -237,7 +216,7 @@ plt.xticks(fontsize=15)
 plt.yticks(fontsize=15)
 # plt.ylim(126.9, 130.15)
 plt.tight_layout()
-plt.savefig(f"Thermal_Conductivity_Profile_Theta_{theta_angle}_z.png", bbox_inches='tight')
+plt.savefig(f"Thermal_Conductivity_Profile_{output_basename}_z.png", bbox_inches='tight')
 plt.show()
 
 
@@ -251,51 +230,108 @@ plt.xticks(fontsize=15)
 plt.yticks(fontsize=15)
 # plt.ylim(126.9, 130.15)
 plt.tight_layout()
-plt.savefig(f"Thermal_Conductivity_Profile_Theta_{theta_angle}_r.png", bbox_inches='tight')
+plt.savefig(f"Thermal_Conductivity_Profile_{output_basename}_r.png", bbox_inches='tight')
 plt.show()
 
-# Invert to integrate under curve
-ydata_z = (1/np.array(thermal_conductivity_z)) 
-ydata_r = (1/np.array(thermal_conductivity_r)) 
 
-# Find minimum value and create a constant line
-y_min_z = np.min(ydata_z)
-ydata_const_z = np.full(len(ydata_z), y_min_z)
 
-y_min_r = np.min(ydata_r)
-ydata_const_r = np.full(len(ydata_r), y_min_r)
+def compute_net_resistance(x_array, kappa_array, label="z"):
+    # Split at x = 0
+    left_mask = x_array < 0
+    right_mask = x_array > 0
 
-# Convert to micrometers
-xdata = np.array(FDTR_x0_vals).astype(float) * 1e-6
+    x_left = x_array[left_mask]
+    x_right = x_array[right_mask]
 
-# Integrate and subtract difference from integral of constant line
-resistance_z = trapz(ydata_z, x=xdata) - trapz(ydata_const_z, x=xdata) 
-resistance_r = trapz(ydata_r, x=xdata) - trapz(ydata_const_r, x=xdata) 
+    kappa_left = kappa_array[left_mask]
+    kappa_right = kappa_array[right_mask]
 
-print("----------------------------------------------------------------------------------------------")
-print("Resistance (z component) = " + str(resistance_z))
-print("Resistance (r component) = " + str(resistance_r))
-print("----------------------------------------------------------------------------------------------")
+    # Define bulk κ as farthest from the interface
+    kappa_bulk_left = kappa_left[0]        # x = min
+    kappa_bulk_right = kappa_right[-1]     # x = max
+
+    # Invert to resistivity
+    rho_left = 1 / kappa_left
+    rho_right = 1 / kappa_right
+    rho_bulk_left = 1 / kappa_bulk_left
+    rho_bulk_right = 1 / kappa_bulk_right
+
+    # Deviations from bulk
+    delta_rho_left = rho_left - rho_bulk_left
+    delta_rho_right = rho_right - rho_bulk_right
+
+    # Integrate
+    resistance_left = trapz(np.maximum(delta_rho_left, 0), x=x_left)
+    boost_left = trapz(np.maximum(-delta_rho_left, 0), x=x_left)
+    net_left = resistance_left - boost_left
+
+    resistance_right = trapz(np.maximum(delta_rho_right, 0), x=x_right)
+    boost_right = trapz(np.maximum(-delta_rho_right, 0), x=x_right)
+    net_right = resistance_right - boost_right
+
+    total_resistance = resistance_left + resistance_right
+    total_boost = boost_left + boost_right
+    total_net = net_left + net_right
+
+    print("----------------------------------------------------------------------------------------------")
+    print(f"{label.upper()} COMPONENT")
+    print("LEFT SIDE:")
+    print(f"  Bulk κ = {kappa_bulk_left:.4f}, 1/κ = {rho_bulk_left:.4e}")
+    print(f"  Resistance  = {resistance_left:.4e}")
+    print(f"  Boost       = {boost_left:.4e}")
+    print(f"  Net         = {net_left:.4e}")
+    print()
+    print("RIGHT SIDE:")
+    print(f"  Bulk κ = {kappa_bulk_right:.4f}, 1/κ = {rho_bulk_right:.4e}")
+    print(f"  Resistance  = {resistance_right:.4e}")
+    print(f"  Boost       = {boost_right:.4e}")
+    print(f"  Net         = {net_right:.4e}")
+    print()
+    print("TOTAL:")
+    print(f"  Resistance  = {total_resistance:.4e}")
+    print(f"  Boost       = {total_boost:.4e}")
+    print(f"  Net         = {total_net:.4e}")
+    print("----------------------------------------------------------------------------------------------")
+
+# Run the analysis for both z and r conductivities
+x_array = np.array(FDTR_x0_vals).astype(float) * 1e-6  # meters
+
+compute_net_resistance(x_array, np.array(thermal_conductivity_z), label="z")
+compute_net_resistance(x_array, np.array(thermal_conductivity_r), label="r")
+
+
 
 ############################################# END FITTING THERMAL CONDUCTIVITY FROM ACTUAL DATA #############################################
 
 
 
 
-############################################ EXPORT DATA TO CSV ################################################
 
-# Specify the file name
-# file_name = f"Thermal_Conductivity_Profile_Theta_{theta_angle}.csv"
 
-# Write data to CSV
-# with open(file_name, mode='w', newline='') as file:
-    # writer = csv.writer(file)
-    # Write header
-    # writer.writerow(['FDTR_x0_vals', 'thermal_conductivity'])
-    # Write data rows
-    # for x0, tc in zip(FDTR_x0_vals, thermal_conductivity):
-        # writer.writerow([x0, tc])
 
-# print("CSV file of Thermal Conductivity data has been written successfully.")
-# print("----------------------------------------------------------------------------------------------")
-############################################ END EXPORT DATA TO CSV #############################################
+
+########################################### EXPORT DATA TO CSV ################################################
+
+# File name
+csv_filename = f"Thermal_Conductivity_Profile_{output_basename}.csv"
+
+# Convert x positions to microns for export
+x_positions_um = np.array(FDTR_x0_vals).astype(float)
+
+# Convert conductivity lists to arrays
+kappa_z_array = np.array(thermal_conductivity_z)
+kappa_r_array = np.array(thermal_conductivity_r)
+
+# Combine all into a single 2D array
+export_data = np.column_stack((x_positions_um, kappa_z_array, kappa_r_array))
+
+# Create a DataFrame for easy export
+df_export = pd.DataFrame(export_data, columns=["Position (µm)", "Kappa_z (W/m·K)", "Kappa_r (W/m·K)"])
+
+# Save to CSV
+df_export.to_csv(csv_filename, index=False)
+
+print(f"Thermal conductivity data exported to {csv_filename}")
+
+print("----------------------------------------------------------------------------------------------")
+########################################### END EXPORT DATA TO CSV #############################################
