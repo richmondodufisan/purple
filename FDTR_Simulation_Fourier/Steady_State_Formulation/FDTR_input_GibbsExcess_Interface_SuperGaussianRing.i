@@ -341,6 +341,28 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
   []
   [avg_surf_temp_imag]
   []
+  
+  [grad_tx_real]
+  []
+  [grad_ty_real]
+  []
+  [grad_tz_real]
+  []
+  [grad_tx_imag]
+  []
+  [grad_ty_imag]
+  []
+  [grad_tz_imag]
+  []
+  
+  
+  
+  [grad_mag_x]
+  []
+  [grad_mag_y]
+  []
+  [grad_mag_z]
+  []
 []
 
 [AuxKernels]
@@ -364,6 +386,83 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
 	expression = '((2 * temp_trans_imag)/(pi*(w_Probe^2)))*exp((-2 * ((x-x0)^2+(y-y0)^2))/(w_Probe^2))'
 	block = transducer_material
   []
+  
+  
+  [grad_tx_real_aux]
+    type = VariableGradientComponent
+    variable = grad_tx_real
+    component = 0
+    gradient_variable = temp_samp_left_real
+    block = 'sample_material_left'
+  []
+
+  [grad_ty_real_aux]
+    type = VariableGradientComponent
+    variable = grad_ty_real
+    component = 1
+    gradient_variable = temp_samp_left_real
+    block = 'sample_material_left'
+  []
+
+  [grad_tz_real_aux]
+    type = VariableGradientComponent
+    variable = grad_tz_real
+    component = 2
+    gradient_variable = temp_samp_left_real
+    block = 'sample_material_left'
+  []
+
+  [grad_tx_imag_aux]
+    type = VariableGradientComponent
+    variable = grad_tx_imag
+    component = 0
+    gradient_variable = temp_samp_left_imag
+    block = 'sample_material_left'
+  []
+
+  [grad_ty_imag_aux]
+    type = VariableGradientComponent
+    variable = grad_ty_imag
+    component = 1
+    gradient_variable = temp_samp_left_imag
+    block = 'sample_material_left'
+  []
+
+  [grad_tz_imag_aux]
+    type = VariableGradientComponent
+    variable = grad_tz_imag
+    component = 2
+    gradient_variable = temp_samp_left_imag
+    block = 'sample_material_left'
+  []
+  
+  
+  
+  
+  [grad_mag_x_aux]
+    type = ParsedAux
+    variable = grad_mag_x
+    coupled_variables = 'grad_tx_real grad_tx_imag'
+    expression = 'sqrt(grad_tx_real^2 + grad_tx_imag^2)'
+    block = sample_material_left
+  []
+
+  [grad_mag_y_aux]
+    type = ParsedAux
+    variable = grad_mag_y
+    coupled_variables = 'grad_ty_real grad_ty_imag'
+    expression = 'sqrt(grad_ty_real^2 + grad_ty_imag^2)'
+    block = sample_material_left
+  []
+
+  [grad_mag_z_aux]
+    type = ParsedAux
+    variable = grad_mag_z
+    coupled_variables = 'grad_tz_real grad_tz_imag'
+    expression = 'sqrt(grad_tz_real^2 + grad_tz_imag^2)'
+    block = sample_material_left
+  []
+
 []
 
 [Postprocessors]
@@ -477,6 +576,6 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
 [Outputs]
   print_linear_residuals = false
   csv = true
-  exodus = false
+  exodus = true
 []
 

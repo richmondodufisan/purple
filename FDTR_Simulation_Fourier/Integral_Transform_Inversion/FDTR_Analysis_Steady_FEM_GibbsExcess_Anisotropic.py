@@ -16,10 +16,11 @@ import math
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Define input filename
-input_filename = 'FDTR_input_GibbsExcess_Interface_SuperGaussianRing_5um_out_theta_0.csv'
+input_filename = 'FDTR_input_GibbsExcess_StepFunction_SuperGaussianRing_5um_out_theta_0.csv'
 
 # Create a base name for output by stripping 'FDTR_input_' and file extension
 output_basename = input_filename.replace('FDTR_input_', '').replace('.csv', '')
+theta_angle = 0
 
 # Read the CSV
 FDTR_data = pd.read_csv(input_filename, skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])

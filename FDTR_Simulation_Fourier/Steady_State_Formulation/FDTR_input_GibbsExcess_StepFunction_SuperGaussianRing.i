@@ -349,5 +349,5 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 [Outputs]
   print_linear_residuals = false
   csv = true
-  exodus = false
+  exodus = true
 []

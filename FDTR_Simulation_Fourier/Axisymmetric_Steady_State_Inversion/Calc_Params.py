@@ -4,7 +4,7 @@ from Two_Layer_Inversion_SuperGaussianRing import calc_thermal_response
 import matplotlib.pyplot as plt
 import numpy as np
 
-freq = 2.0 # in MHz
+freq = 1.0 # in MHz
 kappa = 130.0 # in W/(m.K)
 conductance_12 = 30e6 # in W/(m2.K)
 conductance_23 = 30e6 # in W/(m2.K)
