@@ -252,6 +252,20 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     family = MONOMIAL
     order = CONSTANT
   []
+  
+  
+  [flux_x]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [flux_y]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [flux_z]
+    family = MONOMIAL
+    order = CONSTANT
+  []
 []
 
 [AuxKernels]
@@ -351,6 +365,34 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     expression = 'sqrt(grad_tz_real^2 + grad_tz_imag^2)'
     block = 'sample_material'
   []
+  
+  
+  [flux_x_aux]
+    type = ParsedAux
+    variable = flux_x
+    coupled_variables = 'grad_mag_x'
+	material_properties = 'k_samp_no_ad'
+    expression = 'grad_mag_x/k_samp_no_ad'
+    block = 'sample_material'
+  []
+
+  [flux_y_aux]
+    type = ParsedAux
+    variable = flux_y
+    coupled_variables = 'grad_mag_y'
+	material_properties = 'k_samp_no_ad'
+    expression = 'grad_mag_y/k_samp_no_ad'
+    block = 'sample_material'
+  []
+
+  [flux_z_aux]
+    type = ParsedAux
+    variable = flux_z
+    coupled_variables = 'grad_mag_z'
+	material_properties = 'k_samp_no_ad'
+    expression = 'grad_mag_z/k_samp_no_ad'
+    block = 'sample_material'
+  []
 
 []
 
@@ -406,6 +448,13 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     prop_names = k_samp
     prop_values = grain_boundary_function
 	block = sample_material
+  []
+  
+  [k_samp_for_aux]
+    type = MaterialADConverter
+    ad_props_in = k_samp
+    reg_props_out = k_samp_no_ad
+	block = 'sample_material'
   []
 []
 

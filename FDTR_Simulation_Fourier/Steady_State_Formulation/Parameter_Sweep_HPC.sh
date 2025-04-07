@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Original file name
-og_filename="FDTR_input_GibbsExcess_Interface_SuperGaussianRing"
+og_filename="FDTR_input_GibbsExcess_StepFunction_SuperGaussianRing"
 extension=".i"
 
 og_mesh_script="FDTR_mesh"
