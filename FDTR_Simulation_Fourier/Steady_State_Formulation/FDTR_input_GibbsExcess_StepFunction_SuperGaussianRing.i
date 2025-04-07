@@ -214,25 +214,43 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   []
   
   [grad_tx_real]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_ty_real]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_tz_real]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_tx_imag]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_ty_imag]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_tz_imag]
+    family = MONOMIAL
+    order = CONSTANT
   []
   
   
   
   [grad_mag_x]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_mag_y]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_mag_z]
+    family = MONOMIAL
+    order = CONSTANT
   []
 []
 
@@ -262,49 +280,49 @@ theta_rad = ${fparse (theta_deg/180)*pi}
   [grad_tx_real_aux]
     type = VariableGradientComponent
     variable = grad_tx_real
-    component = 0
-    gradient_variable = temp_samp_left_real
-    block = 'sample_material_left'
+    component = x
+    gradient_variable = temp_samp_real
+    block = 'sample_material'
   []
 
   [grad_ty_real_aux]
     type = VariableGradientComponent
     variable = grad_ty_real
-    component = 1
-    gradient_variable = temp_samp_left_real
-    block = 'sample_material_left'
+    component = y
+    gradient_variable = temp_samp_real
+    block = 'sample_material'
   []
 
   [grad_tz_real_aux]
     type = VariableGradientComponent
     variable = grad_tz_real
-    component = 2
-    gradient_variable = temp_samp_left_real
-    block = 'sample_material_left'
+    component = z
+    gradient_variable = temp_samp_real
+    block = 'sample_material'
   []
 
   [grad_tx_imag_aux]
     type = VariableGradientComponent
     variable = grad_tx_imag
-    component = 0
-    gradient_variable = temp_samp_left_imag
-    block = 'sample_material_left'
+    component = x
+    gradient_variable = temp_samp_imag
+    block = 'sample_material'
   []
 
   [grad_ty_imag_aux]
     type = VariableGradientComponent
     variable = grad_ty_imag
-    component = 1
-    gradient_variable = temp_samp_left_imag
-    block = 'sample_material_left'
+    component = y
+    gradient_variable = temp_samp_imag
+    block = 'sample_material'
   []
 
   [grad_tz_imag_aux]
     type = VariableGradientComponent
     variable = grad_tz_imag
-    component = 2
-    gradient_variable = temp_samp_left_imag
-    block = 'sample_material_left'
+    component = z
+    gradient_variable = temp_samp_imag
+    block = 'sample_material'
   []
   
   
@@ -315,7 +333,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     variable = grad_mag_x
     coupled_variables = 'grad_tx_real grad_tx_imag'
     expression = 'sqrt(grad_tx_real^2 + grad_tx_imag^2)'
-    block = sample_material_left
+    block = 'sample_material'
   []
 
   [grad_mag_y_aux]
@@ -323,7 +341,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     variable = grad_mag_y
     coupled_variables = 'grad_ty_real grad_ty_imag'
     expression = 'sqrt(grad_ty_real^2 + grad_ty_imag^2)'
-    block = sample_material_left
+    block = 'sample_material'
   []
 
   [grad_mag_z_aux]
@@ -331,7 +349,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     variable = grad_mag_z
     coupled_variables = 'grad_tz_real grad_tz_imag'
     expression = 'sqrt(grad_tz_real^2 + grad_tz_imag^2)'
-    block = sample_material_left
+    block = 'sample_material'
   []
 
 []

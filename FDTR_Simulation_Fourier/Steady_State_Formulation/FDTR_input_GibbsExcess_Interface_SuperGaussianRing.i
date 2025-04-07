@@ -343,25 +343,43 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
   []
   
   [grad_tx_real]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_ty_real]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_tz_real]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_tx_imag]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_ty_imag]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_tz_imag]
+    family = MONOMIAL
+    order = CONSTANT
   []
   
   
   
   [grad_mag_x]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_mag_y]
+    family = MONOMIAL
+    order = CONSTANT
   []
   [grad_mag_z]
+    family = MONOMIAL
+    order = CONSTANT
   []
 []
 
@@ -391,7 +409,7 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
   [grad_tx_real_aux]
     type = VariableGradientComponent
     variable = grad_tx_real
-    component = 0
+    component = x
     gradient_variable = temp_samp_left_real
     block = 'sample_material_left'
   []
@@ -399,7 +417,7 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
   [grad_ty_real_aux]
     type = VariableGradientComponent
     variable = grad_ty_real
-    component = 1
+    component = y
     gradient_variable = temp_samp_left_real
     block = 'sample_material_left'
   []
@@ -407,7 +425,7 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
   [grad_tz_real_aux]
     type = VariableGradientComponent
     variable = grad_tz_real
-    component = 2
+    component = z
     gradient_variable = temp_samp_left_real
     block = 'sample_material_left'
   []
@@ -415,7 +433,7 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
   [grad_tx_imag_aux]
     type = VariableGradientComponent
     variable = grad_tx_imag
-    component = 0
+    component = x
     gradient_variable = temp_samp_left_imag
     block = 'sample_material_left'
   []
@@ -423,7 +441,7 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
   [grad_ty_imag_aux]
     type = VariableGradientComponent
     variable = grad_ty_imag
-    component = 1
+    component = y
     gradient_variable = temp_samp_left_imag
     block = 'sample_material_left'
   []
@@ -431,7 +449,7 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
   [grad_tz_imag_aux]
     type = VariableGradientComponent
     variable = grad_tz_imag
-    component = 2
+    component = z
     gradient_variable = temp_samp_left_imag
     block = 'sample_material_left'
   []
