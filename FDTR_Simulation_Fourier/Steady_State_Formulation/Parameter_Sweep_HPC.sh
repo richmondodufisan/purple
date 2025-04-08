@@ -9,9 +9,9 @@ og_mesh_ext=".py"
 
 # Define the range of values you want to loop over
 
-x0_vals_num=("-30" "0")
+x0_vals_num=("0")
 
-freq_vals_num=("1e6")
+freq_vals_num=("1e6" "10e6")
 
 theta_vals_num=("0")
 

@@ -38,6 +38,7 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 gb_face_val = ${fparse int(-tan(theta_rad))}
 
 
+flux_depth = -1
 
 
 [Mesh]
@@ -342,42 +343,85 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
   [avg_surf_temp_imag]
   []
   
-  [grad_tx_real]
+  [grad_tx_real_left]
     family = MONOMIAL
     order = CONSTANT
   []
-  [grad_ty_real]
+  [grad_ty_real_left]
     family = MONOMIAL
     order = CONSTANT
   []
-  [grad_tz_real]
+  [grad_tz_real_left]
     family = MONOMIAL
     order = CONSTANT
   []
-  [grad_tx_imag]
+  [grad_tx_imag_left]
     family = MONOMIAL
     order = CONSTANT
   []
-  [grad_ty_imag]
+  [grad_ty_imag_left]
     family = MONOMIAL
     order = CONSTANT
   []
-  [grad_tz_imag]
+  [grad_tz_imag_left]
     family = MONOMIAL
     order = CONSTANT
   []
   
   
   
-  [grad_mag_x]
+  [flux_x_left]
     family = MONOMIAL
     order = CONSTANT
   []
-  [grad_mag_y]
+  [flux_y_left]
     family = MONOMIAL
     order = CONSTANT
   []
-  [grad_mag_z]
+  [flux_z_left]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  
+  
+  
+  
+  [grad_tx_real_right]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [grad_ty_real_right]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [grad_tz_real_right]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [grad_tx_imag_right]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [grad_ty_imag_right]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [grad_tz_imag_right]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  
+  
+  
+  [flux_x_right]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [flux_y_right]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [flux_z_right]
     family = MONOMIAL
     order = CONSTANT
   []
@@ -406,49 +450,49 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
   []
   
   
-  [grad_tx_real_aux]
+  [grad_tx_real_left_aux]
     type = VariableGradientComponent
-    variable = grad_tx_real
+    variable = grad_tx_real_left
     component = x
     gradient_variable = temp_samp_left_real
     block = 'sample_material_left'
   []
 
-  [grad_ty_real_aux]
+  [grad_ty_real_left_aux]
     type = VariableGradientComponent
-    variable = grad_ty_real
+    variable = grad_ty_real_left
     component = y
     gradient_variable = temp_samp_left_real
     block = 'sample_material_left'
   []
 
-  [grad_tz_real_aux]
+  [grad_tz_real_left_aux]
     type = VariableGradientComponent
-    variable = grad_tz_real
+    variable = grad_tz_real_left
     component = z
     gradient_variable = temp_samp_left_real
     block = 'sample_material_left'
   []
 
-  [grad_tx_imag_aux]
+  [grad_tx_imag_left_aux]
     type = VariableGradientComponent
-    variable = grad_tx_imag
+    variable = grad_tx_imag_left
     component = x
     gradient_variable = temp_samp_left_imag
     block = 'sample_material_left'
   []
 
-  [grad_ty_imag_aux]
+  [grad_ty_imag_left_aux]
     type = VariableGradientComponent
-    variable = grad_ty_imag
+    variable = grad_ty_imag_left
     component = y
     gradient_variable = temp_samp_left_imag
     block = 'sample_material_left'
   []
 
-  [grad_tz_imag_aux]
+  [grad_tz_imag_left_aux]
     type = VariableGradientComponent
-    variable = grad_tz_imag
+    variable = grad_tz_imag_left
     component = z
     gradient_variable = temp_samp_left_imag
     block = 'sample_material_left'
@@ -457,28 +501,117 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
   
   
   
-  [grad_mag_x_aux]
+  [flux_x_left_aux]
     type = ParsedAux
-    variable = grad_mag_x
-    coupled_variables = 'grad_tx_real grad_tx_imag'
-    expression = 'sqrt(grad_tx_real^2 + grad_tx_imag^2)'
+    variable = flux_x_left
+    coupled_variables = 'grad_tx_real_left grad_tx_imag_left'
+	material_properties = 'k_samp_no_ad'
+    expression = '(sqrt(grad_tx_real_left^2 + grad_tx_imag_left^2))/k_samp_no_ad'
     block = sample_material_left
   []
 
-  [grad_mag_y_aux]
+  [flux_y_left_aux]
     type = ParsedAux
-    variable = grad_mag_y
-    coupled_variables = 'grad_ty_real grad_ty_imag'
-    expression = 'sqrt(grad_ty_real^2 + grad_ty_imag^2)'
+    variable = flux_y_left
+    coupled_variables = 'grad_ty_real_left grad_ty_imag_left'
+	material_properties = 'k_samp_no_ad'
+    expression = '(sqrt(grad_ty_real_left^2 + grad_ty_imag_left^2))/k_samp_no_ad'
     block = sample_material_left
   []
 
-  [grad_mag_z_aux]
+  [flux_z_left_aux]
     type = ParsedAux
-    variable = grad_mag_z
-    coupled_variables = 'grad_tz_real grad_tz_imag'
-    expression = 'sqrt(grad_tz_real^2 + grad_tz_imag^2)'
+    variable = flux_z_left
+    coupled_variables = 'grad_tz_real_left grad_tz_imag_left'
+	material_properties = 'k_samp_no_ad'
+    expression = '(sqrt(grad_tz_real_left^2 + grad_tz_imag_left^2))/k_samp_no_ad'
     block = sample_material_left
+  []
+  
+  
+  
+  
+  
+  
+
+
+
+  [grad_tx_real_right_aux]
+    type = VariableGradientComponent
+    variable = grad_tx_real_right
+    component = x
+    gradient_variable = temp_samp_right_real
+    block = 'sample_material_right'
+  []
+
+  [grad_ty_real_right_aux]
+    type = VariableGradientComponent
+    variable = grad_ty_real_right
+    component = y
+    gradient_variable = temp_samp_right_real
+    block = 'sample_material_right'
+  []
+
+  [grad_tz_real_right_aux]
+    type = VariableGradientComponent
+    variable = grad_tz_real_right
+    component = z
+    gradient_variable = temp_samp_right_real
+    block = 'sample_material_right'
+  []
+
+  [grad_tx_imag_right_aux]
+    type = VariableGradientComponent
+    variable = grad_tx_imag_right
+    component = x
+    gradient_variable = temp_samp_right_imag
+    block = 'sample_material_right'
+  []
+
+  [grad_ty_imag_right_aux]
+    type = VariableGradientComponent
+    variable = grad_ty_imag_right
+    component = y
+    gradient_variable = temp_samp_right_imag
+    block = 'sample_material_right'
+  []
+
+  [grad_tz_imag_right_aux]
+    type = VariableGradientComponent
+    variable = grad_tz_imag_right
+    component = z
+    gradient_variable = temp_samp_right_imag
+    block = 'sample_material_right'
+  []
+  
+  
+  
+  
+  [flux_x_right_aux]
+    type = ParsedAux
+    variable = flux_x_right
+    coupled_variables = 'grad_tx_real_right grad_tx_imag_right'
+	material_properties = 'k_samp_no_ad'
+    expression = '(sqrt(grad_tx_real_right^2 + grad_tx_imag_right^2))/k_samp_no_ad'
+    block = sample_material_right
+  []
+
+  [flux_y_right_aux]
+    type = ParsedAux
+    variable = flux_y_right
+    coupled_variables = 'grad_ty_real_right grad_ty_imag_right'
+	material_properties = 'k_samp_no_ad'
+    expression = '(sqrt(grad_ty_real_right^2 + grad_ty_imag_right^2))/k_samp_no_ad'
+    block = sample_material_right
+  []
+
+  [flux_z_right_aux]
+    type = ParsedAux
+    variable = flux_z_right
+    coupled_variables = 'grad_tz_real_right grad_tz_imag_right'
+	material_properties = 'k_samp_no_ad'
+    expression = '(sqrt(grad_tz_real_right^2 + grad_tz_imag_right^2))/k_samp_no_ad'
+    block = sample_material_right
   []
 
 []
@@ -494,7 +627,77 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
     boundary = 'top_pump_area'
     variable = avg_surf_temp_imag
   []
+  [q_n_gb_flux_left]
+    type = PointValue
+    variable = flux_x_left
+    point = '0 0 ${flux_depth}'
+  []
+  [q_n_gb_flux_right]
+    type = PointValue
+    variable = flux_x_right
+    point = '0 0 ${flux_depth}'
+  []
 []
+
+
+
+[VectorPostprocessors]
+  [flux_profile_x_left]
+    type = LineValueSampler
+    variable = flux_x_left
+    start_point = '-30 0 ${flux_depth}'
+    end_point = '0 0 ${flux_depth}'
+    num_points = 5000
+    sort_by = x
+  []
+  [flux_profile_y_left]
+    type = LineValueSampler
+    variable = flux_y_left
+    start_point = '-30 0 ${flux_depth}'
+    end_point = '0 0 ${flux_depth}'
+    num_points = 5000
+    sort_by = x
+  []
+  [flux_profile_z_left]
+    type = LineValueSampler
+    variable = flux_z_left
+    start_point = '-30 0 ${flux_depth}'
+    end_point = '0 0 ${flux_depth}'
+    num_points = 5000
+    sort_by = x
+  []
+  
+  
+  
+  
+  [flux_profile_x_right]
+    type = LineValueSampler
+    variable = flux_x_right
+    start_point = '0 0 ${flux_depth}'
+    end_point = '30 0 ${flux_depth}'
+    num_points = 5000
+    sort_by = x
+  []
+  [flux_profile_y_right]
+    type = LineValueSampler
+    variable = flux_y_right
+    start_point = '0 0 ${flux_depth}'
+    end_point = '30 0 ${flux_depth}'
+    num_points = 5000
+    sort_by = x
+  []
+  [flux_profile_z_right]
+    type = LineValueSampler
+    variable = flux_z_right
+    start_point = '0 0 ${flux_depth}'
+    end_point = '30 0 ${flux_depth}'
+    num_points = 5000
+    sort_by = x
+  []
+[]
+
+
+
 
 [Functions]
   [angular_frequency]
@@ -523,6 +726,13 @@ gb_face_val = ${fparse int(-tan(theta_rad))}
 	prop_names = omega
     prop_values = angular_frequency
 	block = 'transducer_material sample_material_left sample_material_right'
+  []
+  
+  [k_samp_for_aux]
+    type = MaterialADConverter
+    ad_props_in = k_samp
+    reg_props_out = k_samp_no_ad
+	block = 'sample_material_left sample_material_right'
   []
 []
 

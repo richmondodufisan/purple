@@ -29,6 +29,8 @@ c_au = 0.1287e3
 theta_deg = 0
 theta_rad = ${fparse (theta_deg/180)*pi}
 
+flux_depth = -1
+
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator
@@ -407,7 +409,41 @@ theta_rad = ${fparse (theta_deg/180)*pi}
     boundary = 'top_pump_area'
     variable = avg_surf_temp_imag
   []
+  [q_n_gb_flux]
+    type = PointValue
+    variable = flux_x
+    point = '0 0 ${flux_depth}'
+  []
 []
+
+
+[VectorPostprocessors]
+  [flux_profile_x]
+    type = LineValueSampler
+    variable = flux_x
+    start_point = '-30 0 ${flux_depth}'
+    end_point = '30 0 ${flux_depth}'
+    num_points = 10000
+    sort_by = x
+  []
+  [flux_profile_y]
+    type = LineValueSampler
+    variable = flux_y
+    start_point = '-30 0 ${flux_depth}'
+    end_point = '30 0 ${flux_depth}'
+    num_points = 10000
+    sort_by = x
+  []
+  [flux_profile_z]
+    type = LineValueSampler
+    variable = flux_z
+    start_point = '-30 0 ${flux_depth}'
+    end_point = '30 0 ${flux_depth}'
+    num_points = 10000
+    sort_by = x
+  []
+[]
+
 
 [Functions]
   [grain_boundary_function]
