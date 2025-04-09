@@ -1,7 +1,7 @@
 #Global Parameters
 x0_val = 0
 y0_val = 0
-freq_val = 1e6
+freq_val = 10e6
 
 transducer_thickness = 0.09
 probe_radius = 1.34
@@ -217,21 +217,21 @@ flux_depth = -1
     type = LayeredAverage
     variable = flux_x
     direction = x
-    num_layers = 640
+    num_layers = 3200
 	block = sample_material
   []
   [average_flux_y]
     type = LayeredAverage
     variable = flux_y
     direction = x
-    num_layers = 640
+    num_layers = 3200
 	block = sample_material
   []
   [average_flux_z]
     type = LayeredAverage
     variable = flux_z
     direction = x
-    num_layers = 640
+    num_layers = 3200
 	block = sample_material
   []
 []
