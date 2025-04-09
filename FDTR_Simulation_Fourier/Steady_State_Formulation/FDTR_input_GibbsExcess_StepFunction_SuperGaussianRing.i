@@ -216,7 +216,7 @@ flux_depth = -1
   [average_flux_x]
     type = LayeredAverage
     variable = flux_x
-    direction = z
+    direction = x
     num_layers = 640
 	block = sample_material
   []
