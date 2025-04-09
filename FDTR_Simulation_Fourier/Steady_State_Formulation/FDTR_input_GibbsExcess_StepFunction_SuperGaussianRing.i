@@ -209,6 +209,37 @@ flux_depth = -1
   []
 []
 
+
+
+
+[UserObjects]
+  [average_flux_x]
+    type = LayeredAverage
+    variable = flux_x
+    direction = z
+    num_layers = 640
+	block = sample_material
+  []
+  [average_flux_y]
+    type = LayeredAverage
+    variable = flux_y
+    direction = x
+    num_layers = 640
+	block = sample_material
+  []
+  [average_flux_z]
+    type = LayeredAverage
+    variable = flux_z
+    direction = x
+    num_layers = 640
+	block = sample_material
+  []
+[]
+
+
+
+
+
 [AuxVariables]
   [avg_surf_temp_real]
   []
@@ -265,6 +296,20 @@ flux_depth = -1
     order = CONSTANT
   []
   [flux_z]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  
+  
+  [avg_flux_x]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [avg_flux_y]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [avg_flux_z]
     family = MONOMIAL
     order = CONSTANT
   []
@@ -396,6 +441,27 @@ flux_depth = -1
     block = 'sample_material'
   []
 
+
+  [layered_average_x]
+    type = SpatialUserObjectAux
+    variable = avg_flux_x
+    execute_on = timestep_end
+    user_object = average_flux_x
+  []
+  [layered_average_y]
+    type = SpatialUserObjectAux
+    variable = avg_flux_y
+    execute_on = timestep_end
+    user_object = average_flux_y
+  []
+  [layered_average_z]
+    type = SpatialUserObjectAux
+    variable = avg_flux_z
+    execute_on = timestep_end
+    user_object = average_flux_z
+  []
+
+
 []
 
 [Postprocessors]
@@ -441,6 +507,19 @@ flux_depth = -1
     end_point = '30 0 ${flux_depth}'
     num_points = 10000
     sort_by = x
+  []
+  
+  [avg_output_x]
+    type = SpatialUserObjectVectorPostprocessor
+    userobject = average_flux_x
+  []
+  [avg_output_y]
+    type = SpatialUserObjectVectorPostprocessor
+    userobject = average_flux_y
+  []
+  [avg_output_z]
+    type = SpatialUserObjectVectorPostprocessor
+    userobject = average_flux_z
   []
 []
 
