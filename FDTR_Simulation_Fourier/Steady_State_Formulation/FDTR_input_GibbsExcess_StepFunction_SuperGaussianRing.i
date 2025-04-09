@@ -1,7 +1,7 @@
 #Global Parameters
 x0_val = 0
 y0_val = 0
-freq_val = 10e6
+freq_val = 1e6
 
 transducer_thickness = 0.09
 probe_radius = 1.34
@@ -28,8 +28,6 @@ c_au = 0.1287e3
 
 theta_deg = 0
 theta_rad = ${fparse (theta_deg/180)*pi}
-
-flux_depth = -1
 
 [Mesh]
   [sample_mesh]
@@ -217,21 +215,21 @@ flux_depth = -1
     type = LayeredAverage
     variable = flux_x
     direction = x
-    num_layers = 3200
+    num_layers = 321
 	block = sample_material
   []
   [average_flux_y]
     type = LayeredAverage
     variable = flux_y
     direction = x
-    num_layers = 3200
+    num_layers = 321
 	block = sample_material
   []
   [average_flux_z]
     type = LayeredAverage
     variable = flux_z
     direction = x
-    num_layers = 3200
+    num_layers = 321
 	block = sample_material
   []
 []
@@ -475,51 +473,36 @@ flux_depth = -1
     boundary = 'top_pump_area'
     variable = avg_surf_temp_imag
   []
-  [q_n_gb_flux]
-    type = PointValue
-    variable = flux_x
-    point = '0 0 ${flux_depth}'
-  []
 []
 
 
 [VectorPostprocessors]
+  # sample at z = -0.02 to remove discontinuity warning
+  # it is still the same as sampling at z = 0
+  # it is an average value
   [flux_profile_x]
     type = LineValueSampler
-    variable = flux_x
-    start_point = '-30 0 ${flux_depth}'
-    end_point = '30 0 ${flux_depth}'
-    num_points = 10000
+    variable = avg_flux_x
+    start_point = '-30 0 -0.02'
+    end_point = '30 0 -0.02'
+    num_points = 321
     sort_by = x
   []
   [flux_profile_y]
     type = LineValueSampler
-    variable = flux_y
-    start_point = '-30 0 ${flux_depth}'
-    end_point = '30 0 ${flux_depth}'
-    num_points = 10000
+    variable = avg_flux_y
+    start_point = '-30 0 -0.02'
+    end_point = '30 0 -0.02'
+    num_points = 321
     sort_by = x
   []
   [flux_profile_z]
     type = LineValueSampler
-    variable = flux_z
-    start_point = '-30 0 ${flux_depth}'
-    end_point = '30 0 ${flux_depth}'
-    num_points = 10000
+    variable = avg_flux_z
+    start_point = '-30 0 -0.02'
+    end_point = '30 0 -0.02'
+    num_points = 321
     sort_by = x
-  []
-  
-  [avg_output_x]
-    type = SpatialUserObjectVectorPostprocessor
-    userobject = average_flux_x
-  []
-  [avg_output_y]
-    type = SpatialUserObjectVectorPostprocessor
-    userobject = average_flux_y
-  []
-  [avg_output_z]
-    type = SpatialUserObjectVectorPostprocessor
-    userobject = average_flux_z
   []
 []
 

@@ -38,9 +38,6 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 gb_face_val = ${fparse int(-tan(theta_rad))}
 
 
-flux_depth = -1
-
-
 [Mesh]
   [sample_mesh]
     type = FileMeshGenerator
@@ -343,37 +340,37 @@ flux_depth = -1
     type = LayeredAverage
     variable = flux_x_left
     direction = x
-    num_layers = 640
+    num_layers = 160
   []
   [average_flux_y_left]
     type = LayeredAverage
     variable = flux_y_left
     direction = x
-    num_layers = 640
+    num_layers = 160
   []
   [average_flux_z_left]
     type = LayeredAverage
     variable = flux_z_left
     direction = x
-    num_layers = 640
+    num_layers = 160
   []
   [average_flux_x_right]
     type = LayeredAverage
     variable = flux_x_right
     direction = x
-    num_layers = 640
+    num_layers = 160
   []
   [average_flux_y_right]
     type = LayeredAverage
     variable = flux_y_right
     direction = x
-    num_layers = 640
+    num_layers = 160
   []
   [average_flux_z_right]
     type = LayeredAverage
     variable = flux_z_right
     direction = x
-    num_layers = 640
+    num_layers = 160
   []
 []
 
@@ -736,16 +733,6 @@ flux_depth = -1
     boundary = 'top_pump_area'
     variable = avg_surf_temp_imag
   []
-  [q_n_gb_flux_left]
-    type = PointValue
-    variable = flux_x_left
-    point = '0 0 ${flux_depth}'
-  []
-  [q_n_gb_flux_right]
-    type = PointValue
-    variable = flux_x_right
-    point = '0 0 ${flux_depth}'
-  []
 []
 
 
@@ -753,26 +740,26 @@ flux_depth = -1
 [VectorPostprocessors]
   [flux_profile_x_left]
     type = LineValueSampler
-    variable = flux_x_left
-    start_point = '-30 0 ${flux_depth}'
-    end_point = '0 0 ${flux_depth}'
-    num_points = 5000
+    variable = avg_flux_x_left
+    start_point = '-30 0 -0.02'
+    end_point = '0 0 -0.02'
+    num_points = 160
     sort_by = x
   []
   [flux_profile_y_left]
     type = LineValueSampler
-    variable = flux_y_left
-    start_point = '-30 0 ${flux_depth}'
-    end_point = '0 0 ${flux_depth}'
-    num_points = 5000
+    variable = avg_flux_y_left
+    start_point = '-30 0 -0.02'
+    end_point = '0 0 -0.02'
+    num_points = 160
     sort_by = x
   []
   [flux_profile_z_left]
     type = LineValueSampler
-    variable = flux_z_left
-    start_point = '-30 0 ${flux_depth}'
-    end_point = '0 0 ${flux_depth}'
-    num_points = 5000
+    variable = avg_flux_z_left
+    start_point = '-30 0 -0.02'
+    end_point = '0 0 -0.02'
+    num_points = 160
     sort_by = x
   []
   
@@ -781,54 +768,27 @@ flux_depth = -1
   
   [flux_profile_x_right]
     type = LineValueSampler
-    variable = flux_x_right
-    start_point = '0 0 ${flux_depth}'
-    end_point = '30 0 ${flux_depth}'
-    num_points = 5000
+    variable = avg_flux_x_right
+    start_point = '0 0 -0.02'
+    end_point = '30 0 -0.02'
+    num_points = 160
     sort_by = x
   []
   [flux_profile_y_right]
     type = LineValueSampler
-    variable = flux_y_right
-    start_point = '0 0 ${flux_depth}'
-    end_point = '30 0 ${flux_depth}'
-    num_points = 5000
+    variable = avg_flux_y_right
+    start_point = '0 0 -0.02'
+    end_point = '30 0 -0.02'
+    num_points = 160
     sort_by = x
   []
   [flux_profile_z_right]
     type = LineValueSampler
-    variable = flux_z_right
-    start_point = '0 0 ${flux_depth}'
-    end_point = '30 0 ${flux_depth}'
-    num_points = 5000
+    variable = avg_flux_z_right
+    start_point = '0 0 -0.02'
+    end_point = '30 0 -0.02'
+    num_points = 160
     sort_by = x
-  []
-  
-  
-  [avg_output_x_left]
-    type = SpatialUserObjectVectorPostprocessor
-    userobject = average_flux_x_left
-  []
-  [avg_output_y_left]
-    type = SpatialUserObjectVectorPostprocessor
-    userobject = average_flux_y_left
-  []
-  [avg_output_z_left]
-    type = SpatialUserObjectVectorPostprocessor
-    userobject = average_flux_z_left
-  []
-  
-  [avg_output_x_right]
-    type = SpatialUserObjectVectorPostprocessor
-    userobject = average_flux_x_right
-  []
-  [avg_output_y_right]
-    type = SpatialUserObjectVectorPostprocessor
-    userobject = average_flux_y_right
-  []
-  [avg_output_z_right]
-    type = SpatialUserObjectVectorPostprocessor
-    userobject = average_flux_z_right
   []
 []
 
