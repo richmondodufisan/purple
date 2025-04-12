@@ -5,6 +5,7 @@ import pandas as pd
 
 # from Layered_Heat_Conduction_BesselRing import calc_thermal_response
 from Layered_Heat_Conduction_ConcentricGaussian import calc_thermal_response
+from Layered_Heat_Conduction_SuperGaussianRing import calc_thermal_response
 
 
 
@@ -12,15 +13,23 @@ from Layered_Heat_Conduction_ConcentricGaussian import calc_thermal_response
 
 
 # List of user-provided phases (radians) and frequencies (MHz)
+# Data is analytical/exact
 
 # CONCENTRIC BEAM DATA
 user_phases = [-0.10596058228041347, -0.1575436103508173, -0.24010833896857903, -0.3109678805719539, -0.3749534252544176, -0.4336496677733477, -0.6670588326830659, -0.9427065152310182, -1.0917640196738556, -1.1824180944615048, -1.242205644005724]  # User-provided phases in radians
 user_frequencies = [1, 2, 4, 6, 8, 10, 20, 40, 60, 80, 100]  # Corresponding frequencies in MHz
 
 
-# OFFSET BEAM DATA, 3um
+# OFFSET BEAM DATA, 3um (Bessel Ring)
 # user_phases = [-0.23799598070042313, -0.3191473825836547, -0.43240560230778396, -0.5238783521854586, -0.6053949444186811, -0.6799793018202053, -0.9718570417488026, -1.2764150773604046, -1.4004094375266116, -1.454875385132239, -1.4807977410339046]  # User-provided phases in radians
 # user_frequencies = [1, 2, 4, 6, 8, 10, 20, 40, 60, 80, 100]  # Corresponding frequencies in MHz
+
+
+# OFFSET BEAM DATA, 5um (super-Gaussian Ring)
+# user_phases = [-0.6667122931686965, -0.8636335757980098, -1.0791288940958033, -1.2152658443582292, -1.3264651359032231, -1.4289491240955596, -1.8756351169329097, -2.3609649939591186, -2.4330278379415606, -2.3196365007872033, -2.176819192827441]  # User-provided phases in radians
+# user_frequencies = [1, 2, 4, 6, 8, 10, 20, 40, 60, 80, 100]  # Corresponding frequencies in MHz
+
+
 
 
 # Correct solution coordinates (example values, replace with your actual values)
@@ -70,14 +79,18 @@ for user_phase, user_frequency in zip(user_phases, user_frequencies):
             w_probe = 1.34e-6
             w_pump = 1.53e-6
             pump_power = 0.01
-            offset = 3e-6
+            offset = 5e-6
             freq = user_frequency * 1e6
+            
+            order = 2.0
             
 
             # Calculate the phase using the provided model
-            phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
+            # phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
             
             # phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
+            
+            phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, order, freq, pump_power)
 
 
 
@@ -108,30 +121,41 @@ plt.legend()
 
 plt.savefig('cumulative_error_plot_2D_Concentric.png')
 # plt.savefig('cumulative_error_plot_2D_BesselRing_3um.png')
+# plt.savefig('cumulative_error_plot_2D_SuperGaussian_5um.png')
 plt.show()
 
 
 
 
-# Save error data to Excel
-error_df = pd.DataFrame(error_surface, index=kappa_z_values, columns=kappa_r_values)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # Save error data to Excel
+# error_df = pd.DataFrame(error_surface, index=kappa_z_values, columns=kappa_r_values)
 # error_df.to_excel("error_surface_data_bessel_3um.xlsx", sheet_name="Error Data")
-error_df.to_excel("error_surface_data_concentric.xlsx", sheet_name="Error Data")
+# error_df.to_excel("error_surface_data_concentric.xlsx", sheet_name="Error Data")
 
-# Save kappa values to Excel
-kappa_df = pd.DataFrame({"kappa_z": kappa_z_values, "kappa_r": kappa_r_values})
+# # Save kappa values to Excel
+# kappa_df = pd.DataFrame({"kappa_z": kappa_z_values, "kappa_r": kappa_r_values})
 # kappa_df.to_excel("kappa_values_bessel_3um.xlsx", sheet_name="Kappa Values", index=False)
-kappa_df.to_excel("kappa_values_concentric.xlsx", sheet_name="Kappa Values", index=False)
-
-
-
-
-
-
-
-
-
-
+# kappa_df.to_excel("kappa_values_concentric.xlsx", sheet_name="Kappa Values", index=False)
 
 
 
