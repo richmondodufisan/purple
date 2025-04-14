@@ -4,7 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
 
 # from Layered_Heat_Conduction_BesselRing import calc_thermal_response
-from Layered_Heat_Conduction_ConcentricGaussian import calc_thermal_response
+# from Layered_Heat_Conduction_ConcentricGaussian import calc_thermal_response
 from Layered_Heat_Conduction_SuperGaussianRing import calc_thermal_response
 
 
@@ -16,8 +16,8 @@ from Layered_Heat_Conduction_SuperGaussianRing import calc_thermal_response
 # Data is analytical/exact
 
 # CONCENTRIC BEAM DATA
-user_phases = [-0.10596058228041347, -0.1575436103508173, -0.24010833896857903, -0.3109678805719539, -0.3749534252544176, -0.4336496677733477, -0.6670588326830659, -0.9427065152310182, -1.0917640196738556, -1.1824180944615048, -1.242205644005724]  # User-provided phases in radians
-user_frequencies = [1, 2, 4, 6, 8, 10, 20, 40, 60, 80, 100]  # Corresponding frequencies in MHz
+# user_phases = [-0.10596058228041347, -0.1575436103508173, -0.24010833896857903, -0.3109678805719539, -0.3749534252544176, -0.4336496677733477, -0.6670588326830659, -0.9427065152310182, -1.0917640196738556, -1.1824180944615048, -1.242205644005724]  # User-provided phases in radians
+# user_frequencies = [1, 2, 4, 6, 8, 10, 20, 40, 60, 80, 100]  # Corresponding frequencies in MHz
 
 
 # OFFSET BEAM DATA, 3um (Bessel Ring)
@@ -26,8 +26,8 @@ user_frequencies = [1, 2, 4, 6, 8, 10, 20, 40, 60, 80, 100]  # Corresponding fre
 
 
 # OFFSET BEAM DATA, 5um (super-Gaussian Ring)
-# user_phases = [-0.6667122931686965, -0.8636335757980098, -1.0791288940958033, -1.2152658443582292, -1.3264651359032231, -1.4289491240955596, -1.8756351169329097, -2.3609649939591186, -2.4330278379415606, -2.3196365007872033, -2.176819192827441]  # User-provided phases in radians
-# user_frequencies = [1, 2, 4, 6, 8, 10, 20, 40, 60, 80, 100]  # Corresponding frequencies in MHz
+user_phases = [-0.6667122931686965, -0.8636335757980098, -1.0791288940958033, -1.2152658443582292, -1.3264651359032231, -1.4289491240955596, -1.8756351169329097, -2.3609649939591186, -2.4330278379415606, -2.3196365007872033, -2.176819192827441]  # User-provided phases in radians
+user_frequencies = [1, 2, 4, 6, 8, 10, 20, 40, 60, 80, 100]  # Corresponding frequencies in MHz
 
 
 
@@ -106,8 +106,28 @@ for user_phase, user_frequency in zip(user_phases, user_frequencies):
 kappa_z_grid, kappa_r_grid = np.meshgrid(kappa_z_values, kappa_r_values)
 
 plt.figure(figsize=(10, 8))
-plt.contourf(kappa_z_grid, kappa_r_grid, error_surface.T, levels=500, cmap='viridis')
-plt.colorbar(label='Cumulative Error (MSE)')
+
+
+# plt.contourf(kappa_z_grid, kappa_r_grid, error_surface.T, levels=500, cmap='viridis')
+# plt.colorbar(label='Cumulative Error (MSE)')
+
+
+vmin = 0.0                        # Lower bound of color scale
+vmax = 0.00245                    # Upper bound of color scale 
+
+contour = plt.contourf(
+    kappa_z_grid,
+    kappa_r_grid,
+    error_surface.T,
+    levels=500,
+    cmap='viridis',
+    vmin=vmin,
+    vmax=vmax                # ✅ Forces all plots to use the same scale
+)
+plt.colorbar(contour, label='Cumulative Error (MSE)')
+
+
+
 plt.xlabel('Cross-Plane Thermal Conductivity, κ_z (W/m·K)', fontsize=12)
 plt.ylabel('In-Plane Thermal Conductivity, κ_r (MW/m²·K)', fontsize=12)
 plt.title('Cumulative Error Surface for Phase Fitting (2D)', fontsize=14)
@@ -119,9 +139,9 @@ plt.scatter(correct_kappa_z, correct_kappa_r, color='red', marker='x', s=100, la
 plt.legend()
 
 
-plt.savefig('cumulative_error_plot_2D_Concentric.png')
+# plt.savefig('cumulative_error_plot_2D_Concentric.png')
 # plt.savefig('cumulative_error_plot_2D_BesselRing_3um.png')
-# plt.savefig('cumulative_error_plot_2D_SuperGaussian_5um.png')
+plt.savefig('cumulative_error_plot_2D_SuperGaussian_5um.png')
 plt.show()
 
 
