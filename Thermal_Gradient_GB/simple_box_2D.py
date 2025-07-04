@@ -7,7 +7,7 @@ gmsh.model.add("Box Geometry")
 # Dimensions
 length = 120  # X-dimension
 height = 20   # Y-dimension
-refinement = 0.5
+refinement = 5.0
 
 # Create points
 p1 = gmsh.model.occ.addPoint(0, 0, 0, refinement)

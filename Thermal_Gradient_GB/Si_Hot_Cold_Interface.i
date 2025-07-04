@@ -1,6 +1,10 @@
 kappa_bulk_val = 130.00
 
-resistance_val = 3.53857042e-01
+#resistance_val = 3.53857042e-01
+#resistance_val = 1.98920351e-01
+resistance_val = 0.20006
+
+
 conductance_val = ${fparse 1.0/resistance_val}
 
 density_c_val = ${fparse 2630 * 741.79}
@@ -11,7 +15,7 @@ density_c_val = ${fparse 2630 * 741.79}
 
   [sample_mesh]
     type = FileMeshGenerator
-    file = simple_box_2D.msh
+    file = simple_box_2D_5_0.msh
   []
   
   [left_block]
@@ -276,9 +280,9 @@ density_c_val = ${fparse 2630 * 741.79}
   petsc_options_value = 'lu'
 
 
-  nl_rel_tol = 1e-10
-  nl_abs_tol = 1e-10
-  l_tol = 1e-5
+  nl_rel_tol = 1e-15
+  nl_abs_tol = 1e-15
+  l_tol = 1e-10
   l_max_its = 300
   nl_max_its = 20
   

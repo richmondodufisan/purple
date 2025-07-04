@@ -1,16 +1,16 @@
 #Global Parameters
-x0_val = 2
+x0_val = 0
 y0_val = 0
 freq_val = 1e6
 
 transducer_thickness = 0.09
-probe_radius = 6.7
-pump_radius = 7.65
+probe_radius = 1.34
+pump_radius = 1.53
 
 w_Probe = ${fparse probe_radius * sqrt(2)}
 w_Pump = ${fparse pump_radius * sqrt(2)}
 
-offset = 0
+offset = 5
 gaussian_order = 2.0
 
 pump_power = 0.01
