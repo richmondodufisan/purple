@@ -476,35 +476,35 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 []
 
 
-[VectorPostprocessors]
+#[VectorPostprocessors]
   # sample at z = -0.02 to remove discontinuity warning
   # it is still the same as sampling at z = 0
   # it is an average value
-  [flux_profile_x]
-    type = LineValueSampler
-    variable = avg_flux_x
-    start_point = '-30 0 -0.02'
-    end_point = '30 0 -0.02'
-    num_points = 321
-    sort_by = x
-  []
-  [flux_profile_y]
-    type = LineValueSampler
-    variable = avg_flux_y
-    start_point = '-30 0 -0.02'
-    end_point = '30 0 -0.02'
-    num_points = 321
-    sort_by = x
-  []
-  [flux_profile_z]
-    type = LineValueSampler
-    variable = avg_flux_z
-    start_point = '-30 0 -0.02'
-    end_point = '30 0 -0.02'
-    num_points = 321
-    sort_by = x
-  []
-[]
+#  [flux_profile_x]
+#    type = LineValueSampler
+#    variable = avg_flux_x
+#    start_point = '-30 0 -0.02'
+#    end_point = '30 0 -0.02'
+#    num_points = 321
+#    sort_by = x
+#  []
+#  [flux_profile_y]
+#    type = LineValueSampler
+#    variable = avg_flux_y
+#    start_point = '-30 0 -0.02'
+#    end_point = '30 0 -0.02'
+#    num_points = 321
+#    sort_by = x
+#  []
+#  [flux_profile_z]
+#    type = LineValueSampler
+#    variable = avg_flux_z
+#    start_point = '-30 0 -0.02'
+#    end_point = '30 0 -0.02'
+#    num_points = 321
+#    sort_by = x
+#  []
+#[]
 
 
 [Functions]
@@ -613,5 +613,5 @@ theta_rad = ${fparse (theta_deg/180)*pi}
 [Outputs]
   print_linear_residuals = false
   csv = true
-  exodus = true
+  exodus = false
 []
