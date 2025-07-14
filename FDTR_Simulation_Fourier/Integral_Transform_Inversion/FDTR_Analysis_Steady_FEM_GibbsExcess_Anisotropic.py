@@ -16,14 +16,14 @@ import math
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Define input filename
-input_filename = 'FDTR_input_GibbsExcess_Interface_SuperGaussianRing_5um_out_theta_0.csv'
+input_filename = 'FDTR_input_GibbsExcess_StepFunction_SuperGaussianRing_out_theta_0.csv'
 
 # Create a base name for output by stripping 'FDTR_input_' and file extension
 output_basename = input_filename.replace('FDTR_input_', '').replace('.csv', '')
 theta_angle = 0
 
 # Read the CSV
-FDTR_data = pd.read_csv(f'./paper_results/Interface_5um/{input_filename}', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+FDTR_data = pd.read_csv(f'./paper_results/{input_filename}', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
 
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
@@ -215,7 +215,7 @@ plt.title("Thermal Conductivity Profile, θ = " + str(theta_angle) + " (vertical
 plt.grid(True)
 plt.xticks(fontsize=15)
 plt.yticks(fontsize=15)
-# plt.ylim(126.9, 130.15)
+plt.ylim(125, 131)
 plt.tight_layout()
 plt.savefig(f"Thermal_Conductivity_Profile_{output_basename}_z.png", bbox_inches='tight')
 plt.show()
@@ -229,7 +229,7 @@ plt.title("Thermal Conductivity Profile, θ = " + str(theta_angle) + " (radial (
 plt.grid(True)
 plt.xticks(fontsize=15)
 plt.yticks(fontsize=15)
-# plt.ylim(126.9, 130.15)
+plt.ylim(125, 131)
 plt.tight_layout()
 plt.savefig(f"Thermal_Conductivity_Profile_{output_basename}_r.png", bbox_inches='tight')
 plt.show()
@@ -250,6 +250,10 @@ def compute_net_resistance(x_array, kappa_array, label="z"):
     # Define bulk κ as farthest from the interface
     kappa_bulk_left = kappa_left[0]        # x = min
     kappa_bulk_right = kappa_right[-1]     # x = max
+    
+    # Define bulk κ as farthest from the interface
+    # kappa_bulk_left = 130.2
+    # kappa_bulk_right = 130.2
 
     # Invert to resistivity
     rho_left = 1 / kappa_left
