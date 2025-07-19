@@ -101,7 +101,7 @@ z_cos_smooth = resistance_2b[0] / np.cos(theta_smooth_rad)
 
 
 # ----- Set manually -----
-alpha = 2.0  # Tune this value to see fit quality
+alpha = 2  # Tune this value to see fit quality
 # ------------------------
 
 # Generalized z-component model
@@ -139,7 +139,7 @@ popt, _ = curve_fit(model_cos_alpha, theta_deg_b_subset, res_b_subset, p0=[2.0])
 alpha_fit = popt[0]
 
 #MANUAL ALPHA
-alpha_fit = 2.0
+alpha_fit = 2
 
 print(f"Best-fit alpha (first 4 points only): {alpha_fit:.4f}")
 
@@ -180,7 +180,7 @@ ax1.plot(theta_smooth, z_cos_smooth, linestyle=':', color='purple', alpha=0.6, l
 # ax1.plot(theta_smooth, z_cos_smooth_alpha, linestyle=':', color='green', alpha=0.6, label=fr"Scaled $1/\cos^{{{alpha}}}(\theta)$ (z, anchored at $0^\circ$)")
 
 z_cos_smooth_alpha = resistance_2b[0] / (np.cos(theta_smooth_rad) ** alpha_fit)
-ax1.plot(theta_smooth, z_cos_smooth_alpha, linestyle='-.', color='purple', alpha=0.5, label=fr"$\propto 1/\cos^{{{alpha_fit:.2f}}}(\theta)$")
+ax1.plot(theta_smooth, z_cos_smooth_alpha, linestyle='-.', color='purple', alpha=0.5, label=fr"$\propto 1/\cos^{{{int(alpha_fit)}}}(\theta)$")
 
 
 
@@ -228,6 +228,6 @@ plt.savefig(f"Tilt_v_Resist_STEP_FUNCTION_anisotropic_z.png", bbox_inches='tight
 
 
 # plt.savefig(f"Tilt_v_Resist_STEP_FUNCTION_anisotropic_BOTH.png", bbox_inches='tight', dpi=600)
-plt.show()
+# plt.show()
 
 
