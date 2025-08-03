@@ -17,10 +17,10 @@ import pdb
 # In this section, you define the length and breadth of the map, and the number of steps in each direction
 
 # Define map size and resolution parameters
-length_x = 100
-length_y = 100
-steps_x = 31
-steps_y = 31
+length_x = 18
+length_y = 18
+steps_x = 7
+steps_y = 7
 
 output_file_prefix = "Si"
 
@@ -28,8 +28,8 @@ output_file_prefix = "Si"
 data_directory = "./"  # User should update this to the actual directory
 
 # Expected phase data files
-phase_range = ["1MHz", "2MHz", "4MHz", "6MHz", "10MHz"]
-frequencies = [1, 2, 4, 6, 10]  # Corresponding frequency values, write the numerical values in MHz
+phase_range = ["1MHz", "2MHz", "4MHz", "8MHz", "10MHz"]
+frequencies = [1, 2, 4, 8, 10]  # Corresponding frequency values, write the numerical values in MHz
 
 
 # Define material regions, with an array of material properties for each region
@@ -40,7 +40,7 @@ frequencies = [1, 2, 4, 6, 10]  # Corresponding frequency values, write the nume
 # You can define however many/little as you like, but when changing the size of the array, update "fit_function_FDTR" in the function definitions section
 
 regions = [
-    {"x_range": (0, 100), "y_range": (0, 100), "material_properties": [215, 19300, 128.5, 6180, 249.06]}
+    {"x_range": (0, 18), "y_range": (0, 18), "material_properties": [215, 19300, 128.5, 6180, 249.06]}
     # Add more regions as needed
 ]
 
@@ -61,10 +61,12 @@ regions = [
 ############################################################# FUNCTION DEFINITIONS #########################################################################################
 
 # Define a function to determine which region the current position belongs to
-def get_material_properties(i, j, regions):
+def get_material_properties(i, j, steps_x, steps_y, regions):
     for region in regions:
         x_range, y_range = region["x_range"], region["y_range"]
-        if x_range[0] <= j < x_range[1] and y_range[0] <= i < y_range[1]:
+        scaled_i = y_range[1] * i / steps_y
+        scaled_j = x_range[1] * j / steps_x
+        if x_range[0] <= scaled_j < x_range[1] and y_range[0] <= scaled_i < y_range[1]:
             return region["material_properties"]
     return None  # If no region is found (shouldn't happen if regions cover all areas)   
     
@@ -146,7 +148,7 @@ fitting_map = np.zeros((steps_y, steps_x, 2))  # Assuming we're fitting 2 proper
 for i in range(steps_y):
     for j in range(steps_x):
         # Get the material properties for the current position (i, j)
-        material_properties = get_material_properties(i, j, regions)
+        material_properties = get_material_properties(i, j, steps_x, steps_y, regions)
         if material_properties is None:
             print(f"No material properties found for position ({i}, {j})")
             continue

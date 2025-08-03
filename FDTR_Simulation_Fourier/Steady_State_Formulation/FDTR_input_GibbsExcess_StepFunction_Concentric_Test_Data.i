@@ -348,6 +348,6 @@ c_au = 0.1287e3
 [Outputs]
   print_linear_residuals = false
   csv = true
-  exodus = true
+  exodus = false
 []
 
