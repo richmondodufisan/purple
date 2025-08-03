@@ -17,17 +17,25 @@ xcen = 0
 ycen = 0
 
 # Refinement Parameters
-dummy_factor = 1.6
-trans_thick_ref = 0.045
-pump_inner_refine = 0.075
-pump_outer_refine = 0.2
-reg_element_refine = 4
+# dummy_factor = 1.6
+# trans_thick_ref = 0.045
+# pump_inner_refine = 0.075
+# pump_outer_refine = 0.2
+# reg_element_refine = 4
 
 # dummy_factor = 1.6
-# trans_thick_ref = 0.5
-# pump_inner_refine = 0.5
-# pump_outer_refine = 1.5
+# trans_thick_ref = 0.4
+# pump_inner_refine = 1
+# pump_outer_refine = 2
 # reg_element_refine = 12
+
+
+dummy_factor = 1.6
+trans_thick_ref = 0.09
+pump_inner_refine = 0.2
+pump_outer_refine = 0.4
+reg_element_refine = 4
+
 
 # 1. Create the **Base Substrate Box**
 substrate = gmsh.model.occ.addBox(-x_dir, -y_dir, -z_dir, 2*x_dir, 2*y_dir, z_dir)
