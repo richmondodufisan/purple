@@ -32,12 +32,15 @@ def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_prob
     
         'transducer_thickness': h1,
         'k_trans_z': kappa_z1,
+        'k_trans_r': kappa_r1,
         'rho_trans': rho1,
         'c_trans': c1,
         
         'sample_thickness': h2,
         'k_samp_z': kappa_z2,
+        'k_samp_r': kappa_r2,
         'k_gb_z': gb_kappa * 1e-6,
+        'k_gb_r': gb_kappa * 1e-6,
         'rho_samp': rho2,
         'c_samp': c2,
         
@@ -101,6 +104,6 @@ def calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_prob
     amplitude = math.sqrt(H_real**2 + H_imag**2)
     
     # Clean files
-    # os.system(f"rm FDTR_input_Traditional_Axisymmetric_temp*")
+    os.system(f"rm FDTR_Two_Layer_Concentric_temp*")
     
     return phase, amplitude
