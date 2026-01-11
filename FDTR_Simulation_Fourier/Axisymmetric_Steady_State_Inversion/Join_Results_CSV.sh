@@ -7,7 +7,7 @@ x0_vals_num=("0")
 freq_vals_num=("1e6" "2e6" "3e6" "4e6" "6e6" "8e6" "10e6")
 
 # Output file
-output_file="../${og_filename}_0_1_out.csv"
+output_file="../${og_filename}_0_25_um.csv"
 
 # Create header for the output file
 echo "x0, freq, imag_part, real_part" > "$output_file"

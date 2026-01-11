@@ -28,7 +28,7 @@ offset = 3e-6
 
 order = 2.0
 
-si_distance = 1e-6
+si_distance = 1.2e-6
 gb_thickness = 0.01e-6
 gb_kappa = 56.52
 

@@ -6,8 +6,7 @@ extension=".i"
 
 # Define the range of values you want to loop over
 
-freq_vals_num=("1e6" "2e6" "4e6" "6e6" "8e6" "10e6")
-
+freq_vals_num=("1e6" "2e6" "3e6" "4e6" "5e6" "6e6" "7e6" "8e6" "9e6" "10e6")
 
 
 # Clear the output files before appending

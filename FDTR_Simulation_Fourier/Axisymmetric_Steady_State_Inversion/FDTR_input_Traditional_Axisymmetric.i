@@ -12,8 +12,8 @@ sample_thickness = 40
 k_samp_z = 130e-6
 k_samp_r = 130e-6
 
-k_gb_z = 130e-6
-k_gb_r = 130e-6
+k_gb_z = 56.52e-6
+k_gb_r = 56.52e-6
 
 rho_samp = 2.329e-15
 c_samp = 689.1
@@ -30,7 +30,7 @@ w_Pump = ${fparse pump_radius * sqrt(2)}
 pump_absorbance = 1
 
 
-si_distance = 1
+si_distance = 0.25
 gb_thickness = 0.01
 
 block_3_val = ${fparse -si_distance}
