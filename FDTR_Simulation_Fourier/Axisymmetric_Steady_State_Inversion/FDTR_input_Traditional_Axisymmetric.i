@@ -3,17 +3,14 @@ freq_val = 1e6
 
 transducer_thickness = 0.09
 k_trans_z = 215e-6
-k_trans_r = 215e-6
 rho_trans = 19.3e-15
 c_trans = 128.7
 
 
 sample_thickness = 40
 k_samp_z = 130e-6
-k_samp_r = 130e-6
 
 k_gb_z = 130e-6
-k_gb_r = 130e-6
 
 rho_samp = 2.329e-15
 c_samp = 689.1
@@ -33,48 +30,31 @@ pump_absorbance = 1
 si_distance = 1
 gb_thickness = 0.01
 
-block_3_val = ${fparse -si_distance}
-block_2_val = ${fparse -si_distance-gb_thickness}
-
 [Mesh]
   coord_type = RZ
   [sample_mesh]
     type = FileMeshGenerator
     file = FDTR_mesh.msh
   []
-  [sample_block_bottom]
+  [sample_block]
     type = SubdomainBoundingBoxGenerator
     input = sample_mesh
     block_id = 1
-    top_right = '40 ${block_2_val} 0'
-    bottom_left = '0 -40 0'
-  []
-  [grain_boundary_block]
-    type = SubdomainBoundingBoxGenerator
-    input = sample_block_bottom
-    block_id = 2
-    top_right = '40 ${block_3_val} 0'
-    bottom_left = '0 ${block_2_val} 0'
-  []
-  [sample_block_top]
-    type = SubdomainBoundingBoxGenerator
-    input = grain_boundary_block
-    block_id = 3
     top_right = '40 0 0'
-    bottom_left = '0 ${block_3_val} 0'
+    bottom_left = '0 -40 0'
   []
   [transducer_block]
     type = SubdomainBoundingBoxGenerator
-    input = sample_block_top
-    block_id = 4	
+    input = sample_block
+    block_id = 2	
     top_right = '40 ${transducer_thickness} 0'
     bottom_left = '0 0 0'
   []
   
   [rename]
     type = RenameBlockGenerator
-    old_block = '1 2 3 4'
-    new_block = 'sample_material_bottom gb_material sample_material_top transducer_material'
+    old_block = '1 2'
+    new_block = 'sample_material transducer_material'
     input = transducer_block
   []
   
@@ -96,7 +76,7 @@ block_2_val = ${fparse -si_distance-gb_thickness}
     type = SideSetsBetweenSubdomainsGenerator
     input = applied_pump_sample
     primary_block = transducer_material
-    paired_block = sample_material_top
+    paired_block = sample_material
     new_boundary = 'boundary_conductance'
   []
     
@@ -129,18 +109,18 @@ block_2_val = ${fparse -si_distance-gb_thickness}
   [temp_samp_real]
     order = FIRST
     family = LAGRANGE
-	block = 'sample_material_bottom gb_material sample_material_top'
+	block = sample_material
   []
   [temp_samp_imag]
     order = FIRST
     family = LAGRANGE
-	block = 'sample_material_bottom gb_material sample_material_top'
+	block = sample_material
   []
 []
 
 [Kernels]
   [heat_conduction_transducer_real]
-    type = HeatConductionSteadyRealAnisotropic
+    type = HeatConductionSteadyReal
 	
     variable = temp_trans_real
 	imaginary_temp = temp_trans_imag
@@ -153,7 +133,7 @@ block_2_val = ${fparse -si_distance-gb_thickness}
 	block = transducer_material
   []
   [heat_conduction_transducer_imag]
-    type = HeatConductionSteadyImagAnisotropic
+    type = HeatConductionSteadyImag
 	
     variable = temp_trans_imag
 	real_temp = temp_trans_real
@@ -168,7 +148,7 @@ block_2_val = ${fparse -si_distance-gb_thickness}
   
   
   [heat_conduction_sample_real]
-    type = HeatConductionSteadyRealAnisotropic
+    type = HeatConductionSteadyReal
 	
     variable = temp_samp_real
 	imaginary_temp = temp_samp_imag
@@ -178,10 +158,10 @@ block_2_val = ${fparse -si_distance-gb_thickness}
 	omega = omega
 	density = rho_samp
 	
-	block = 'sample_material_top sample_material_bottom'
+	block = sample_material
   []
   [heat_conduction_sample_imag]
-    type = HeatConductionSteadyImagAnisotropic
+    type = HeatConductionSteadyImag
 	
     variable = temp_samp_imag
 	real_temp = temp_samp_real
@@ -191,35 +171,7 @@ block_2_val = ${fparse -si_distance-gb_thickness}
 	omega = omega
 	density = rho_samp
 	
-	block = 'sample_material_top sample_material_bottom'
-  []
-  
-  
-  [heat_conduction_gb_real]
-    type = HeatConductionSteadyRealAnisotropic
-	
-    variable = temp_samp_real
-	imaginary_temp = temp_samp_imag
-	
-	thermal_conductivity = k_gb
-	heat_capacity = c_samp
-	omega = omega
-	density = rho_samp
-	
-	block = 'gb_material'
-  []
-  [heat_conduction_gb_imag]
-    type = HeatConductionSteadyImagAnisotropic
-	
-    variable = temp_samp_imag
-	real_temp = temp_samp_real
-	
-	thermal_conductivity = k_gb
-	heat_capacity = c_samp
-	omega = omega
-	density = rho_samp
-	
-	block = 'gb_material'
+	block = sample_material
   []
 []
 
@@ -297,6 +249,12 @@ block_2_val = ${fparse -si_distance-gb_thickness}
 []
 
 [Functions]
+  [grain_boundary_function]
+    type = ParsedFunction
+	expression = 'if ( (x > (-si_dist - gb_thick)) & (x < (-si_dist)), k_gb, k_bulk )'
+	symbol_names = 'si_dist gb_thick k_bulk k_gb'
+	symbol_values = '${si_distance} ${gb_thickness} ${k_samp_z} ${k_gb_z}'
+  []
   [angular_frequency]
 	type = ParsedFunction
 	expression = '2 * pi * freq'
@@ -310,45 +268,31 @@ block_2_val = ${fparse -si_distance-gb_thickness}
   [basic_transducer_materials]
     type = ADGenericConstantMaterial
     block = transducer_material
-    prop_names = 'rho_trans c_trans'
-    prop_values = '${rho_trans} ${c_trans}'
-  []
-  [transducer_kappa]
-    type = ADGenericConstantRankTwoTensor
-    tensor_name = k_trans
-    # tensor values are column major-ordered
-    tensor_values = '${k_trans_r} 0 0 0 ${k_trans_r} 0 0 0 ${k_trans_z}'
-	block = transducer_material
+    prop_names = 'rho_trans c_trans k_trans'
+    prop_values = '${rho_trans} ${c_trans} ${k_trans_z}'
   []
   
   
   [basic_sample_materials]
     type = ADGenericConstantMaterial
-    block = 'sample_material_top sample_material_bottom gb_material'
+    block = 'sample_material'
     prop_names = 'rho_samp c_samp'
     prop_values = '${rho_samp} ${c_samp}'
   []
-  [sample_kappa]
-    type = ADGenericConstantRankTwoTensor
-    tensor_name = k_samp
-    # tensor values are column major-ordered
-    tensor_values = '${k_samp_r} 0 0 0 ${k_samp_r} 0 0 0 ${k_samp_z}'
-	block = 'sample_material_top sample_material_bottom'
+  [kappa_gb_val]
+    type = ADGenericFunctionMaterial
+	prop_names = k_samp
+    prop_values = grain_boundary_function
+	block = 'transducer_material sample_material'
   []
-  [gb_kappa]
-    type = ADGenericConstantRankTwoTensor
-    tensor_name = k_gb
-    # tensor values are column major-ordered
-    tensor_values = '${k_gb_r} 0 0 0 ${k_gb_r} 0 0 0 ${k_gb_z}'
-	block = gb_material
-  []
+
   
   
   [simulation_frequency]
     type = ADGenericFunctionMaterial
 	prop_names = omega
     prop_values = angular_frequency
-	block = 'transducer_material sample_material_top sample_material_bottom gb_material'
+	block = 'transducer_material sample_material'
   []
 []
 

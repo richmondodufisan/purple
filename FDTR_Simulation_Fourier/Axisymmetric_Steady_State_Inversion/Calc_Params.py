@@ -28,9 +28,9 @@ offset = 3e-6
 
 order = 2.0
 
-si_distance = 2e-6
+si_distance = 1e-6
 gb_thickness = 0.01e-6
-gb_kappa = 130.0
+gb_kappa = 56.52
 
 # Calculate analytical phase 
 # phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
