@@ -1,6 +1,7 @@
 # from Two_Layer_Inversion_Concentric import calc_thermal_response
 # from Two_Layer_Inversion_BesselRing import calc_thermal_response
-from Two_Layer_Inversion_SuperGaussianRing import calc_thermal_response
+# from Two_Layer_Inversion_SuperGaussianRing import calc_thermal_response
+from Two_Layer_Inversion_Traditional_Concentric import calc_thermal_response
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -27,10 +28,16 @@ offset = 3e-6
 
 order = 2.0
 
+si_distance = 2e-6
+gb_thickness = 0.01e-6
+gb_kappa = 130.0
+
 # Calculate analytical phase 
 # phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power)
 # phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, freq, pump_power)
-phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, order, freq, pump_power)
+# phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, offset, order, freq, pump_power)
+
+phase, amplitude = calc_thermal_response(N_layers, layer_props, interface_props, w_pump, w_probe, freq, pump_power, gb_kappa, gb_thickness, si_distance)
 
 print("----------------------------------------------------------------------------------------------")
 print("Phase: " + str(phase)) 
