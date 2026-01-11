@@ -1,5 +1,5 @@
 #Global Parameters
-freq_val = 1e6
+freq_val = 10e6
 
 transducer_thickness = 0.09
 k_trans_z = 215e-6
