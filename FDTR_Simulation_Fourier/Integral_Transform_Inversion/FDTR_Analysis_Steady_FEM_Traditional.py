@@ -11,8 +11,10 @@ import math
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Read the CSV files into pandas DataFrames
-FDTR_data = pd.read_csv('FDTR_input_Traditional_out_1_2_um.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+FDTR_data = pd.read_csv('FDTR_input_Traditional_Axisymmetric_2_25_um.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
 theta_angle = "0" # for output file name change
+
+si_dist = 2.25e-6
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
 FDTR_freq_vals = FDTR_data['frequency'].unique().tolist()
@@ -108,9 +110,18 @@ def fit_function_FDTR(freqs, G):
 
     for freq in freqs:
         # Define other parameters required by calc_thermal_response function
+        
+        si_distance = si_dist
+        gb_thickness = 0.1e-6
+        
+        gb_thick = si_distance + (gb_thickness/2)
+        # gb_thick = si_distance
+        
+        remainder = 40e-6 - gb_thick
+        
         N_layers = 3
-        layer3 = [39.75e-6, 130, 130, 2329, 689.1]
-        layer2 = [0.25e-6, 130, 130, 2329, 689.1]
+        layer3 = [remainder, 130, 130, 2329, 689.1]
+        layer2 = [gb_thick, 130, 130, 2329, 689.1]
         layer1 = [9e-8, 215, 215, 19300, 128.7]
         layer_props = np.array([layer3, layer2, layer1])
         interface_props = [G, 3e7]
@@ -139,12 +150,17 @@ counter = 0
 for x0 in FDTR_x0_vals:
 
     FDTR_phase = np.array(FDTR_phase_data[x0])
+    
+    p0 = [1e7]                 # example: start at 10 MW/m^2-K
+    bounds = ([1e4], [1e10])   # keep G strictly positive and finite
 
     # popt = optimized params (conductance), pcov = covariance (not needed, except maybe for debugging)
     popt, pcov = curve_fit(
         fit_function_FDTR,
         FDTR_freq,   # Frequency data
         FDTR_phase,  # Phase data
+        p0=p0,
+        bounds=bounds,
         method='trf',  # Use Trust Region Reflective algorithm
         maxfev=10000,  # Maximum number of function evaluations
         ftol=1e-12,   # Set the tolerance on the relative error in the function values

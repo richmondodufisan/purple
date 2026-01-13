@@ -7,7 +7,7 @@ import math
 
 # === USER INPUTS ===
 offset_list = np.linspace(0e-6, 50e-6, 50)  # offsets in meters (e.g., 0 to 15 microns)
-fixed_frequency = 10e6  # Frequency in Hz (e.g., 10 MHz)
+fixed_frequency = 1e6  # Frequency in Hz (e.g., 10 MHz)
 perturbation = 0.0005   # Small perturbation for sensitivity calculation
 
 # === Thermal Parameters ===
@@ -86,8 +86,8 @@ def finite_difference_log(FDTR_function, freq_range, param_name, param_value, pe
 
 # ############ PLOT OFFSET VS SENSITIVITY ###################
 
-# Sensitivity_kappa_r_list = []
-Sensitivity_kappa_z_list = []
+Sensitivity_kappa_r_list = []
+# Sensitivity_kappa_z_list = []
 
 
 
@@ -101,44 +101,50 @@ for offset in offset_list:
 
     freqs = np.array([fixed_frequency])  # Single frequency as array
 
-    # sens_kappa_r = finite_difference_log(FDTR_function, freqs, "kappa_r", kappa_r_val, perturbation, params)[0]
-    sens_kappa_z = finite_difference_log(FDTR_function, freqs, "kappa_z", kappa_z_val, perturbation, params)[0]
+    sens_kappa_r = finite_difference_log(FDTR_function, freqs, "kappa_r", kappa_r_val, perturbation, params)[0]
+    # sens_kappa_z = finite_difference_log(FDTR_function, freqs, "kappa_z", kappa_z_val, perturbation, params)[0]
 
 
-    # Sensitivity_kappa_r_list.append(sens_kappa_r)
-    Sensitivity_kappa_z_list.append(sens_kappa_z)
+    Sensitivity_kappa_r_list.append(sens_kappa_r)
+    # Sensitivity_kappa_z_list.append(sens_kappa_z)
 
 
 
 # === Plotting ===
-# plt.figure(figsize=(10, 6))
-# plt.plot(np.array(offset_list)*1e6, Sensitivity_kappa_r_list, label=r'$\kappa_{r}$ (Si)', linestyle='--', linewidth=3)
-# plt.grid(True)
-# plt.xlabel('Offset (μm)', fontsize=14)
-# plt.ylabel('Relative Sensitivity', fontsize=14)
-# plt.xticks(fontsize=14)
-# plt.yticks(fontsize=14)
-# plt.title(f'Relative Sensitivity vs Offset for $\\kappa_{{r}}$ (Si) at {fixed_frequency/1e6:.1f} MHz', fontsize=16)
-# plt.legend(fontsize=14)
-# plt.tight_layout()
-# plt.savefig(f'sensitivity_vs_offset_kappa_r_{int(fixed_frequency/1e6)}MHz_1.png')
-# plt.show()
+sens_deg = np.array(Sensitivity_kappa_r_list, dtype=float)   # make it a NumPy array
+# sens_deg = np.array(Sensitivity_kappa_z_list, dtype=float)   # make it a NumPy array
 
-
-
+sens_rad = np.deg2rad(sens_deg)                              # convert degrees -> radians
 
 plt.figure(figsize=(10, 6))
-plt.plot(np.array(offset_list)*1e6, Sensitivity_kappa_z_list, label=r'$\kappa_{z}$ (Si)', linestyle='--', linewidth=3)
+plt.plot(np.array(offset_list)/1.53e-6, sens_rad, label=r'$\kappa_{r}$ (Si)', linestyle='--', linewidth=3)
 plt.grid(True)
-plt.xlabel('Offset (μm)', fontsize=14)
-plt.ylabel('Relative Sensitivity', fontsize=14)
+plt.xlabel('Offset/Pump Radius', fontsize=14)
+plt.ylabel('Sensitivity (radians)', fontsize=14)
 plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
-plt.title(f'Sensitivity vs Offset for $\\kappa_{{z}}$ (Si) at {fixed_frequency/1e6:.1f} MHz', fontsize=16)
+plt.title(f'Sensitivity vs Offset for $\\kappa_{{r}}$ (Si) at {fixed_frequency/1e6:.1f} MHz', fontsize=16)
 plt.legend(fontsize=14)
 plt.tight_layout()
-plt.savefig(f'sensitivity_vs_offset_kappa_z_{int(fixed_frequency/1e6)}MHz_1.png')
+plt.savefig(f'sensitivity_vs_offset_kappa_r_{int(fixed_frequency/1e6)}MHz_paper.png')
 plt.show()
+
+
+
+
+
+# plt.figure(figsize=(10, 6))
+# plt.plot(np.array(offset_list)/1.53e-6, sens_rad, label=r'$\kappa_{z}$ (Si)', linestyle='--', linewidth=3)
+# plt.grid(True)
+# plt.xlabel('Offset/Pump Radius', fontsize=14)
+# plt.ylabel('Sensitivity (radians)', fontsize=14)
+# plt.xticks(fontsize=14)
+# plt.yticks(fontsize=14)
+# plt.title(f'Sensitivity vs Offset for $\\kappa_{{z}}$ (Si) at {fixed_frequency/1e6:.1f} MHz', fontsize=16)
+# plt.legend(fontsize=14)
+# plt.tight_layout()
+# plt.savefig(f'sensitivity_vs_offset_kappa_z_{int(fixed_frequency/1e6)}MHz_paper.png')
+# plt.show()
 
 
 

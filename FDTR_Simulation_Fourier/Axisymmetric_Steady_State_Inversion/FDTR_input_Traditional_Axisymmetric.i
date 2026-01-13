@@ -30,8 +30,8 @@ w_Pump = ${fparse pump_radius * sqrt(2)}
 pump_absorbance = 1
 
 
-si_distance = 1
-gb_thickness = 0.01
+si_distance = 5.0
+gb_thickness = 0.1
 
 block_3_val = ${fparse -si_distance}
 block_2_val = ${fparse -si_distance-gb_thickness}
