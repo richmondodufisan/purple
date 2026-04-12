@@ -1,6 +1,6 @@
 #Global Parameters
 shear_modulus_val = 100000
-poissons_ratio_val = 0.49
+poissons_ratio_val = 0.4999
 
 bulk_modulus_val = ${fparse ((2 * shear_modulus_val) * (1 + poissons_ratio_val))/(3 * (1 - (2 * poissons_ratio_val)))}
 

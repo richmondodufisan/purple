@@ -11,10 +11,10 @@ import math
 ############################################# READING IN AND ORGANIZING DATA #############################################
 
 # Read the CSV files into pandas DataFrames
-FDTR_data = pd.read_csv('FDTR_input_Traditional_Axisymmetric_2_25_um.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
+FDTR_data = pd.read_csv('FDTR_input_Traditional_Axisymmetric_15_00_um.csv', skiprows=1, names=['x0', 'frequency', 'imag_part', 'real_part'])
 theta_angle = "0" # for output file name change
 
-si_dist = 2.25e-6
+si_dist = 15.0e-6
 
 # Extract lists of unique frequencies (in MHz) and unique x0 values
 FDTR_freq_vals = FDTR_data['frequency'].unique().tolist()
@@ -152,7 +152,7 @@ for x0 in FDTR_x0_vals:
     FDTR_phase = np.array(FDTR_phase_data[x0])
     
     p0 = [1e7]                 # example: start at 10 MW/m^2-K
-    bounds = ([1e4], [1e10])   # keep G strictly positive and finite
+    bounds = ([1e6], [1e10])   # keep G strictly positive and finite
 
     # popt = optimized params (conductance), pcov = covariance (not needed, except maybe for debugging)
     popt, pcov = curve_fit(
