@@ -128,7 +128,15 @@ dt_val = ${fparse right_disp_val/100}
     boundary = 'left'
     value = 0
 	preset = false
-  []  
+  []
+  [left_y]
+    type = ADDirichletBC
+    variable = disp_y
+    boundary = 'left'
+    value = 0
+	preset = false
+  []
+  
   
   [right_x]
     type = ADFunctionDirichletBC
