@@ -101,8 +101,9 @@ dt_val = ${fparse right_disp_val/100}
   []
 
   [axial_stress]
-    type = ElementAverageValue
+    type = PointValue
     variable = stress_xx
+    point = '0.01 0.0005 0'
   []
 []
 
@@ -127,15 +128,7 @@ dt_val = ${fparse right_disp_val/100}
     boundary = 'left'
     value = 0
 	preset = false
-  []
-  [left_y]
-    type = ADDirichletBC
-    variable = disp_y
-    boundary = 'left'
-    value = 0
-	preset = false
-  []
-  
+  []  
   
   [right_x]
     type = ADFunctionDirichletBC
