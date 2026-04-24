@@ -64,15 +64,6 @@ dt_val = ${fparse right_disp_val/100}
 []
 
 [AuxVariables]
-  [strain_xx]
-    order = CONSTANT
-    family = MONOMIAL
-  []
-  [strain_yy]
-    order = CONSTANT
-    family = MONOMIAL
-  []
-
   [stress_xx]
     order = CONSTANT
     family = MONOMIAL
@@ -110,36 +101,22 @@ dt_val = ${fparse right_disp_val/100}
     index_i = 1
     index_j = 1
   []
-
-  [strain_xx]
-    type = RankTwoAux
-    rank_two_tensor = total_strain
-    variable = strain_xx
-    index_i = 0
-    index_j = 0
-  []
-  [strain_yy]
-    type = RankTwoAux
-    rank_two_tensor = total_strain
-    variable = strain_yy
-    index_i = 1
-    index_j = 1
-  []
 []
 
 [Postprocessors]
-  [axial_strain]
-    type = PointValue
-    variable = strain_xx
-    point = '${l_plate} 0.001 0'
+  [axial_disp]
+    type = NodalExtremeValue
+    variable = disp_x
+    boundary = right
+    value_type = max
   []
+
   [axial_stress]
-    type = PointValue
+    type = ElementAverageValue
     variable = stress_xx
-    point = '${l_plate} 0.001 0'
   []
   [pressure_integral]
-    type = ElementIntegralVariablePostprocessor
+    type = ElementAverageValue
     variable = pressure
 	execute_on = 'initial timestep_begin'
   []
@@ -154,6 +131,7 @@ dt_val = ${fparse right_disp_val/100}
   [strain]
     type = ComputeLagrangianStrain
 	displacements = 'disp_x disp_y'
+	large_kinematics = true
   []	
 []
 
